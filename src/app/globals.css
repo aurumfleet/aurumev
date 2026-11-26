@@ -177,6 +177,58 @@ body {
     }
   }
 
+  @keyframes partnerMarqueeRtl {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes partnerHoloFloat {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+      opacity: 0.25;
+    }
+    50% {
+      transform: translate3d(6px, -12px, 0);
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes partnerGoldSweep {
+    0% {
+      transform: translate3d(-120%, 0, 0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.55;
+    }
+    80% {
+      opacity: 0.55;
+    }
+    100% {
+      transform: translate3d(220%, 0, 0);
+      opacity: 0;
+    }
+  }
+
+  .partner-marquee-track {
+    animation: partnerMarqueeRtl 36s linear infinite;
+    will-change: transform;
+  }
+
+  .partner-holo-stage:hover .partner-marquee-track,
+  .partner-holo-stage[data-paused="true"] .partner-marquee-track {
+    animation-play-state: paused;
+  }
+
+  .partner-perspective {
+    perspective: 1400px;
+  }
+
   .hero-perspective {
     perspective: 1300px;
   }
