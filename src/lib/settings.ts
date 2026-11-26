@@ -44,8 +44,8 @@ export interface SiteSettingsBundle {
 }
 
 export const DEFAULT_CONTACT_SETTINGS: ContactSettings = {
-  phone: "Configure in Admin Settings",
-  whatsapp: "",
+  phone: "+91 7779990277",
+  whatsapp: "917779990277",
   supportEmail: "support@aurumfleet.example",
   officeAddress: "Aurum Fleet Solutions Pvt Ltd — Configure Registered Office in Admin Settings",
   operatingHours: "Mon – Sat, 09:00 AM – 07:00 PM IST",
