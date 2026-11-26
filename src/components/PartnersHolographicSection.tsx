@@ -26,6 +26,7 @@ export function PartnersHolographicSection() {
   const touchStartXRef = useRef<number | null>(null);
   const baseTouchOffsetRef = useRef(0);
   const touchMovedRef = useRef(false);
+  const lastPointerTypeRef = useRef<string>("mouse");
 
   // Subtle curved 3D depth arc + cursor-driven 3D magnetic card tilt (zero React re-renders)
   useEffect(() => {
@@ -274,7 +275,11 @@ export function PartnersHolographicSection() {
                         data-dimmed={isDimmed ? "true" : "false"}
                         data-tilt-x="0"
                         data-tilt-y="0"
+                        onPointerDown={(e) => {
+                          lastPointerTypeRef.current = e.pointerType;
+                        }}
                         onPointerEnter={(e) => {
+                          lastPointerTypeRef.current = e.pointerType;
                           if (e.pointerType === "mouse") {
                             setFocusedKey(key);
                             setIsPaused(true);
@@ -282,11 +287,18 @@ export function PartnersHolographicSection() {
                         }}
                         onPointerMove={handleCardPointerMove}
                         onPointerLeave={(e) => {
-                          e.currentTarget.dataset.tiltX = "0";
-                          e.currentTarget.dataset.tiltY = "0";
-                          setFocusedKey((prev) => (prev === key ? null : prev));
+                          if (e.pointerType === "mouse") {
+                            e.currentTarget.dataset.tiltX = "0";
+                            e.currentTarget.dataset.tiltY = "0";
+                            setFocusedKey((prev) => (prev === key ? null : prev));
+                          }
                         }}
                         onClick={() => {
+                          if (lastPointerTypeRef.current === "mouse") {
+                            setFocusedKey(key);
+                            setIsPaused(true);
+                            return;
+                          }
                           setFocusedKey((prev) => {
                             const next = prev === key ? null : key;
                             setIsPaused(next !== null);
