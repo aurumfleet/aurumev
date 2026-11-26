@@ -201,10 +201,10 @@ export function HeroShowcase() {
     introPlayedThisVisit = true;
     const fadeTimer = window.setTimeout(() => {
       setIntroPhase("fading");
-    }, 3400);
+    }, 4000);
     const doneTimer = window.setTimeout(() => {
       setIntroPhase("done");
-    }, 4500);
+    }, 5100);
     return () => {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(doneTimer);

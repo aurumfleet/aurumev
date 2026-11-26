@@ -30,13 +30,15 @@ interface RaindropGlassCanvasProps {
 }
 
 function buildOrganicShape(seed: number, isTeardrop: boolean): OrganicPoint[] {
-  const count = 8;
+  const count = 10;
   const pts: OrganicPoint[] = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2;
-    // Slight bottom sag for gravity + subtle organic irregularity
-    const gravitySag = Math.sin(angle) > 0 ? 1 + Math.sin(angle) * (isTeardrop ? 0.24 : 0.09) : 1 - (isTeardrop ? 0.08 : 0);
-    const jitter = 0.9 + Math.abs(Math.sin(seed * 13.7 + i * 4.3)) * 0.18;
+    const gravitySag =
+      Math.sin(angle) > 0
+        ? 1 + Math.sin(angle) * (isTeardrop ? 0.22 : 0.08)
+        : 1 - (isTeardrop ? 0.07 : 0);
+    const jitter = 0.93 + Math.abs(Math.sin(seed * 17.3 + i * 3.7)) * 0.13;
     pts.push({ angle, radialScale: gravitySag * jitter });
   }
   return pts;
@@ -63,9 +65,7 @@ function traceOrganicPath(
   for (let i = 0; i < coords.length; i++) {
     const curr = coords[i];
     const next = coords[(i + 1) % coords.length];
-    const midX = (curr.x + next.x) / 2;
-    const midY = (curr.y + next.y) / 2;
-    ctx.quadraticCurveTo(curr.x, curr.y, midX, midY);
+    ctx.quadraticCurveTo(curr.x, curr.y, (curr.x + next.x) / 2, (curr.y + next.y) / 2);
   }
   ctx.closePath();
 }
@@ -107,16 +107,16 @@ export function RaindropGlassCanvas({
 
     const createDrops = (w: number, h: number): Droplet[] => {
       const list: Droplet[] = [];
-      const mistCount = w < 640 ? 95 : 190;
-      const beadCount = w < 640 ? 38 : 74;
-      const slidingCount = w < 640 ? 6 : 12;
+      const mistCount = w < 640 ? 110 : 210;
+      const beadCount = w < 640 ? 36 : 72;
+      const slidingCount = w < 640 ? 6 : 11;
 
-      // 1. Fine condensation micro-beads across the entire glass pane
+      // 1. Razor-crisp micro-beads (crystal clear, zero milky fill)
       for (let i = 0; i < mistCount; i++) {
         list.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          r: 0.9 + Math.random() * 1.6,
+          r: 0.75 + Math.random() * 1.4,
           vy: 0,
           sliding: false,
           wobblePhase: Math.random() * Math.PI * 2,
@@ -126,19 +126,19 @@ export function RaindropGlassCanvas({
         });
       }
 
-      // 2. Medium & large organic surface-tension droplets
+      // 2. Medium & large crystal surface-tension lenses
       for (let i = 0; i < beadCount; i++) {
         let x = Math.random() * w;
         const y = Math.random() * h;
         const inCenter =
-          x > w * 0.27 && x < w * 0.73 && y > h * 0.2 && y < h * 0.66;
-        if (inCenter && Math.random() < 0.7) {
+          x > w * 0.28 && x < w * 0.72 && y > h * 0.22 && y < h * 0.65;
+        if (inCenter && Math.random() < 0.72) {
           x =
             Math.random() < 0.5
-              ? Math.random() * w * 0.27
-              : w * 0.73 + Math.random() * w * 0.27;
+              ? Math.random() * w * 0.28
+              : w * 0.72 + Math.random() * w * 0.28;
         }
-        const r = inCenter ? 2.1 + Math.random() * 2.4 : 2.8 + Math.random() * 6.8;
+        const r = inCenter ? 2.2 + Math.random() * 2.2 : 3.0 + Math.random() * 7.2;
         list.push({
           x,
           y,
@@ -152,14 +152,14 @@ export function RaindropGlassCanvas({
         });
       }
 
-      // 3. Slow gravity-sliding heavy droplets leaving micro-bead trails
+      // 3. Slow sliding crystal teardrops leaving ultra-fine clear trails
       for (let i = 0; i < slidingCount; i++) {
-        const r = 4.6 + Math.random() * 4.4;
+        const r = 4.8 + Math.random() * 4.5;
         list.push({
           x: Math.random() * w,
           y: Math.random() * h,
           r,
-          vy: 0.45 + Math.random() * 0.75,
+          vy: 0.42 + Math.random() * 0.7,
           sliding: true,
           wobblePhase: Math.random() * Math.PI * 2,
           sparkle: 0,
@@ -192,30 +192,31 @@ export function RaindropGlassCanvas({
     const drawDroplet = (d: Droplet, img: HTMLImageElement | null) => {
       const yStretch = d.sliding ? 1.24 : 1.05;
 
-      // Tiny mist droplets: subtle translucent glass highlights without heavy fill
+      // Micro condensation specks: pure tiny shadow + crisp specular pinhole (no cloudy fill)
       if (d.r < 2.2) {
         ctx.beginPath();
         ctx.arc(d.x + 0.5, d.y + 0.8, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.32)";
         ctx.fill();
 
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.14)";
-        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
 
         ctx.beginPath();
-        ctx.arc(d.x - d.r * 0.3, d.y - d.r * 0.3, Math.max(0.45, d.r * 0.35), 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
+        ctx.arc(d.x - d.r * 0.32, d.y - d.r * 0.32, Math.max(0.45, d.r * 0.38), 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
         ctx.fill();
         return;
       }
 
-      // Sliding wake trail
+      // Ultra-fine trailing micro-droplets behind sliding teardrops
       if (d.sliding && d.trail.length > 0) {
         for (let t = 0; t < d.trail.length; t++) {
           const pt = d.trail[t];
-          const alpha = ((t + 1) / d.trail.length) * 0.32;
+          const alpha = ((t + 1) / d.trail.length) * 0.45;
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(2)})`;
@@ -223,18 +224,39 @@ export function RaindropGlassCanvas({
         }
       }
 
-      // 1. Soft blurred contact shadow beneath drop
+      // 1. Soft external contact shadow + subtle exterior caustic glow beneath drop
       ctx.save();
-      ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
-      ctx.shadowBlur = Math.max(2, d.r * 0.55);
-      ctx.shadowOffsetX = 0.8;
-      ctx.shadowOffsetY = 2.2;
+      ctx.shadowColor = "rgba(0, 0, 0, 0.62)";
+      ctx.shadowBlur = Math.max(2.5, d.r * 0.65);
+      ctx.shadowOffsetX = 1.1;
+      ctx.shadowOffsetY = 2.6;
       traceOrganicPath(ctx, d.x, d.y, d.r, d.shape, yStretch);
-      ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
       ctx.fill();
       ctx.restore();
 
-      // 2. Optical Fresnel refraction inside the organic droplet lens
+      // Faint caustic light transmission cast onto glass just below the droplet
+      if (d.r >= 3.6) {
+        const causticGrad = ctx.createRadialGradient(
+          d.x + d.r * 0.15,
+          d.y + d.r * 1.18 * yStretch,
+          0.5,
+          d.x + d.r * 0.15,
+          d.y + d.r * 1.18 * yStretch,
+          d.r * 0.9
+        );
+        causticGrad.addColorStop(
+          0,
+          d.sparkle > 0.15 ? "rgba(252, 196, 92, 0.34)" : "rgba(255, 255, 255, 0.24)"
+        );
+        causticGrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = causticGrad;
+        ctx.beginPath();
+        ctx.arc(d.x + d.r * 0.15, d.y + d.r * 1.18 * yStretch, d.r * 0.9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 2. Pure Crystal-Clear Optical Lens Inside Droplet
       ctx.save();
       traceOrganicPath(ctx, d.x, d.y, d.r, d.shape, yStretch);
       ctx.clip();
@@ -258,85 +280,102 @@ export function RaindropGlassCanvas({
         const scaleY = img.naturalHeight / drawH;
         const srcCenterX = (d.x - offX) * scaleX;
         const srcCenterY = (d.y - offY) * scaleY;
-        const sampleHalfW = Math.max(10, d.r * 4.8 * scaleX);
-        const sampleHalfH = Math.max(10, d.r * 4.8 * yStretch * scaleY);
+        const sampleHalfW = Math.max(8, d.r * 4.2 * scaleX);
+        const sampleHalfH = Math.max(8, d.r * 4.2 * yStretch * scaleY);
 
         ctx.translate(d.x, d.y);
-        // Flip vertically + slight horizontal zoom for convex lens optics
-        ctx.scale(1.06, -1.06);
+        // Magnify and invert vertically to simulate genuine optical convex water lens
+        ctx.scale(1.18, -1.18);
+        ctx.filter = "brightness(1.25) contrast(1.16) saturate(1.15)";
         ctx.drawImage(
           img,
           Math.max(0, srcCenterX - sampleHalfW),
           Math.max(0, srcCenterY - sampleHalfH),
           sampleHalfW * 2,
           sampleHalfH * 2,
-          -d.r * 1.15,
-          -d.r * yStretch * 1.15,
-          d.r * 2.3,
-          d.r * yStretch * 2.3
+          -d.r * 1.12,
+          -d.r * yStretch * 1.12,
+          d.r * 2.24,
+          d.r * yStretch * 2.24
         );
+        ctx.filter = "none";
       }
 
-      // Reset transform before shading inside clip
+      // Reset matrix before rim optics
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // 3. Real water internal light shading:
-      //    Dark upper meniscus shadow (light refracting down) + bright bottom caustic glow
-      const depthGrad = ctx.createLinearGradient(
+      // 3. Crystal-Clear Rim Only (100% transparent center, sharp refraction only at perimeter!)
+      const crystalRim = ctx.createRadialGradient(
+        d.x - d.r * 0.08,
+        d.y - d.r * 0.1,
+        d.r * 0.52,
+        d.x,
+        d.y,
+        d.r * yStretch * 1.04
+      );
+      crystalRim.addColorStop(0, "rgba(255, 255, 255, 0)");
+      crystalRim.addColorStop(0.76, "rgba(255, 255, 255, 0.02)");
+      crystalRim.addColorStop(0.9, "rgba(230, 245, 255, 0.22)");
+      crystalRim.addColorStop(1, "rgba(0, 0, 0, 0.52)");
+      ctx.fillStyle = crystalRim;
+      ctx.fillRect(d.x - d.r * 1.3, d.y - d.r * 1.6, d.r * 2.6, d.r * 3.2);
+
+      // Upper dark total-internal-reflection sliver + bottom bright focal arc
+      const meniscusGrad = ctx.createLinearGradient(
         d.x,
         d.y - d.r * yStretch,
         d.x,
         d.y + d.r * yStretch
       );
-      depthGrad.addColorStop(0, "rgba(0, 0, 0, 0.58)");
-      depthGrad.addColorStop(0.28, "rgba(0, 0, 0, 0.12)");
-      depthGrad.addColorStop(0.72, "rgba(255, 255, 255, 0.04)");
-      depthGrad.addColorStop(1, d.sparkle > 0.15 ? "rgba(252, 190, 80, 0.55)" : "rgba(255, 255, 255, 0.48)");
-      ctx.fillStyle = depthGrad;
-      ctx.fillRect(d.x - d.r * 1.3, d.y - d.r * 1.6, d.r * 2.6, d.r * 3.2);
-
-      // Subtle inner rim vignette (NO thick cartoon white outline)
-      const rimGrad = ctx.createRadialGradient(
-        d.x,
-        d.y + d.r * 0.15,
-        d.r * 0.35,
-        d.x,
-        d.y,
-        d.r * yStretch * 1.1
+      meniscusGrad.addColorStop(0, "rgba(0, 0, 0, 0.58)");
+      meniscusGrad.addColorStop(0.16, "rgba(0, 0, 0, 0)");
+      meniscusGrad.addColorStop(0.8, "rgba(255, 255, 255, 0)");
+      meniscusGrad.addColorStop(
+        1,
+        d.sparkle > 0.15 ? "rgba(252, 200, 96, 0.72)" : "rgba(255, 255, 255, 0.65)"
       );
-      rimGrad.addColorStop(0, "rgba(255, 255, 255, 0)");
-      rimGrad.addColorStop(0.82, "rgba(0, 0, 0, 0.08)");
-      rimGrad.addColorStop(1, "rgba(0, 0, 0, 0.45)");
-      ctx.fillStyle = rimGrad;
+      ctx.fillStyle = meniscusGrad;
       ctx.fillRect(d.x - d.r * 1.3, d.y - d.r * 1.6, d.r * 2.6, d.r * 3.2);
 
       ctx.restore();
 
-      // 4. Pinpoint sharp specular highlight on upper-left lens surface
+      // 4. Razor-sharp twin specular reflections (gives wet crystal surface look)
       ctx.beginPath();
       ctx.ellipse(
-        d.x - d.r * 0.32,
+        d.x - d.r * 0.33,
         d.y - d.r * 0.36 * yStretch,
-        Math.max(0.7, d.r * 0.17),
-        Math.max(0.55, d.r * 0.11),
+        Math.max(0.65, d.r * 0.16),
+        Math.max(0.45, d.r * 0.09),
         -Math.PI / 4,
         0,
         Math.PI * 2
       );
-      ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(0.95, 0.78 + d.sparkle * 0.2).toFixed(2)})`;
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(0.98, 0.88 + d.sparkle * 0.12).toFixed(2)})`;
       ctx.fill();
 
-      // Tiny secondary lower-right caustic pinpoint on larger beads
-      if (d.r >= 4) {
+      // Micro pinpoint gleam inside specular highlight
+      if (d.r >= 3.2) {
         ctx.beginPath();
         ctx.arc(
-          d.x + d.r * 0.22,
-          d.y + d.r * 0.62 * yStretch,
-          Math.max(0.5, d.r * 0.09),
+          d.x - d.r * 0.36,
+          d.y - d.r * 0.39 * yStretch,
+          Math.max(0.45, d.r * 0.07),
           0,
           Math.PI * 2
         );
-        ctx.fillStyle = "rgba(255, 245, 220, 0.72)";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill();
+
+        // Bottom-right micro caustic glint
+        ctx.beginPath();
+        ctx.arc(
+          d.x + d.r * 0.24,
+          d.y + d.r * 0.65 * yStretch,
+          Math.max(0.45, d.r * 0.08),
+          0,
+          Math.PI * 2
+        );
+        ctx.fillStyle = "rgba(255, 250, 235, 0.86)";
         ctx.fill();
       }
     };
@@ -359,9 +398,9 @@ export function RaindropGlassCanvas({
             d.y += d.vy;
             d.x += Math.sin(d.wobblePhase) * 0.18;
 
-            if (Math.random() < 0.3) {
-              d.trail.push({ x: d.x, y: d.y - d.r * 1.15, r: Math.max(0.7, d.r * 0.18) });
-              if (d.trail.length > 8) d.trail.shift();
+            if (Math.random() < 0.32) {
+              d.trail.push({ x: d.x, y: d.y - d.r * 1.15, r: Math.max(0.6, d.r * 0.15) });
+              if (d.trail.length > 9) d.trail.shift();
             }
 
             if (d.y - d.r * 2 > height) {
