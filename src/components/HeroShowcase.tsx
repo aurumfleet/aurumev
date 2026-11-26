@@ -329,10 +329,10 @@ export function HeroShowcase() {
               alt={slide.alt}
               fill
               priority={idx === 0}
-              className="scale-105 object-cover object-center blur-[9px] brightness-[0.8]"
+              className="scale-105 object-cover object-center blur-[8px] brightness-90"
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/42 to-black/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/80" />
           </div>
         ))}
       </div>
@@ -350,7 +350,7 @@ export function HeroShowcase() {
       {/* Desktop Centered Through-The-Glass 3D Layout (md+) */}
       <div className="hero-perspective relative z-10 hidden min-h-[88vh] flex-col justify-between pb-10 pt-20 md:flex">
         {/* Centered Floating 3D Headline & Dual Buttons */}
-        <div className="aurum-container my-auto flex flex-col items-center text-center">
+        <div className="aurum-container my-auto flex w-full flex-col items-center text-center">
           <div
             ref={centerStage3dRef}
             className="preserve-3d max-w-4xl will-change-transform"
@@ -367,7 +367,7 @@ export function HeroShowcase() {
               {/* Minimalist Center Hairline Rule */}
               <div className="mx-auto mt-6 h-px w-20 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
 
-              <p className="mx-auto mt-5 max-w-xl text-base font-normal leading-relaxed text-white/88 lg:text-[19px]">
+              <p className="mx-auto mt-5 max-w-xl text-base font-normal leading-relaxed text-white/90 lg:text-[19px]">
                 {current.subtitle}
               </p>
 
@@ -394,10 +394,10 @@ export function HeroShowcase() {
         </div>
 
         {/* Bottom 3D Interactive Glass Thumbnail Filmstrip */}
-        <div className="aurum-container hero-perspective mt-6">
+        <div className="aurum-container hero-perspective mt-6 w-full">
           <div
             ref={dockRef}
-            className="preserve-3d mx-auto grid max-w-4xl grid-cols-4 gap-3.5 will-change-transform"
+            className="preserve-3d mx-auto grid w-full max-w-4xl grid-cols-4 gap-3.5 will-change-transform"
           >
             {HERO_SLIDES.map((s, idx) => {
               const isActive = idx === activeIdx;
@@ -407,10 +407,10 @@ export function HeroShowcase() {
                   type="button"
                   onClick={() => setActiveIdx(idx)}
                   aria-label={`Select scene ${idx + 1}: ${s.thumbLabel}`}
-                  className={`group relative overflow-hidden rounded-2xl border p-1.5 text-left backdrop-blur-xl transition-all duration-300 ${
+                  className={`group relative w-full overflow-hidden rounded-2xl border p-1.5 text-left backdrop-blur-xl transition-all duration-300 ${
                     isActive
                       ? "border-[#FCAA30] bg-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.45),0_0_20px_rgba(252,170,48,0.22)] -translate-y-1"
-                      : "border-white/15 bg-black/35 opacity-75 hover:-translate-y-0.5 hover:border-white/40 hover:opacity-100"
+                      : "border-white/20 bg-black/40 opacity-80 hover:-translate-y-0.5 hover:border-white/40 hover:opacity-100"
                   }`}
                 >
                   <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
@@ -453,7 +453,7 @@ export function HeroShowcase() {
           {current.headline}
         </h1>
         <div className="mx-auto mt-4 h-px w-14 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
-        <p className="mx-auto mt-3.5 max-w-sm text-sm leading-relaxed text-white/85">
+        <p className="mx-auto mt-3.5 max-w-sm text-sm leading-relaxed text-white/90">
           {current.subtitle}
         </p>
 
