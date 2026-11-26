@@ -75,29 +75,39 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* 3. EDITORIAL BRAND STATEMENT */}
-        <section className="bg-white py-20 sm:py-24">
-          <div className="aurum-container text-center">
-            <RevealOnScroll>
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#666666]">
-                Aurum Fleet Solutions Pvt Ltd
-              </p>
-              <h2 className="mx-auto mt-4 max-w-4xl font-display text-4xl font-semibold leading-[1.06] tracking-[-0.04em] text-[#0F0F0F] sm:text-[58px]">
-                Driven by Trust.{" "}
-                <span className="text-[#828587]">Powered by Tomorrow.</span>
-              </h2>
-              <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[#666666] sm:text-xl">
-                Built for India&apos;s last-mile delivery ecosystem, daily urban commuters,
-                enterprise fleets, and structured fleet partners.
-              </p>
-            </RevealOnScroll>
-          </div>
-        </section>
+        {/* 3 & 4. BENTO BRAND EDITORIAL + QUICK JOURNEY SELECTOR */}
+        <section className="bg-[#F4F4F4] py-16 sm:py-24">
+          <div className="aurum-container grid gap-5 lg:grid-cols-12">
+            {/* Editorial Brand Bento Feature Card */}
+            <RevealOnScroll className="lg:col-span-5">
+              <div className="flex h-full flex-col justify-between rounded-[32px] bg-[#0F0F0F] p-8 text-white shadow-elevated sm:p-10">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#FCAA30]">
+                    Aurum Fleet Solutions Pvt Ltd
+                  </p>
+                  <h2 className="mt-4 font-display text-3xl font-semibold leading-[1.06] tracking-[-0.04em] sm:text-[46px]">
+                    Driven by Trust.{" "}
+                    <span className="text-[#828587]">Powered by Tomorrow.</span>
+                  </h2>
+                  <p className="mt-4 text-sm leading-relaxed text-[#B6B8B9] sm:text-base">
+                    Built for India&apos;s last-mile delivery ecosystem, daily urban commuters,
+                    enterprise fleets, and structured fleet partners.
+                  </p>
+                </div>
 
-        {/* 4. QUICK JOURNEY SELECTOR (4 Paths: Riders, Delivery Partners, Business, Investors) */}
-        <section className="bg-[#F4F4F4] py-16 sm:py-20">
-          <div className="aurum-container">
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-white/15 pt-6">
+                  <Link href="/rentals#book" className="aurum-pill-mango px-6 py-3 text-xs">
+                    Start EV Rental <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link href="/how-it-works" className="aurum-pill-light px-5 py-3 text-xs">
+                    How It Works
+                  </Link>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            {/* 2x2 Interactive Journey Bento Cards */}
+            <div className="grid gap-5 sm:grid-cols-2 lg:col-span-7">
               {[
                 {
                   overline: "INDIVIDUALS",
@@ -138,15 +148,15 @@ export default async function HomePage() {
               ].map((card, i) => {
                 const Icon = card.icon;
                 return (
-                  <RevealOnScroll key={card.href} delayMs={i * 70}>
+                  <RevealOnScroll key={card.href} delayMs={i * 60}>
                     <Link
                       href={card.href}
-                      className="group flex h-full flex-col justify-between rounded-3xl bg-white p-7 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated"
+                      className="group flex h-full flex-col justify-between rounded-[28px] border border-black/[0.05] bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-[#FCAA30]/60 hover:shadow-elevated"
                     >
                       <div>
                         <div className="flex items-center justify-between">
                           <span
-                            className={`text-[11px] font-semibold uppercase tracking-[0.22em] ${card.overlineColor}`}
+                            className={`text-[10px] font-bold uppercase tracking-[0.22em] ${card.overlineColor}`}
                           >
                             {card.overline}
                           </span>
@@ -154,17 +164,15 @@ export default async function HomePage() {
                             <Icon className="h-5 w-5" />
                           </span>
                         </div>
-                        <h3 className="mt-5 font-display text-xl font-medium tracking-[-0.02em] text-[#0F0F0F]">
+                        <h3 className="mt-4 font-display text-xl font-medium tracking-[-0.02em] text-[#0F0F0F]">
                           {card.title}
                         </h3>
-                        <p className="mt-2 text-sm leading-relaxed text-[#666666]">{card.desc}</p>
+                        <p className="mt-1.5 text-sm leading-relaxed text-[#666666]">{card.desc}</p>
                       </div>
 
-                      <div className="mt-6">
-                        <span className="aurum-pill-soft w-full justify-between px-5 py-3 text-xs font-semibold group-hover:bg-[#0F0F0F] group-hover:text-white">
-                          {card.cta}
-                          <ArrowRight className="h-4 w-4" />
-                        </span>
+                      <div className="mt-5 flex items-center justify-between border-t border-[#F0F0F0] pt-4 text-xs font-semibold text-[#0F0F0F] group-hover:text-[#0667F4]">
+                        <span>{card.cta}</span>
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </div>
                     </Link>
                   </RevealOnScroll>
@@ -226,14 +234,16 @@ export default async function HomePage() {
             </RevealOnScroll>
 
             <RevealOnScroll direction="right" className="lg:col-span-6">
-              <div className="relative aspect-[16/11] w-full overflow-hidden rounded-t-3xl shadow-elevated">
-                <Image
-                  src="/images/business-ev-fleet.jpg"
-                  alt="Aurum EV charging and operations hub"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+              <div className="relative aspect-[16/11] w-full overflow-hidden rounded-t-3xl border border-white/70 bg-white p-2 shadow-elevated">
+                <div className="relative h-full w-full overflow-hidden rounded-t-2xl">
+                  <Image
+                    src="/images/aurum-zepto-hero.jpg"
+                    alt="Aurum EV operations and urban fleet support"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
               </div>
             </RevealOnScroll>
           </div>

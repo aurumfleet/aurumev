@@ -56,14 +56,16 @@ export function AurumEcosystemSection() {
               const Icon = item.icon;
               return (
                 <RevealOnScroll key={item.label} delayMs={(idx % 4) * 50}>
-                  <div className="flex h-full flex-col justify-between rounded-3xl bg-[#F4F4F4] p-5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#EBEBEB]">
+                  <div className="group flex h-full flex-col justify-between rounded-3xl border border-black/[0.06] bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-[#FCAA30]/60 hover:shadow-elevated">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="rounded-full bg-white px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#666666]">
-                        {item.group}
+                      <span className="rounded-full bg-[#F4F4F4] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#666666]">
+                        {String(idx + 1).padStart(2, "0")} · {item.group}
                       </span>
-                      <Icon className="h-4 w-4 text-[#0667F4]" />
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F7F8FA] text-[#0F0F0F] transition-colors group-hover:bg-[#FCAA30]">
+                        <Icon className="h-4 w-4" />
+                      </span>
                     </div>
-                    <p className="mt-4 break-words font-display text-sm font-medium text-[#0F0F0F] sm:text-base">
+                    <p className="mt-5 break-words font-display text-sm font-medium text-[#0F0F0F] sm:text-base">
                       {item.label}
                     </p>
                   </div>

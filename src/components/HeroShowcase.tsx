@@ -3,21 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, type ReactNode } from "react";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
+import { RaindropGlassCanvas } from "./RaindropGlassCanvas";
 
 interface HeroSlide {
   id: string;
   eyebrow: string;
   headline: string;
   subtitle: string;
-  captionLabel: string;
-  captionValue: string;
+  thumbLabel: string;
   primaryCta: { label: string; href: string };
   secondaryCta: { label: string; href: string };
   image: string;
@@ -27,12 +22,11 @@ interface HeroSlide {
 const HERO_SLIDES: HeroSlide[] = [
   {
     id: "commuter",
-    eyebrow: "AURUM EV · URBAN ELECTRIC MOBILITY",
+    eyebrow: "THROUGH THE GLASS · AURUM EV",
     headline: "EMPOWERING RIDERS.\nDRIVING THE FUTURE.",
     subtitle:
-      "Flexible zero-fuel electric two-wheeler rentals for daily commuters, delivery partners, and structured fleet partnerships.",
-    captionLabel: "AURUM COMMUTER SERIES",
-    captionValue: "Zero Fuel · Fixed Transparent Rent",
+      "Flexible zero-fuel electric two-wheeler rentals for urban commuters, delivery fleets, and structured partners.",
+    thumbLabel: "Urban Commuter",
     primaryCta: { label: "Rent Today", href: "/rentals#book" },
     secondaryCta: { label: "Invest Now", href: "/invest" },
     image: "/images/aurum-commuter-hero.jpg",
@@ -44,8 +38,7 @@ const HERO_SLIDES: HeroSlide[] = [
     headline: "BUILT FOR INDIA'S\nDELIVERY FLEETS.",
     subtitle:
       "Weekly and monthly EV rental plans engineered for quick-commerce riders with scheduled hub maintenance.",
-    captionLabel: "QUICK-COMMERCE READY",
-    captionValue: "High Uptime · Hub Service Support",
+    thumbLabel: "Quick Commerce",
     primaryCta: { label: "For Delivery Riders", href: "/riders" },
     secondaryCta: { label: "Calculate Savings", href: "/#calculator" },
     image: "/images/aurum-blinkit-hero.jpg",
@@ -57,8 +50,7 @@ const HERO_SLIDES: HeroSlide[] = [
     headline: "LAST-MILE EV.\nZERO FUEL WORRY.",
     subtitle:
       "Consistent doorstep reliability with transparent rental agreements and predictable daily operating economics.",
-    captionLabel: "DOORSTEP MOBILITY",
-    captionValue: "All-In Preventive Maintenance",
+    thumbLabel: "Last-Mile EV",
     primaryCta: { label: "Book Your EV", href: "/rentals#book" },
     secondaryCta: { label: "Explore Fleet", href: "/fleet" },
     image: "/images/aurum-zepto-hero.jpg",
@@ -70,16 +62,13 @@ const HERO_SLIDES: HeroSlide[] = [
     headline: "SCALE YOUR\nELECTRIC FLEET.",
     subtitle:
       "Bulk B2B electric two-wheeler deployments, preventive servicing, and consolidated GST-compliant billing.",
-    captionLabel: "CORPORATE SOLUTIONS",
-    captionValue: "Bulk Deployments · Fleet SLA",
+    thumbLabel: "B2B Enterprise",
     primaryCta: { label: "Business Solutions", href: "/business#proposal" },
     secondaryCta: { label: "Explore Fleet", href: "/fleet" },
     image: "/images/aurum-instamart-hero.jpg",
     alt: "Swiggy Instamart doorstep delivery with an Aurum EV fleet scooter",
   },
 ];
-
-const TRUST_POINTS = ["Fixed Rent", "Scheduled Maintenance", "No Hidden Charges"];
 
 function PremiumHeroButton({
   href,
@@ -184,18 +173,15 @@ export function HeroShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
   const ambientLightRef = useRef<HTMLDivElement>(null);
   const bgParallaxRef = useRef<HTMLDivElement>(null);
-  const copyParallaxRef = useRef<HTMLDivElement>(null);
-  const stage3dRef = useRef<HTMLDivElement>(null);
-  const stageRimRef = useRef<HTMLDivElement>(null);
-  const stageInnerPhotoRef = useRef<HTMLDivElement>(null);
-  const stageSheenRef = useRef<HTMLDivElement>(null);
-  const stageCaptionRef = useRef<HTMLDivElement>(null);
+  const centerStage3dRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const rainPointerRef = useRef({ x: 0.5, y: 0.5, inside: false });
 
   const pointer = useRef({
-    targetX: 0.66,
-    targetY: 0.48,
-    curX: 0.66,
-    curY: 0.48,
+    targetX: 0.5,
+    targetY: 0.45,
+    curX: 0.5,
+    curY: 0.45,
     nx: 0,
     ny: 0,
     targetNx: 0,
@@ -230,13 +216,13 @@ export function HeroShowcase() {
       clock += 0.016;
       const p = pointer.current;
 
-      const idleNx = Math.sin(clock * 0.65) * 0.18;
-      const idleNy = Math.cos(clock * 0.5) * 0.12;
+      const idleNx = Math.sin(clock * 0.6) * 0.14;
+      const idleNy = Math.cos(clock * 0.45) * 0.1;
 
       const destNx = p.inside ? p.targetNx : idleNx;
       const destNy = p.inside ? p.targetNy : idleNy;
-      const destX = p.inside ? p.targetX : 0.68 + Math.sin(clock * 0.4) * 0.05;
-      const destY = p.inside ? p.targetY : 0.46 + Math.cos(clock * 0.35) * 0.04;
+      const destX = p.inside ? p.targetX : 0.5 + Math.sin(clock * 0.35) * 0.08;
+      const destY = p.inside ? p.targetY : 0.42 + Math.cos(clock * 0.3) * 0.05;
       const destIntensity = p.inside ? 1 : 0.45;
 
       const ease = p.inside ? 0.09 : 0.045;
@@ -250,70 +236,38 @@ export function HeroShowcase() {
       const pctX = (p.curX * 100).toFixed(2);
       const pctY = (p.curY * 100).toFixed(2);
 
-      // Warm champagne-gold optical spotlight across soft blurred scene (zero blue tint)
+      // Warm champagne glass illumination behind droplets
       if (ambientLightRef.current) {
         const pulseBoost = p.pressPulse * 0.24;
         const a1 = (0.18 * p.intensity + pulseBoost).toFixed(3);
-        const a2 = (0.07 * p.intensity + pulseBoost * 0.5).toFixed(3);
-        ambientLightRef.current.style.background = `radial-gradient(${640 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 42%, transparent 72%)`;
+        const a2 = (0.06 * p.intensity + pulseBoost * 0.5).toFixed(3);
+        ambientLightRef.current.style.background = `radial-gradient(${620 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 44%, transparent 74%)`;
       }
 
       // Layer -1: Deep blurred backdrop counter-parallax
       if (bgParallaxRef.current) {
-        const px = (-p.nx * 16).toFixed(2);
-        const py = (-p.ny * 12).toFixed(2);
-        bgParallaxRef.current.style.transform = `scale(1.06) translate3d(${px}px, ${py}px, 0)`;
+        const px = (-p.nx * 14).toFixed(2);
+        const py = (-p.ny * 10).toFixed(2);
+        bgParallaxRef.current.style.transform = `scale(1.08) translate3d(${px}px, ${py}px, 0)`;
       }
 
-      // Layer 0: Subtle editorial copy parallax
-      if (copyParallaxRef.current) {
-        const cx = (p.nx * 5).toFixed(2);
-        const cy = (p.ny * 4).toFixed(2);
-        copyParallaxRef.current.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-      }
-
-      // Layer +1: Main 3D glass window tilt + dynamic shadow offset + click recoil
-      if (stage3dRef.current) {
-        const floatY = Math.sin(clock * 1.1) * 6;
-        const rotY = (p.nx * 13).toFixed(2);
-        const rotX = (-p.ny * 10).toFixed(2);
-        const tx = (p.nx * 9).toFixed(2);
-        const ty = (p.ny * 6 + floatY).toFixed(2);
+      // Layer +1: Centered 3D perspective typography tilt + click press depth
+      if (centerStage3dRef.current) {
+        const rotY = (p.nx * 4.5).toFixed(2);
+        const rotX = (-p.ny * 3.5).toFixed(2);
+        const tx = (p.nx * 8).toFixed(2);
+        const ty = (p.ny * 6).toFixed(2);
         const pressZ = (-p.pressPulse * 16).toFixed(2);
-        const pressScale = (1 - p.pressPulse * 0.025).toFixed(4);
-        stage3dRef.current.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${tx}px, ${ty}px, ${pressZ}px) scale(${pressScale})`;
-
-        const shX = (-p.nx * 24).toFixed(1);
-        const shY = (28 - p.ny * 18).toFixed(1);
-        stage3dRef.current.style.filter = `drop-shadow(${shX}px ${shY}px 42px rgba(0,0,0,0.48))`;
+        centerStage3dRef.current.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${tx}px, ${ty}px, ${pressZ}px)`;
       }
 
-      // Cursor-angled champagne metallic rim reflection
-      if (stageRimRef.current) {
-        const angle = Math.atan2(p.ny, p.nx) * (180 / Math.PI) + 90;
-        stageRimRef.current.style.background = `linear-gradient(${angle.toFixed(1)}deg, rgba(252,170,48,0.85), rgba(255,255,255,0.45) 45%, rgba(252,170,48,0.18) 80%, rgba(255,255,255,0.55))`;
-      }
-
-      // Layer +2: Internal 3D window depth shift (creates real parallax portal effect)
-      if (stageInnerPhotoRef.current) {
-        const ix = (p.nx * 8).toFixed(2);
-        const iy = (p.ny * 6).toFixed(2);
-        stageInnerPhotoRef.current.style.transform = `translateZ(30px) scale(1.07) translate3d(${ix}px, ${iy}px, 0)`;
-      }
-
-      // Layer +3: Floating minimalist caption depth
-      if (stageCaptionRef.current) {
-        const fx = (p.nx * 14).toFixed(2);
-        const fy = (p.ny * 10).toFixed(2);
-        stageCaptionRef.current.style.transform = `translateZ(68px) translate3d(${fx}px, ${fy}px, 0)`;
-      }
-
-      // Specular glass sheen following pointer
-      if (stageSheenRef.current) {
-        const sx = 50 + p.nx * 40;
-        const sy = 50 + p.ny * 40;
-        const sa = p.inside ? 0.24 : 0.11;
-        stageSheenRef.current.style.background = `radial-gradient(360px circle at ${sx.toFixed(1)}% ${sy.toFixed(1)}%, rgba(255,255,255,${sa}), rgba(252,170,48,0.08) 40%, transparent 68%)`;
+      // Layer +2: Bottom 3D Thumbnail Filmstrip perspective float
+      if (dockRef.current) {
+        const dx = (p.nx * 10).toFixed(2);
+        const dy = (p.ny * 5).toFixed(2);
+        const dRotX = (4 - p.ny * 3).toFixed(2);
+        const dRotY = (p.nx * 3.5).toFixed(2);
+        dockRef.current.style.transform = `rotateX(${dRotX}deg) rotateY(${dRotY}deg) translate3d(${dx}px, ${dy}px, 16px)`;
       }
 
       rafId = window.requestAnimationFrame(tick);
@@ -333,6 +287,7 @@ export function HeroShowcase() {
     pointer.current.targetNx = (rx - 0.5) * 2;
     pointer.current.targetNy = (ry - 0.5) * 2;
     pointer.current.inside = true;
+    rainPointerRef.current = { x: rx, y: ry, inside: true };
   }
 
   function handlePointerDown() {
@@ -341,10 +296,7 @@ export function HeroShowcase() {
 
   function handlePointerLeave() {
     pointer.current.inside = false;
-  }
-
-  function stepSlide(dir: -1 | 1) {
-    setActiveIdx((prev) => (prev + dir + HERO_SLIDES.length) % HERO_SLIDES.length);
+    rainPointerRef.current.inside = false;
   }
 
   const current = HERO_SLIDES[activeIdx];
@@ -357,78 +309,70 @@ export function HeroShowcase() {
       onPointerLeave={handlePointerLeave}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative w-full overflow-hidden bg-[#141414]"
+      className="relative w-full overflow-hidden bg-[#121212]"
     >
+      {/* Full-Bleed Softly Blurred User Photo Scene */}
+      <div
+        ref={bgParallaxRef}
+        className="pointer-events-none absolute inset-0 will-change-transform"
+        style={{ transform: "scale(1.08)" }}
+      >
+        {HERO_SLIDES.map((slide, idx) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-out ${
+              idx === activeIdx ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <Image
+              src={slide.image}
+              alt={slide.alt}
+              fill
+              priority={idx === 0}
+              className="scale-105 object-cover object-center blur-[9px] brightness-[0.8]"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/42 to-black/80" />
+          </div>
+        ))}
+      </div>
+
+      {/* Refractive Water Drops on Glass Simulation */}
+      <RaindropGlassCanvas imageSrc={current.image} pointerRef={rainPointerRef} />
+
       {/* Warm Champagne Optical Studio Glow */}
       <div
         ref={ambientLightRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[5] hidden md:block"
+        className="pointer-events-none absolute inset-0 z-[7] hidden md:block"
       />
 
-      {/* Desktop Minimalist 3D Hero (md+) */}
-      <div className="relative hidden min-h-[86vh] w-full md:flex md:items-center">
-        {/* Softly Blurred Full-Bleed User Photo Backdrop (zero dark-blue cast) */}
-        <div
-          ref={bgParallaxRef}
-          className="pointer-events-none absolute inset-0 will-change-transform"
-          style={{ transform: "scale(1.06)" }}
-        >
-          {HERO_SLIDES.map((slide, idx) => (
-            <div
-              key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-out ${
-                idx === activeIdx ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <Image
-                src={slide.image}
-                alt={slide.alt}
-                fill
-                priority={idx === 0}
-                className="scale-105 object-cover object-center blur-[5px]"
-                sizes="100vw"
-              />
-              {/* Neutral warm-obsidian editorial gradient for crisp text contrast */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/48 to-black/22" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/28" />
-            </div>
-          ))}
-        </div>
-
-        {/* Hero Foreground Grid */}
-        <div className="aurum-container relative z-10 grid w-full items-center gap-12 pb-16 pt-20 lg:grid-cols-12">
-          {/* Left Minimalist Editorial Column */}
+      {/* Desktop Centered Through-The-Glass 3D Layout (md+) */}
+      <div className="hero-perspective relative z-10 hidden min-h-[88vh] flex-col justify-between pb-10 pt-20 md:flex">
+        {/* Centered Floating 3D Headline & Dual Buttons */}
+        <div className="aurum-container my-auto flex flex-col items-center text-center">
           <div
-            ref={copyParallaxRef}
-            className="text-white will-change-transform lg:col-span-6"
+            ref={centerStage3dRef}
+            className="preserve-3d max-w-4xl will-change-transform"
           >
             <div key={current.id} className="animate-[fadeIn_0.5s_ease-out]">
-              <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.32em] text-[#FCAA30]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FCAA30]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.38em] text-[#FCAA30]">
                 {current.eyebrow}
               </p>
 
-              <h1 className="mt-4 whitespace-pre-line font-display text-5xl font-semibold leading-[0.95] tracking-[-0.04em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)] lg:text-[72px]">
+              <h1 className="mt-4 whitespace-pre-line font-display text-5xl font-semibold leading-[0.95] tracking-[-0.04em] text-white drop-shadow-[0_12px_36px_rgba(0,0,0,0.45)] lg:text-[76px]">
                 {current.headline}
               </h1>
 
-              <p className="mt-5 max-w-lg text-lg font-normal leading-relaxed text-white/88 lg:text-[20px]">
+              {/* Minimalist Center Hairline Rule */}
+              <div className="mx-auto mt-6 h-px w-20 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
+
+              <p className="mx-auto mt-5 max-w-xl text-base font-normal leading-relaxed text-white/88 lg:text-[19px]">
                 {current.subtitle}
               </p>
 
-              {/* Minimalist Trust Line */}
-              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium tracking-wide text-white/80">
-                {TRUST_POINTS.map((item, i) => (
-                  <span key={item} className="inline-flex items-center gap-2">
-                    {i > 0 && <span className="h-1 w-1 rounded-full bg-[#FCAA30]/75" />}
-                    {item}
-                  </span>
-                ))}
-              </div>
-
-              {/* Premium Interactive Buttons */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
+              {/* Centered Premium Action Buttons */}
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <PremiumHeroButton
                   href={current.primaryCta.href}
                   variant="mango"
@@ -446,172 +390,93 @@ export function HeroShowcase() {
                 </PremiumHeroButton>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Minimalist Slide Controls */}
-            <div className="mt-11 flex items-center gap-4">
-              <div className="flex items-center gap-2">
+        {/* Bottom 3D Interactive Glass Thumbnail Filmstrip */}
+        <div className="aurum-container hero-perspective mt-6">
+          <div
+            ref={dockRef}
+            className="preserve-3d mx-auto grid max-w-4xl grid-cols-4 gap-3.5 will-change-transform"
+          >
+            {HERO_SLIDES.map((s, idx) => {
+              const isActive = idx === activeIdx;
+              return (
                 <button
+                  key={s.id}
                   type="button"
-                  onClick={() => stepSlide(-1)}
-                  aria-label="Previous slide"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition duration-200 hover:border-[#FCAA30] hover:bg-[#FCAA30] hover:text-[#0F0F0F]"
+                  onClick={() => setActiveIdx(idx)}
+                  aria-label={`Select scene ${idx + 1}: ${s.thumbLabel}`}
+                  className={`group relative overflow-hidden rounded-2xl border p-1.5 text-left backdrop-blur-xl transition-all duration-300 ${
+                    isActive
+                      ? "border-[#FCAA30] bg-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.45),0_0_20px_rgba(252,170,48,0.22)] -translate-y-1"
+                      : "border-white/15 bg-black/35 opacity-75 hover:-translate-y-0.5 hover:border-white/40 hover:opacity-100"
+                  }`}
                 >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => stepSlide(1)}
-                  aria-label="Next slide"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition duration-200 hover:border-[#FCAA30] hover:bg-[#FCAA30] hover:text-[#0F0F0F]"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {HERO_SLIDES.map((s, idx) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    aria-label={`View slide ${idx + 1}: ${s.eyebrow}`}
-                    onClick={() => setActiveIdx(idx)}
-                    className="relative h-1 w-12 overflow-hidden rounded-full bg-white/30 transition-all hover:bg-white/55"
-                  >
-                    {idx === activeIdx && (
+                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
+                    <Image
+                      src={s.image}
+                      alt={s.thumbLabel}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="220px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+                    <span className="absolute bottom-2 left-2.5 text-[11px] font-semibold tracking-tight text-white">
+                      {s.thumbLabel}
+                    </span>
+                  </div>
+                  <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-white/20">
+                    {isActive && (
                       <span
-                        key={`prog-${activeIdx}-${paused ? "p" : "r"}`}
-                        className={`absolute inset-y-0 left-0 rounded-full bg-[#FCAA30] ${
+                        key={`dock-${activeIdx}-${paused ? "p" : "r"}`}
+                        className={`block h-full rounded-full bg-[#FCAA30] ${
                           paused ? "w-full" : "animate-slide-progress"
                         }`}
                       />
                     )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Minimalist 3D Portal Frame (Crisp Unblurred Aurum EV Photo) */}
-          <div className="hero-perspective hidden lg:col-span-6 lg:block">
-            <div
-              ref={stage3dRef}
-              className="preserve-3d relative mx-auto aspect-[16/11] w-full max-w-[580px] will-change-transform"
-            >
-              {/* Metallic Champagne Hairline Frame */}
-              <div
-                ref={stageRimRef}
-                className="preserve-3d relative h-full w-full rounded-[30px] p-[1.5px]"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(252,170,48,0.75), rgba(255,255,255,0.4) 50%, rgba(252,170,48,0.3))",
-                }}
-              >
-                <div className="preserve-3d relative h-full w-full overflow-hidden rounded-[29px] bg-[#141414]/65 p-2 backdrop-blur-xl">
-                  {/* Specular Glass Sheen */}
-                  <div
-                    ref={stageSheenRef}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 z-20 rounded-[29px]"
-                  />
-
-                  {/* Layer +2: Crisp Unblurred Photo Shifting Inside 3D Frame */}
-                  <div className="preserve-3d relative h-full w-full overflow-hidden rounded-[22px]">
-                    <div
-                      ref={stageInnerPhotoRef}
-                      className="relative h-full w-full will-change-transform"
-                      style={{ transform: "translateZ(30px) scale(1.07)" }}
-                    >
-                      <Image
-                        key={current.image}
-                        src={current.image}
-                        alt={current.alt}
-                        fill
-                        priority
-                        className="object-cover object-center transition-opacity duration-700"
-                        sizes="580px"
-                      />
-                    </div>
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
                   </div>
-
-                  {/* Layer +3: Single Minimalist Floating Glass Caption */}
-                  <div
-                    ref={stageCaptionRef}
-                    className="absolute inset-x-6 bottom-6 z-30 flex items-center justify-between gap-4 rounded-2xl border border-white/25 bg-black/50 px-5 py-3.5 text-white backdrop-blur-2xl will-change-transform"
-                    style={{ transform: "translateZ(68px)" }}
-                  >
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#FCAA30]">
-                        {current.captionLabel}
-                      </p>
-                      <p className="mt-0.5 font-display text-sm font-medium tracking-tight text-white">
-                        {current.captionValue}
-                      </p>
-                    </div>
-                    <Link
-                      href="/fleet"
-                      aria-label="Explore AURUM EV Fleet"
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FCAA30] text-[#0F0F0F] transition-transform duration-300 hover:scale-110"
-                    >
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Mobile Minimalist 3D Hero (< md) */}
-      <div className="relative flex flex-col overflow-hidden bg-[#141414] text-white md:hidden">
-        {/* Soft Blurred Mobile Backdrop */}
-        <div className="pointer-events-none absolute inset-0">
-          <Image
-            src={current.image}
-            alt={current.alt}
-            fill
-            priority
-            className="scale-105 object-cover opacity-50 blur-[4px]"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/60 to-black/85" />
+      {/* Mobile Centered Through-The-Glass Hero (< md) */}
+      <div className="relative z-10 flex flex-col px-5 pb-8 pt-10 text-center text-white md:hidden">
+        <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#FCAA30]">
+          {current.eyebrow}
+        </p>
+
+        <h1 className="mt-3 whitespace-pre-line font-display text-[36px] font-semibold leading-[0.98] tracking-[-0.04em] text-white">
+          {current.headline}
+        </h1>
+        <div className="mx-auto mt-4 h-px w-14 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
+        <p className="mx-auto mt-3.5 max-w-sm text-sm leading-relaxed text-white/85">
+          {current.subtitle}
+        </p>
+
+        <div className="mt-6 flex flex-col gap-3">
+          <PremiumHeroButton
+            href={current.primaryCta.href}
+            variant="mango"
+            fullWidth
+            onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero_mobile" })}
+          >
+            <span>{current.primaryCta.label}</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0F0F0F] text-[#FCAA30]">
+              <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </PremiumHeroButton>
+          <PremiumHeroButton href={current.secondaryCta.href} variant="glass" fullWidth>
+            <span>{current.secondaryCta.label}</span>
+            <ArrowUpRight className="h-4 w-4 text-[#FCAA30]" />
+          </PremiumHeroButton>
         </div>
 
-        <div className="relative z-10 px-5 pb-6 pt-9 text-center">
-          <p className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.26em] text-[#FCAA30]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#FCAA30]" />
-            {current.eyebrow}
-          </p>
-
-          <h1 className="mt-3 whitespace-pre-line font-display text-[36px] font-semibold leading-[0.98] tracking-[-0.04em] text-white">
-            {current.headline}
-          </h1>
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-white/85">
-            {current.subtitle}
-          </p>
-
-          <div className="mt-6 flex flex-col gap-3">
-            <PremiumHeroButton
-              href={current.primaryCta.href}
-              variant="mango"
-              fullWidth
-              onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero_mobile" })}
-            >
-              <span>{current.primaryCta.label}</span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0F0F0F] text-[#FCAA30]">
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
-            </PremiumHeroButton>
-            <PremiumHeroButton href={current.secondaryCta.href} variant="glass" fullWidth>
-              <span>{current.secondaryCta.label}</span>
-              <ArrowUpRight className="h-4 w-4 text-[#FCAA30]" />
-            </PremiumHeroButton>
-          </div>
-        </div>
-
-        {/* Mobile 3D Floating Crisp Photo Window */}
-        <div className="hero-perspective relative z-10 px-4 pb-8">
+        {/* Mobile Crisp Unblurred 3D Card Window + Scene Pills */}
+        <div className="hero-perspective mt-7">
           <div className="preserve-3d relative aspect-[16/10] w-full overflow-hidden rounded-3xl border border-white/25 bg-black/40 p-1.5 shadow-elevated backdrop-blur-xl animate-[heroFloat3d_6.5s_ease-in-out_infinite]">
             <div className="relative h-full w-full overflow-hidden rounded-[20px]">
               <Image
@@ -622,19 +487,24 @@ export function HeroShowcase() {
                 className="object-cover"
                 sizes="100vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-              <div className="absolute inset-x-0 bottom-3 flex justify-center gap-2">
-                {HERO_SLIDES.map((s, idx) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    aria-label={`Slide ${idx + 1}`}
-                    onClick={() => setActiveIdx(idx)}
-                    className={`h-1 rounded-full transition-all ${
-                      idx === activeIdx ? "w-9 bg-[#FCAA30]" : "w-4 bg-white/55"
-                    }`}
-                  />
-                ))}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+              <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2">
+                <span className="rounded-full bg-black/65 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
+                  {current.thumbLabel}
+                </span>
+                <div className="flex gap-1.5">
+                  {HERO_SLIDES.map((s, idx) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      aria-label={`Slide ${idx + 1}`}
+                      onClick={() => setActiveIdx(idx)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        idx === activeIdx ? "w-7 bg-[#FCAA30]" : "w-3 bg-white/55"
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
