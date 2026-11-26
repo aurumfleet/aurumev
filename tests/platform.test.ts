@@ -1,4 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
+import {
+  calculateInvestmentPlan,
+  formatINR,
+  formatIndianCompact,
+  INVESTMENT_MODEL_CONSTANTS,
+} from "../src/data/investment-plans";
 import { query, queryOne, resetDbForTests } from "../src/lib/db";
 import { getSiteSettingsBundle } from "../src/lib/settings";
 import {
@@ -104,5 +110,51 @@ describe("AURUM EV Public Website, Database & Enquiry Suite", () => {
     expect(settings.investment.financialModelApproved).toBe(false);
     expect(settings.investment.publicStatusMessage).toContain("currently being finalized");
     expect(settings.sustainabilityStats.filter((s) => s.verified)).toHaveLength(0);
+  });
+
+  it("computes exact EV investment model schedule and surplus across all 5 defined plans", () => {
+    expect(INVESTMENT_MODEL_CONSTANTS.investmentPerEv).toBe(66_500);
+    expect(INVESTMENT_MODEL_CONSTANTS.gstPerEv).toBe(3_500);
+    expect(INVESTMENT_MODEL_CONSTANTS.totalInvestmentPerEv).toBe(70_000);
+    expect(INVESTMENT_MODEL_CONSTANTS.agreementMonths).toBe(48);
+
+    const p2 = calculateInvestmentPlan(2);
+    expect(p2.investment).toBe(1_33_000);
+    expect(p2.gst).toBe(7_000);
+    expect(p2.totalInvestment).toBe(1_40_000);
+    expect(p2.monthlyRental).toBe(8_600);
+    expect(p2.annualRental).toBe(1_03_200);
+    expect(p2.totalRental48Months).toBe(4_12_800);
+    expect(p2.projectedRentalSurplus).toBe(2_72_800);
+    expect(formatINR(p2.projectedRentalSurplus)).toBe("₹2,72,800");
+
+    const p5 = calculateInvestmentPlan(5);
+    expect(p5.totalInvestment).toBe(3_50_000);
+    expect(p5.monthlyRental).toBe(23_000);
+    expect(p5.totalRental48Months).toBe(11_04_000);
+    expect(p5.projectedRentalSurplus).toBe(7_54_000);
+
+    const p10 = calculateInvestmentPlan(10);
+    expect(p10.totalInvestment).toBe(7_00_000);
+    expect(p10.monthlyRental).toBe(50_000);
+    expect(p10.totalRental48Months).toBe(24_00_000);
+    expect(p10.projectedRentalSurplus).toBe(17_00_000);
+
+    const p25 = calculateInvestmentPlan(25);
+    expect(p25.totalInvestment).toBe(17_50_000);
+    expect(p25.monthlyRental).toBe(1_30_000);
+    expect(p25.totalRental48Months).toBe(62_40_000);
+    expect(p25.projectedRentalSurplus).toBe(44_90_000);
+
+    const p50 = calculateInvestmentPlan(50);
+    expect(p50.investment).toBe(33_25_000);
+    expect(p50.gst).toBe(1_75_000);
+    expect(p50.totalInvestment).toBe(35_00_000);
+    expect(p50.monthlyRental).toBe(2_75_000);
+    expect(p50.annualRental).toBe(33_00_000);
+    expect(p50.totalRental48Months).toBe(1_32_00_000);
+    expect(p50.projectedRentalSurplus).toBe(97_00_000);
+    expect(formatIndianCompact(p50.totalRental48Months)).toBe("₹1.32 Crore");
+    expect(formatIndianCompact(p50.projectedRentalSurplus)).toBe("₹97 Lakh");
   });
 });
