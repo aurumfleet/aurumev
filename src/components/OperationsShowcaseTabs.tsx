@@ -19,7 +19,7 @@ const TABS = [
     ],
     ctaLabel: "Explore Rider Plans",
     ctaHref: "/riders",
-    image: "/images/aurum-blinkit-hero.jpg",
+    image: "/images/aurum-rapido.jpg",
   },
   {
     key: "business",
@@ -34,7 +34,7 @@ const TABS = [
     ],
     ctaLabel: "Request Business Proposal",
     ctaHref: "/business#proposal",
-    image: "/images/aurum-instamart-hero.jpg",
+    image: "/images/aurum-porter.jpg",
   },
   {
     key: "invest",
@@ -49,7 +49,7 @@ const TABS = [
     ],
     ctaLabel: "Explore Investment Info",
     ctaHref: "/invest",
-    image: "/images/aurum-commuter-hero.jpg",
+    image: "/images/aurum-zepto.jpg",
   },
 ];
 

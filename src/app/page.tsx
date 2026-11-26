@@ -237,7 +237,7 @@ export default async function HomePage() {
               <div className="relative aspect-[16/11] w-full overflow-hidden rounded-t-3xl border border-white/70 bg-white p-2 shadow-elevated">
                 <div className="relative h-full w-full overflow-hidden rounded-t-2xl">
                   <Image
-                    src="/images/aurum-zepto-hero.jpg"
+                    src="/images/aurum-zepto.jpg"
                     alt="Aurum EV operations and urban fleet support"
                     fill
                     className="object-cover"

@@ -21,52 +21,64 @@ interface HeroSlide {
 
 const HERO_SLIDES: HeroSlide[] = [
   {
-    id: "commuter",
+    id: "rapido",
     eyebrow: "THROUGH THE GLASS · AURUM EV",
     headline: "EMPOWERING RIDERS.\nDRIVING THE FUTURE.",
     subtitle:
       "Flexible zero-fuel electric two-wheeler rentals for urban commuters, delivery fleets, and structured partners.",
-    thumbLabel: "Urban Commuter",
+    thumbLabel: "Urban Riders",
     primaryCta: { label: "Rent Today", href: "/rentals#book" },
     secondaryCta: { label: "Invest Now", href: "/invest" },
-    image: "/images/aurum-commuter-hero.jpg",
-    alt: "Riders on an Aurum Fleet Solutions silver electric two-wheeler outside an urban corporate building",
+    image: "/images/aurum-rapido.jpg",
+    alt: "Delivery rider seated beside the white-and-gold Aurum EV electric scooter in an urban business district",
   },
   {
     id: "blinkit",
-    eyebrow: "DELIVERY PARTNER ECOSYSTEM",
+    eyebrow: "QUICK-COMMERCE PARTNER FLEETS",
     headline: "BUILT FOR INDIA'S\nDELIVERY FLEETS.",
     subtitle:
       "Weekly and monthly EV rental plans engineered for quick-commerce riders with scheduled hub maintenance.",
     thumbLabel: "Quick Commerce",
     primaryCta: { label: "For Delivery Riders", href: "/riders" },
     secondaryCta: { label: "Calculate Savings", href: "/#calculator" },
-    image: "/images/aurum-blinkit-hero.jpg",
-    alt: "Blinkit delivery partner riding an Aurum EV branded electric scooter",
+    image: "/images/aurum-blinkit.jpg",
+    alt: "Blinkit partner riding a white-and-gold Aurum EV electric scooter",
   },
   {
-    id: "zepto",
-    eyebrow: "LAST-MILE LOGISTICS",
+    id: "swiggy",
+    eyebrow: "HYPERLOCAL LOGISTICS",
     headline: "LAST-MILE EV.\nZERO FUEL WORRY.",
     subtitle:
       "Consistent doorstep reliability with transparent rental agreements and predictable daily operating economics.",
-    thumbLabel: "Last-Mile EV",
+    thumbLabel: "Hyperlocal EV",
     primaryCta: { label: "Book Your EV", href: "/rentals#book" },
     secondaryCta: { label: "Explore Fleet", href: "/fleet" },
-    image: "/images/aurum-zepto-hero.jpg",
-    alt: "Zepto delivery handover beside a parked Aurum EV silver electric scooter",
+    image: "/images/aurum-swiggy.jpg",
+    alt: "Swiggy Instamart doorstep delivery with an Aurum EV fleet scooter",
   },
   {
-    id: "instamart",
+    id: "zomato",
+    eyebrow: "FOOD & PARCEL DELIVERY",
+    headline: "EVERY MILE\nPOWERED CLEAN.",
+    subtitle:
+      "All-day urban uptime supported by preventive hub servicing, verified vehicle specs, and instant booking requests.",
+    thumbLabel: "City Delivery",
+    primaryCta: { label: "Rider Plans", href: "/riders" },
+    secondaryCta: { label: "Our Fleet", href: "/fleet" },
+    image: "/images/aurum-zomato.jpg",
+    alt: "Zomato rider delivering an order beside an Aurum EV scooter",
+  },
+  {
+    id: "porter",
     eyebrow: "ENTERPRISE & B2B FLEETS",
     headline: "SCALE YOUR\nELECTRIC FLEET.",
     subtitle:
       "Bulk B2B electric two-wheeler deployments, preventive servicing, and consolidated GST-compliant billing.",
-    thumbLabel: "B2B Enterprise",
+    thumbLabel: "B2B Logistics",
     primaryCta: { label: "Business Solutions", href: "/business#proposal" },
     secondaryCta: { label: "Explore Fleet", href: "/fleet" },
-    image: "/images/aurum-instamart-hero.jpg",
-    alt: "Swiggy Instamart doorstep delivery with an Aurum EV fleet scooter",
+    image: "/images/aurum-porter.jpg",
+    alt: "Porter B2B logistics partner loading packages beside a blue-accented Aurum EV scooter",
   },
 ];
 
@@ -429,7 +441,7 @@ export function HeroShowcase() {
         <div className="aurum-container hero-perspective mt-6 w-full">
           <div
             ref={dockRef}
-            className="preserve-3d mx-auto grid w-full max-w-4xl grid-cols-4 gap-3.5 will-change-transform"
+            className="preserve-3d mx-auto grid w-full max-w-5xl grid-cols-5 gap-3 will-change-transform"
           >
             {HERO_SLIDES.map((s, idx) => {
               const isActive = idx === activeIdx;

@@ -38,7 +38,7 @@ export default function BusinessPage() {
             <div className="lg:col-span-6">
               <div className="relative aspect-[16/10] overflow-hidden rounded-3xl border border-white/10">
                 <Image
-                  src="/images/business-ev-fleet.jpg"
+                  src="/images/aurum-porter.jpg"
                   alt="Corporate EV fleet line-up"
                   fill
                   className="object-cover"

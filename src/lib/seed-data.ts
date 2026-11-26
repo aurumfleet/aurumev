@@ -104,12 +104,21 @@ export async function seedDatabase(): Promise<void> {
         claimed_range_km, top_speed_kmph, charging_time_hours, image_url,
         specs_verified, description, is_published
       ) VALUES
-        ('Aurum Fleet Series', 'City Commuter EV (Specifications Pending)', 'commuter', NULL, NULL, NULL, NULL, NULL, '/images/hero-ev-scooter.jpg', FALSE, 'Configurable urban commuter electric two-wheeler listing. Verified battery, range, and commercial rates are published upon fleet onboarding.', TRUE),
-        ('Aurum Fleet Series', 'Delivery Partner EV (Specifications Pending)', 'delivery', NULL, NULL, NULL, NULL, NULL, '/images/business-ev-fleet.jpg', FALSE, 'Configurable commercial electric two-wheeler built for last-mile delivery partners.', TRUE),
-        ('Aurum Fleet Series', 'Corporate Fleet EV (Specifications Pending)', 'corporate', NULL, NULL, NULL, NULL, NULL, '/images/business-ev-fleet.jpg', FALSE, 'Enterprise fleet electric two-wheeler tier with centralized maintenance support and flexible SLA agreements.', TRUE)
+        ('Aurum Fleet Series', 'City Commuter EV (Specifications Pending)', 'commuter', NULL, NULL, NULL, NULL, NULL, '/images/aurum-ev-studio.png', FALSE, 'Configurable urban commuter electric two-wheeler listing. Verified battery, range, and commercial rates are published upon fleet onboarding.', TRUE),
+        ('Aurum Fleet Series', 'Delivery Partner EV (Specifications Pending)', 'delivery', NULL, NULL, NULL, NULL, NULL, '/images/aurum-blinkit.jpg', FALSE, 'Configurable commercial electric two-wheeler built for last-mile delivery partners.', TRUE),
+        ('Aurum Fleet Series', 'Corporate Fleet EV (Specifications Pending)', 'corporate', NULL, NULL, NULL, NULL, NULL, '/images/aurum-porter.jpg', FALSE, 'Enterprise fleet electric two-wheeler tier with centralized maintenance support and flexible SLA agreements.', TRUE)
       RETURNING id`
     );
     firstModelId = modelRes.rows[0]?.id ?? null;
+  } else {
+    await query(
+      `UPDATE vehicle_models SET image_url = CASE category
+        WHEN 'commuter' THEN '/images/aurum-ev-studio.png'
+        WHEN 'delivery' THEN '/images/aurum-blinkit.jpg'
+        ELSE '/images/aurum-porter.jpg'
+       END
+       WHERE image_url IN ('/images/hero-ev-scooter.jpg', '/images/business-ev-fleet.jpg', '/images/studio-ev-scooter.jpg')`
+    );
   }
 
   // Sample Fleet Units
@@ -120,9 +129,17 @@ export async function seedDatabase(): Promise<void> {
         vehicle_code, model_id, vehicle_name, vehicle_brand, vehicle_model, category,
         image_url, location_id, status, specs_verified, notes
       ) VALUES
-        ('AUR-DEV-001', $1, 'Sample Fleet Unit 001', 'Aurum Fleet Series', 'City Commuter EV', 'commuter', '/images/hero-ev-scooter.jpg', $2, 'available', FALSE, 'Sample fleet listing'),
-        ('AUR-DEV-002', $1, 'Sample Fleet Unit 002', 'Aurum Fleet Series', 'Delivery Partner EV', 'delivery', '/images/business-ev-fleet.jpg', $2, 'available', FALSE, 'Sample fleet listing')`,
+        ('AUR-DEV-001', $1, 'Sample Fleet Unit 001', 'Aurum Fleet Series', 'City Commuter EV', 'commuter', '/images/aurum-ev-studio.png', $2, 'available', FALSE, 'Sample fleet listing'),
+        ('AUR-DEV-002', $1, 'Sample Fleet Unit 002', 'Aurum Fleet Series', 'Delivery Partner EV', 'delivery', '/images/aurum-blinkit.jpg', $2, 'available', FALSE, 'Sample fleet listing')`,
       [firstModelId, defaultLocId]
+    );
+  } else {
+    await query(
+      `UPDATE vehicles SET image_url = CASE category
+        WHEN 'commuter' THEN '/images/aurum-ev-studio.png'
+        ELSE '/images/aurum-blinkit.jpg'
+       END
+       WHERE image_url IN ('/images/hero-ev-scooter.jpg', '/images/business-ev-fleet.jpg', '/images/studio-ev-scooter.jpg')`
     );
   }
 

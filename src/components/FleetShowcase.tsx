@@ -181,8 +181,8 @@ export function FleetShowcase({
             const approvedPlan = approvedPlanFor(model.category);
             const imgSrc =
               model.category === "commuter"
-                ? "/images/studio-ev-scooter.jpg"
-                : model.image_url || "/images/studio-ev-scooter.jpg";
+                ? "/images/aurum-ev-studio.png"
+                : model.image_url || "/images/aurum-ev-studio.png";
 
             return (
               <article
@@ -210,8 +210,10 @@ export function FleetShowcase({
                       src={imgSrc}
                       alt={`${model.brand} ${model.model_name}`}
                       fill
-                      className={`object-cover transition-transform duration-500 group-hover:scale-105 ${
-                        imgSrc.includes("studio") ? "mix-blend-multiply" : ""
+                      className={`transition-transform duration-500 group-hover:scale-105 ${
+                        imgSrc.includes("studio")
+                          ? "object-contain p-2 mix-blend-multiply"
+                          : "object-cover"
                       }`}
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />

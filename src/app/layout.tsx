@@ -41,14 +41,14 @@ export const metadata: Metadata = {
     title: "AURUM EV | Driven by Trust. Powered by Tomorrow.",
     description:
       "Electric two-wheeler rentals, delivery partner EV plans, corporate fleet solutions, and mobility partnerships by Aurum Fleet Solutions Pvt Ltd.",
-    images: ["/images/hero-ev-scooter.jpg"],
+    images: ["/images/aurum-ev-studio.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "AURUM EV | Driven by Trust. Powered by Tomorrow.",
     description:
       "Smart electric two-wheeler rental and fleet management ecosystem by Aurum Fleet Solutions Pvt Ltd.",
-    images: ["/images/hero-ev-scooter.jpg"],
+    images: ["/images/aurum-ev-studio.png"],
   },
 };
 

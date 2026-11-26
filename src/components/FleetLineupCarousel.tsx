@@ -68,7 +68,9 @@ export function FleetLineupCarousel({
             (p) => p.category === m.category && p.pricing_approved && p.base_rate != null
           );
           const cleanImage =
-            m.category === "commuter" ? "/images/studio-ev-scooter.jpg" : m.image_url || "/images/studio-ev-scooter.jpg";
+            m.category === "commuter"
+              ? "/images/aurum-ev-studio.png"
+              : m.image_url || "/images/aurum-ev-studio.png";
 
           return (
             <article
@@ -105,8 +107,10 @@ export function FleetLineupCarousel({
                   src={cleanImage}
                   alt={`${m.brand} ${m.model_name}`}
                   fill
-                  className={`object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
-                    cleanImage.includes("studio") ? "mix-blend-multiply" : ""
+                  className={`transition-transform duration-500 ease-out group-hover:scale-105 ${
+                    cleanImage.includes("studio")
+                      ? "object-contain p-2 mix-blend-multiply"
+                      : "object-cover"
                   }`}
                   sizes="(max-width: 640px) 90vw, 480px"
                 />
