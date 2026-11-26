@@ -56,21 +56,25 @@ export default async function HomePage() {
         {/* 1. HERO SHOWCASE CAROUSEL */}
         <HeroShowcase />
 
-        {/* 2. ANNOUNCEMENT STRIP (Neev-inspired value bar in clean Simple Energy palette) */}
-        <div className="border-b border-[#EBEBEB] bg-[#F4F4F4] py-3.5">
-          <div className="aurum-container flex flex-wrap items-center justify-center gap-3 text-center text-xs sm:text-sm">
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#C2F7C8] px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#13B75E]">
+        {/* 2. KEY INVESTMENT & OPERATIONS HIGHLIGHT BAR */}
+        <div className="border-b border-[#EBEBEB] bg-white py-4">
+          <div className="aurum-container flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center text-xs sm:text-sm">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#C2F7C8] px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#13B75E]">
               <Sparkles className="h-3 w-3" />
-              EV Mobility
+              Fleet Plan
             </span>
-            <p className="font-medium text-[#0F0F0F]">
-              Switch to zero-fuel electric two-wheeler rentals with flexible weekly & monthly plans.
-            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-display font-semibold tracking-tight text-[#0F0F0F]">
+              <span>₹70,000 per EV</span>
+              <span aria-hidden="true" className="text-[#FCAA30]">|</span>
+              <span>4-Year Investment Plan</span>
+              <span aria-hidden="true" className="text-[#FCAA30]">|</span>
+              <span>Managed Fleet Operations</span>
+            </div>
             <Link
-              href="/#calculator"
-              className="font-semibold text-[#0667F4] underline-offset-4 hover:underline"
+              href="/invest"
+              className="text-xs font-semibold text-[#0667F4] underline-offset-4 hover:underline"
             >
-              Calculate your savings →
+              Explore Investment Plans →
             </Link>
           </div>
         </div>

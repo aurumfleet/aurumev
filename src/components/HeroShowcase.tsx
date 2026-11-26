@@ -7,80 +7,54 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { RaindropGlassCanvas } from "./RaindropGlassCanvas";
 
-interface HeroSlide {
+interface HeroScene {
   id: string;
-  eyebrow: string;
-  headline: string;
-  subtitle: string;
   thumbLabel: string;
-  primaryCta: { label: string; href: string };
-  secondaryCta: { label: string; href: string };
   image: string;
   alt: string;
 }
 
-const HERO_SLIDES: HeroSlide[] = [
+const HERO_SCENES: HeroScene[] = [
   {
     id: "rapido",
-    eyebrow: "THROUGH THE GLASS · AURUM EV",
-    headline: "EMPOWERING RIDERS.\nDRIVING THE FUTURE.",
-    subtitle:
-      "Flexible zero-fuel electric two-wheeler rentals for urban commuters, delivery fleets, and structured partners.",
     thumbLabel: "Urban Riders",
-    primaryCta: { label: "Rent Today", href: "/rentals#book" },
-    secondaryCta: { label: "Invest Now", href: "/invest" },
     image: "/images/aurum-rapido.jpg",
     alt: "Delivery rider seated beside the white-and-gold Aurum EV electric scooter in an urban business district",
   },
   {
     id: "blinkit",
-    eyebrow: "QUICK-COMMERCE PARTNER FLEETS",
-    headline: "BUILT FOR INDIA'S\nDELIVERY FLEETS.",
-    subtitle:
-      "Weekly and monthly EV rental plans engineered for quick-commerce riders with scheduled hub maintenance.",
     thumbLabel: "Quick Commerce",
-    primaryCta: { label: "For Delivery Riders", href: "/riders" },
-    secondaryCta: { label: "Calculate Savings", href: "/#calculator" },
     image: "/images/aurum-blinkit.jpg",
     alt: "Blinkit partner riding a white-and-gold Aurum EV electric scooter",
   },
   {
     id: "swiggy",
-    eyebrow: "HYPERLOCAL LOGISTICS",
-    headline: "LAST-MILE EV.\nZERO FUEL WORRY.",
-    subtitle:
-      "Consistent doorstep reliability with transparent rental agreements and predictable daily operating economics.",
     thumbLabel: "Hyperlocal EV",
-    primaryCta: { label: "Book Your EV", href: "/rentals#book" },
-    secondaryCta: { label: "Explore Fleet", href: "/fleet" },
     image: "/images/aurum-swiggy.jpg",
     alt: "Swiggy Instamart doorstep delivery with an Aurum EV fleet scooter",
   },
   {
     id: "zomato",
-    eyebrow: "FOOD & PARCEL DELIVERY",
-    headline: "EVERY MILE\nPOWERED CLEAN.",
-    subtitle:
-      "All-day urban uptime supported by preventive hub servicing, verified vehicle specs, and instant booking requests.",
     thumbLabel: "City Delivery",
-    primaryCta: { label: "Rider Plans", href: "/riders" },
-    secondaryCta: { label: "Our Fleet", href: "/fleet" },
     image: "/images/aurum-zomato.jpg",
     alt: "Zomato rider delivering an order beside an Aurum EV scooter",
   },
   {
     id: "porter",
-    eyebrow: "ENTERPRISE & B2B FLEETS",
-    headline: "SCALE YOUR\nELECTRIC FLEET.",
-    subtitle:
-      "Bulk B2B electric two-wheeler deployments, preventive servicing, and consolidated GST-compliant billing.",
     thumbLabel: "B2B Logistics",
-    primaryCta: { label: "Business Solutions", href: "/business#proposal" },
-    secondaryCta: { label: "Explore Fleet", href: "/fleet" },
     image: "/images/aurum-porter.jpg",
     alt: "Porter B2B logistics partner loading packages beside a blue-accented Aurum EV scooter",
   },
 ];
+
+const HERO_CONTENT = {
+  eyebrow: "AURUM FLEET SOLUTIONS · ELECTRIC MOBILITY",
+  headline: "Powering India's Delivery Future with Electric Mobility.",
+  subtitle:
+    "Aurum Fleet Solutions brings together EV rentals, delivery fleet operations and structured EV investment opportunities.",
+  primaryCta: { label: "Explore Investment Plans", href: "/invest" },
+  secondaryCta: { label: "Rent an EV", href: "/rentals#book" },
+};
 
 function PremiumHeroButton({
   href,
@@ -226,7 +200,7 @@ export function HeroShowcase() {
   useEffect(() => {
     if (paused) return;
     const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % HERO_SLIDES.length);
+      setActiveIdx((prev) => (prev + 1) % HERO_SCENES.length);
     }, 5200);
     return () => clearInterval(timer);
   }, [paused]);
@@ -268,7 +242,6 @@ export function HeroShowcase() {
       const pctX = (p.curX * 100).toFixed(2);
       const pctY = (p.curY * 100).toFixed(2);
 
-      // Warm champagne glass illumination behind droplets
       if (ambientLightRef.current) {
         const pulseBoost = p.pressPulse * 0.24;
         const a1 = (0.18 * p.intensity + pulseBoost).toFixed(3);
@@ -276,14 +249,12 @@ export function HeroShowcase() {
         ambientLightRef.current.style.background = `radial-gradient(${620 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 44%, transparent 74%)`;
       }
 
-      // Layer -1: Deep blurred backdrop counter-parallax
       if (bgParallaxRef.current) {
         const px = (-p.nx * 14).toFixed(2);
         const py = (-p.ny * 10).toFixed(2);
         bgParallaxRef.current.style.transform = `scale(1.08) translate3d(${px}px, ${py}px, 0)`;
       }
 
-      // Layer +1: Centered 3D perspective typography tilt + click press depth
       if (centerStage3dRef.current) {
         const rotY = (p.nx * 4.5).toFixed(2);
         const rotX = (-p.ny * 3.5).toFixed(2);
@@ -293,7 +264,6 @@ export function HeroShowcase() {
         centerStage3dRef.current.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${tx}px, ${ty}px, ${pressZ}px)`;
       }
 
-      // Layer +2: Bottom 3D Thumbnail Filmstrip perspective float
       if (dockRef.current) {
         const dx = (p.nx * 10).toFixed(2);
         const dy = (p.ny * 5).toFixed(2);
@@ -331,7 +301,7 @@ export function HeroShowcase() {
     rainPointerRef.current.inside = false;
   }
 
-  const current = HERO_SLIDES[activeIdx];
+  const current = HERO_SCENES[activeIdx];
 
   return (
     <section
@@ -343,39 +313,58 @@ export function HeroShowcase() {
       onMouseLeave={() => setPaused(false)}
       className="relative w-full overflow-hidden bg-[#121212]"
     >
-      {/* Full-Bleed Softly Blurred User Photo Scene */}
+      {/* Full-Bleed Softly Blurred Background with Unique 3D Depth Flip Transitions */}
       <div
         ref={bgParallaxRef}
-        className="pointer-events-none absolute inset-0 will-change-transform"
+        className="hero-perspective pointer-events-none absolute inset-0 will-change-transform"
         style={{ transform: "scale(1.08)" }}
       >
-        {HERO_SLIDES.map((slide, idx) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-out ${
-              idx === activeIdx ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <Image
-              src={slide.image}
-              alt={slide.alt}
-              fill
-              priority={idx === 0}
-              className={`scale-105 object-cover object-center transition-[filter] duration-1000 ease-out ${
-                introPhase === "active"
-                  ? "blur-[9px] brightness-90"
-                  : introPhase === "fading"
-                    ? "blur-[5px] brightness-95"
-                    : "blur-[3px] brightness-100"
+        {HERO_SCENES.map((scene, idx) => {
+          const isActive = idx === activeIdx;
+          const isPrev = idx === (activeIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length;
+          return (
+            <div
+              key={scene.id}
+              style={{
+                transform: isActive
+                  ? "rotateY(0deg) translateZ(0px) scale(1.03)"
+                  : isPrev
+                    ? "rotateY(-12deg) translateZ(-120px) scale(1.14)"
+                    : "rotateY(12deg) translateZ(-80px) scale(1.1)",
+              }}
+              className={`absolute inset-0 transition-all duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                isActive ? "opacity-100" : "opacity-0"
               }`}
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/80" />
-          </div>
-        ))}
+            >
+              <Image
+                src={scene.image}
+                alt={scene.alt}
+                fill
+                priority={idx === 0}
+                className={`scale-105 object-cover object-center transition-[filter] duration-1000 ease-out ${
+                  introPhase === "active"
+                    ? "blur-[9px] brightness-90"
+                    : introPhase === "fading"
+                      ? "blur-[5px] brightness-95"
+                      : "blur-[3px] brightness-100"
+                }`}
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/80" />
+            </div>
+          );
+        })}
       </div>
 
-      {/* Intro-Only Refractive Water Drops on Glass (clears cleanly after website opens) */}
+      {/* Subtle 3D Orbital Champagne Ring Halo */}
+      <div
+        aria-hidden="true"
+        className="hero-perspective pointer-events-none absolute inset-0 z-[5] hidden items-center justify-center md:flex"
+      >
+        <div className="h-[640px] w-[640px] rounded-full border border-[#FCAA30]/20 animate-[heroOrbit_24s_linear_infinite]" />
+      </div>
+
+      {/* Intro-Only Fast 3D Rain + Crystal Water Drops on Glass */}
       {introPhase !== "done" && (
         <RaindropGlassCanvas
           imageSrc={current.image}
@@ -391,70 +380,76 @@ export function HeroShowcase() {
         className="pointer-events-none absolute inset-0 z-[7] hidden md:block"
       />
 
-      {/* Desktop Centered Through-The-Glass 3D Layout (md+) */}
+      {/* Desktop Centered Unified Copy + 3D Coverflow Filmstrip (md+) */}
       <div className="hero-perspective relative z-10 hidden min-h-[88vh] flex-col justify-between pb-10 pt-20 md:flex">
-        {/* Centered Floating 3D Headline & Dual Buttons */}
+        {/* Static Rock-Solid Unified Headline, Subheadline & Two CTAs */}
         <div className="aurum-container my-auto flex w-full flex-col items-center text-center">
           <div
             ref={centerStage3dRef}
             className="preserve-3d max-w-4xl will-change-transform"
           >
-            <div key={current.id} className="animate-[fadeIn_0.5s_ease-out]">
-              <p className="text-[11px] font-bold uppercase tracking-[0.38em] text-[#FCAA30]">
-                {current.eyebrow}
-              </p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.36em] text-[#FCAA30]">
+              {HERO_CONTENT.eyebrow}
+            </p>
 
-              <h1 className="mt-4 whitespace-pre-line font-display text-5xl font-semibold leading-[0.95] tracking-[-0.04em] text-white drop-shadow-[0_12px_36px_rgba(0,0,0,0.45)] lg:text-[76px]">
-                {current.headline}
-              </h1>
+            <h1 className="mt-4 font-display text-4xl font-semibold leading-[1.02] tracking-[-0.04em] text-white drop-shadow-[0_12px_36px_rgba(0,0,0,0.45)] sm:text-5xl lg:text-[64px]">
+              {HERO_CONTENT.headline}
+            </h1>
 
-              {/* Minimalist Center Hairline Rule */}
-              <div className="mx-auto mt-6 h-px w-20 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
+            <div className="mx-auto mt-6 h-px w-20 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
 
-              <p className="mx-auto mt-5 max-w-xl text-base font-normal leading-relaxed text-white/90 lg:text-[19px]">
-                {current.subtitle}
-              </p>
+            <p className="mx-auto mt-5 max-w-2xl text-base font-normal leading-relaxed text-white/90 lg:text-[19px]">
+              {HERO_CONTENT.subtitle}
+            </p>
 
-              {/* Centered Premium Action Buttons */}
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-                <PremiumHeroButton
-                  href={current.primaryCta.href}
-                  variant="mango"
-                  onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero" })}
-                >
-                  <span>{current.primaryCta.label}</span>
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0F0F0F] text-[#FCAA30] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-rotate-12">
-                    <ArrowRight className="h-4 w-4" />
-                  </span>
-                </PremiumHeroButton>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <PremiumHeroButton
+                href={HERO_CONTENT.primaryCta.href}
+                variant="mango"
+                onClick={() => trackAnalyticsEvent("invest_cta_click", { source: "hero" })}
+              >
+                <span>{HERO_CONTENT.primaryCta.label}</span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0F0F0F] text-[#FCAA30] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-rotate-12">
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </PremiumHeroButton>
 
-                <PremiumHeroButton href={current.secondaryCta.href} variant="glass">
-                  <span>{current.secondaryCta.label}</span>
-                  <ArrowUpRight className="h-4 w-4 text-[#FCAA30] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </PremiumHeroButton>
-              </div>
+              <PremiumHeroButton
+                href={HERO_CONTENT.secondaryCta.href}
+                variant="glass"
+                onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero" })}
+              >
+                <span>{HERO_CONTENT.secondaryCta.label}</span>
+                <ArrowUpRight className="h-4 w-4 text-[#FCAA30] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </PremiumHeroButton>
             </div>
           </div>
         </div>
 
-        {/* Bottom 3D Interactive Glass Thumbnail Filmstrip */}
+        {/* Bottom 3D Coverflow Glass Thumbnail Dock */}
         <div className="aurum-container hero-perspective mt-6 w-full">
           <div
             ref={dockRef}
             className="preserve-3d mx-auto grid w-full max-w-5xl grid-cols-5 gap-3 will-change-transform"
           >
-            {HERO_SLIDES.map((s, idx) => {
+            {HERO_SCENES.map((s, idx) => {
               const isActive = idx === activeIdx;
+              const offset = idx - activeIdx;
+              const coverflowTransform = isActive
+                ? "translateZ(26px) translateY(-6px) scale(1.04) rotateY(0deg)"
+                : `translateZ(${-Math.abs(offset) * 14}px) rotateY(${Math.max(-10, Math.min(10, -offset * 5))}deg) scale(0.97)`;
+
               return (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => setActiveIdx(idx)}
                   aria-label={`Select scene ${idx + 1}: ${s.thumbLabel}`}
-                  className={`group relative w-full overflow-hidden rounded-2xl border p-1.5 text-left backdrop-blur-xl transition-all duration-300 ${
+                  style={{ transform: coverflowTransform }}
+                  className={`group relative w-full overflow-hidden rounded-2xl border p-1.5 text-left backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                     isActive
-                      ? "border-[#FCAA30] bg-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.45),0_0_20px_rgba(252,170,48,0.22)] -translate-y-1"
-                      : "border-white/20 bg-black/40 opacity-80 hover:-translate-y-0.5 hover:border-white/40 hover:opacity-100"
+                      ? "border-[#FCAA30] bg-white/15 shadow-[0_18px_38px_rgba(0,0,0,0.5),0_0_24px_rgba(252,170,48,0.28)]"
+                      : "border-white/20 bg-black/40 opacity-75 hover:border-white/50 hover:opacity-100"
                   }`}
                 >
                   <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
@@ -487,57 +482,67 @@ export function HeroShowcase() {
         </div>
       </div>
 
-      {/* Mobile Centered Through-The-Glass Hero (< md) */}
+      {/* Mobile Centered Unified Copy + 3D Floating Card (< md) */}
       <div className="relative z-10 flex flex-col px-5 pb-8 pt-10 text-center text-white md:hidden">
-        <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#FCAA30]">
-          {current.eyebrow}
+        <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#FCAA30]">
+          {HERO_CONTENT.eyebrow}
         </p>
 
-        <h1 className="mt-3 whitespace-pre-line font-display text-[36px] font-semibold leading-[0.98] tracking-[-0.04em] text-white">
-          {current.headline}
+        <h1 className="mt-3 font-display text-[32px] font-semibold leading-[1.06] tracking-[-0.03em] text-white">
+          {HERO_CONTENT.headline}
         </h1>
         <div className="mx-auto mt-4 h-px w-14 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
         <p className="mx-auto mt-3.5 max-w-sm text-sm leading-relaxed text-white/90">
-          {current.subtitle}
+          {HERO_CONTENT.subtitle}
         </p>
 
         <div className="mt-6 flex flex-col gap-3">
           <PremiumHeroButton
-            href={current.primaryCta.href}
+            href={HERO_CONTENT.primaryCta.href}
             variant="mango"
             fullWidth
-            onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero_mobile" })}
+            onClick={() => trackAnalyticsEvent("invest_cta_click", { source: "hero_mobile" })}
           >
-            <span>{current.primaryCta.label}</span>
+            <span>{HERO_CONTENT.primaryCta.label}</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0F0F0F] text-[#FCAA30]">
               <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </PremiumHeroButton>
-          <PremiumHeroButton href={current.secondaryCta.href} variant="glass" fullWidth>
-            <span>{current.secondaryCta.label}</span>
+          <PremiumHeroButton
+            href={HERO_CONTENT.secondaryCta.href}
+            variant="glass"
+            fullWidth
+            onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero_mobile" })}
+          >
+            <span>{HERO_CONTENT.secondaryCta.label}</span>
             <ArrowUpRight className="h-4 w-4 text-[#FCAA30]" />
           </PremiumHeroButton>
         </div>
 
-        {/* Mobile Crisp Unblurred 3D Card Window + Scene Pills */}
+        {/* Mobile 3D Rotating Scene Frame */}
         <div className="hero-perspective mt-7">
           <div className="preserve-3d relative aspect-[16/10] w-full overflow-hidden rounded-3xl border border-white/25 bg-black/40 p-1.5 shadow-elevated backdrop-blur-xl animate-[heroFloat3d_6.5s_ease-in-out_infinite]">
             <div className="relative h-full w-full overflow-hidden rounded-[20px]">
-              <Image
-                src={current.image}
-                alt={current.alt}
-                fill
-                priority
-                className="object-cover"
-                sizes="100vw"
-              />
+              {HERO_SCENES.map((scene, idx) => (
+                <Image
+                  key={scene.id}
+                  src={scene.image}
+                  alt={scene.alt}
+                  fill
+                  priority={idx === 0}
+                  className={`object-cover transition-all duration-700 ${
+                    idx === activeIdx ? "scale-100 opacity-100" : "scale-110 opacity-0"
+                  }`}
+                  sizes="100vw"
+                />
+              ))}
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
               <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2">
                 <span className="rounded-full bg-black/65 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
                   {current.thumbLabel}
                 </span>
                 <div className="flex gap-1.5">
-                  {HERO_SLIDES.map((s, idx) => (
+                  {HERO_SCENES.map((s, idx) => (
                     <button
                       key={s.id}
                       type="button"
