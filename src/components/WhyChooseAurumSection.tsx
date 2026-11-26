@@ -243,7 +243,7 @@ export function WhyChooseAurumSection() {
                             <span className="text-base">{plan.evUnits}</span>
                             {plan.highlightBadge && (
                               <span
-                                className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${
+                                className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${
                                   plan.highlightTone === "emerald"
                                     ? "border border-[#059669]/30 bg-[#059669]/10 text-[#047857]"
                                     : "border border-[#C69A43]/40 bg-[#C69A43]/15 text-[#8E671D]"
