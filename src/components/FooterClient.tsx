@@ -138,11 +138,21 @@ export function FooterClient({ contact }: { contact: ContactSettings }) {
         <div className="grid gap-6 border-b border-white/15 py-8 text-xs text-[#B6B8B9] sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex items-start gap-2.5">
             <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#FCAA30]" />
-            <span>{contact.phone}</span>
+            <a
+              href={`tel:${contact.phone.replace(/\s+/g, "")}`}
+              className="transition-colors hover:text-[#FCAA30]"
+            >
+              {contact.phone}
+            </a>
           </div>
           <div className="flex items-start gap-2.5">
             <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#FCAA30]" />
-            <span>{contact.supportEmail}</span>
+            <a
+              href={`mailto:${contact.supportEmail}`}
+              className="transition-colors hover:text-[#FCAA30]"
+            >
+              {contact.supportEmail}
+            </a>
           </div>
           <div className="flex items-start gap-2.5">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#FCAA30]" />

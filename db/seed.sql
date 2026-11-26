@@ -8,7 +8,7 @@ INSERT INTO site_settings (key, value, description)
 VALUES
   (
     'contact_settings',
-    '{"phone":"Configure in Admin Settings","whatsapp":"","supportEmail":"support@aurumfleet.example","officeAddress":"Aurum Fleet Solutions Pvt Ltd — Configure Registered Office in Admin Settings","operatingHours":"Mon – Sat, 09:00 AM – 07:00 PM IST","socialLinks":{"linkedin":"","instagram":"","facebook":"","x":""}}'::jsonb,
+    '{"phone":"+91 77799 90277","whatsapp":"917779990277","supportEmail":"info@aurumfleets.com","officeAddress":"Ground Floor, B 130, Dharampal Satyapal Rd, B Block, Sector 65, Noida, Uttar Pradesh 201301","operatingHours":"Mon – Sat, 09:00 AM – 07:00 PM IST","socialLinks":{"linkedin":"","instagram":"","facebook":"","x":""}}'::jsonb,
     'Centralized contact details'
   ),
   (

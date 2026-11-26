@@ -44,10 +44,11 @@ export interface SiteSettingsBundle {
 }
 
 export const DEFAULT_CONTACT_SETTINGS: ContactSettings = {
-  phone: "+91 7779990277",
+  phone: "+91 77799 90277",
   whatsapp: "917779990277",
-  supportEmail: "support@aurumfleet.example",
-  officeAddress: "Aurum Fleet Solutions Pvt Ltd — Configure Registered Office in Admin Settings",
+  supportEmail: "info@aurumfleets.com",
+  officeAddress:
+    "Ground Floor, B 130, Dharampal Satyapal Rd, B Block, Sector 65, Noida, Uttar Pradesh 201301",
   operatingHours: "Mon – Sat, 09:00 AM – 07:00 PM IST",
   socialLinks: {
     linkedin: "",

@@ -56,12 +56,25 @@ export async function seedDatabase(): Promise<void> {
   ];
 
   for (const entry of settingsEntries) {
-    await query(
-      `INSERT INTO site_settings (key, value, description)
-       VALUES ($1, $2::jsonb, $3)
-       ON CONFLICT (key) DO NOTHING`,
-      [entry.key, JSON.stringify(entry.value), entry.description]
-    );
+    if (entry.key === "contact_settings") {
+      await query(
+        `INSERT INTO site_settings (key, value, description)
+         VALUES ($1, $2::jsonb, $3)
+         ON CONFLICT (key) DO UPDATE SET
+           value = EXCLUDED.value,
+           updated_at = NOW()
+         WHERE site_settings.value->>'supportEmail' = 'support@aurumfleet.example'
+            OR site_settings.value->>'phone' LIKE '%Configure%'`,
+        [entry.key, JSON.stringify(entry.value), entry.description]
+      );
+    } else {
+      await query(
+        `INSERT INTO site_settings (key, value, description)
+         VALUES ($1, $2::jsonb, $3)
+         ON CONFLICT (key) DO NOTHING`,
+        [entry.key, JSON.stringify(entry.value), entry.description]
+      );
+    }
   }
 
   // Locations

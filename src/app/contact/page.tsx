@@ -39,28 +39,38 @@ export default async function ContactPage() {
 
             <div className="aurum-card space-y-5">
               <div className="flex items-start gap-3">
-                <Phone className="mt-0.5 h-5 w-5 text-[#0667F4]" />
+                <Phone className="mt-0.5 h-5 w-5 shrink-0 text-[#0667F4]" />
                 <div>
-                  <p className="text-xs font-semibold uppercase text-[#666666]">Phone</p>
-                  <p className="font-medium text-[#0F0F0F]">{contact.phone}</p>
+                  <p className="text-xs font-semibold uppercase text-[#666666]">Phone &amp; WhatsApp</p>
+                  <a
+                    href={`tel:${contact.phone.replace(/\s+/g, "")}`}
+                    className="font-medium text-[#0F0F0F] transition-colors hover:text-[#0667F4]"
+                  >
+                    {contact.phone}
+                  </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-5 w-5 text-[#0667F4]" />
+                <Mail className="mt-0.5 h-5 w-5 shrink-0 text-[#0667F4]" />
                 <div>
                   <p className="text-xs font-semibold uppercase text-[#666666]">Support Email</p>
-                  <p className="font-medium text-[#0F0F0F]">{contact.supportEmail}</p>
+                  <a
+                    href={`mailto:${contact.supportEmail}`}
+                    className="font-medium text-[#0F0F0F] transition-colors hover:text-[#0667F4]"
+                  >
+                    {contact.supportEmail}
+                  </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 text-[#0667F4]" />
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#0667F4]" />
                 <div>
                   <p className="text-xs font-semibold uppercase text-[#666666]">Registered Office</p>
-                  <p className="font-medium text-[#0F0F0F]">{contact.officeAddress}</p>
+                  <p className="font-medium leading-relaxed text-[#0F0F0F]">{contact.officeAddress}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Clock className="mt-0.5 h-5 w-5 text-[#0667F4]" />
+                <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#0667F4]" />
                 <div>
                   <p className="text-xs font-semibold uppercase text-[#666666]">Operating Hours</p>
                   <p className="font-medium text-[#0F0F0F]">{contact.operatingHours}</p>
