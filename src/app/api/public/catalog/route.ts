@@ -2,6 +2,8 @@ import { query } from "@/lib/db";
 import { jsonOk, jsonError } from "@/lib/api-helpers";
 import { getSiteSettingsBundle } from "@/lib/settings";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const [locations, vehicleModels, rentalPlans, faqs, testimonials, blogPosts, settings, homePage] =

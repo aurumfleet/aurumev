@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import { Pool, type PoolClient } from "pg";
@@ -24,17 +25,49 @@ function getDatabaseUrl(): string {
   return process.env.DATABASE_URL?.trim() || "pglite://./data/aurum-pgdata";
 }
 
+function isServerlessRuntime(): boolean {
+  return Boolean(
+    process.env.VERCEL ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.NETLIFY
+  );
+}
+
+function isProductionBuildPhase(): boolean {
+  return process.env.NEXT_PHASE === "phase-production-build";
+}
+
 export function isPostgresPoolMode(): boolean {
   const url = getDatabaseUrl();
   return url.startsWith("postgres://") || url.startsWith("postgresql://");
 }
 
+function resolvePostgresSsl(url: string): boolean | { rejectUnauthorized: boolean } {
+  if (url.includes("sslmode=disable")) return false;
+  if (
+    url.includes("localhost") ||
+    url.includes("127.0.0.1") ||
+    url.includes("::1")
+  ) {
+    return url.includes("sslmode=require") ? { rejectUnauthorized: false } : false;
+  }
+  return { rejectUnauthorized: false };
+}
+
 function getPool(): Pool {
   if (!globalForDb.__aurumPgPool) {
-    globalForDb.__aurumPgPool = new Pool({
-      connectionString: getDatabaseUrl(),
-      max: 15,
+    const connectionString = getDatabaseUrl();
+    const pool = new Pool({
+      connectionString,
+      ssl: resolvePostgresSsl(connectionString),
+      max: isServerlessRuntime() ? 5 : 10,
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 8000,
     });
+    pool.on("error", () => {
+      // Prevent unhandled idle client errors from crashing Node/serverless workers
+    });
+    globalForDb.__aurumPgPool = pool;
   }
   return globalForDb.__aurumPgPool;
 }
@@ -42,8 +75,16 @@ function getPool(): Pool {
 async function getPglite(): Promise<PGlite> {
   if (!globalForDb.__aurumPglite) {
     const url = getDatabaseUrl();
-    if (url === "pglite://memory" || process.env.VITEST === "true") {
+    if (
+      url === "pglite://memory" ||
+      process.env.VITEST === "true" ||
+      isProductionBuildPhase()
+    ) {
       globalForDb.__aurumPglite = new PGlite();
+    } else if (isServerlessRuntime()) {
+      const tmpDir = path.join(os.tmpdir(), "aurum-pgdata");
+      fs.mkdirSync(tmpDir, { recursive: true });
+      globalForDb.__aurumPglite = new PGlite(tmpDir);
     } else {
       const dir = url.replace(/^pglite:\/\//, "") || "./data/aurum-pgdata";
       const resolved = path.isAbsolute(dir) ? dir : path.resolve(process.cwd(), dir);
@@ -97,9 +138,15 @@ export async function runMigrations(client?: DbClient): Promise<void> {
     const sql = fs.readFileSync(path.join(migrationsDir, file), "utf-8");
     await execSql(sql);
     if (client) {
-      await client.query("INSERT INTO _aurum_migrations (filename) VALUES ($1)", [file]);
+      await client.query(
+        "INSERT INTO _aurum_migrations (filename) VALUES ($1) ON CONFLICT (filename) DO NOTHING",
+        [file]
+      );
     } else {
-      await rawQuery("INSERT INTO _aurum_migrations (filename) VALUES ($1)", [file]);
+      await rawQuery(
+        "INSERT INTO _aurum_migrations (filename) VALUES ($1) ON CONFLICT (filename) DO NOTHING",
+        [file]
+      );
     }
   }
 }
@@ -129,14 +176,16 @@ export async function ensureDbReady(): Promise<void> {
   if (!globalForDb.__aurumDbInitPromise) {
     globalForDb.__aurumDbInitPromise = (async () => {
       await runMigrations();
-      // Auto-seed default settings & baseline records if site_settings is empty
       const countRes = await rawQuery<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM site_settings");
       const count = Number(countRes.rows[0]?.cnt ?? "0");
       if (count === 0) {
         const { seedDatabase } = await import("./seed-data");
         await seedDatabase();
       }
-    })();
+    })().catch((err) => {
+      globalForDb.__aurumDbInitPromise = undefined;
+      throw err;
+    });
   }
   await globalForDb.__aurumDbInitPromise;
 }

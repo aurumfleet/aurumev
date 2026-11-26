@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { ClickPulseEffect } from "@/components/ClickPulseEffect";
+import { getAppUrl } from "@/lib/app-url";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,7 +17,7 @@ const plusJakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const appUrl = getAppUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
