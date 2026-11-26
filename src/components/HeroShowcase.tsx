@@ -381,7 +381,7 @@ export function HeroShowcase() {
       />
 
       {/* Desktop Centered Unified Copy + 3D Coverflow Filmstrip (md+) */}
-      <div className="hero-perspective relative z-10 hidden min-h-[88vh] flex-col justify-between pb-10 pt-20 md:flex">
+      <div className="hero-perspective relative z-10 hidden min-h-[92vh] flex-col justify-between pb-10 pt-24 md:flex">
         {/* Static Rock-Solid Unified Headline, Subheadline & Two CTAs */}
         <div className="aurum-container my-auto flex w-full flex-col items-center text-center">
           <div
@@ -483,7 +483,7 @@ export function HeroShowcase() {
       </div>
 
       {/* Mobile Centered Unified Copy + 3D Floating Card (< md) */}
-      <div className="relative z-10 flex flex-col px-5 pb-8 pt-10 text-center text-white md:hidden">
+      <div className="relative z-10 flex flex-col px-5 pb-8 pt-24 text-center text-white md:hidden">
         <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#FCAA30]">
           {HERO_CONTENT.eyebrow}
         </p>
