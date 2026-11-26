@@ -96,7 +96,7 @@ export function PartnersHolographicSection() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     auraRef.current.style.opacity = "1";
-    auraRef.current.style.transform = `translate3d(${x - 160}px, ${y - 160}px, 0)`;
+    auraRef.current.style.transform = `translate3d(${x - 120}px, ${y - 120}px, 0)`;
   };
 
   const handleStagePointerLeave = () => {
@@ -136,7 +136,7 @@ export function PartnersHolographicSection() {
       const x = e.touches[0].clientX - rect.left;
       const y = e.touches[0].clientY - rect.top;
       auraRef.current.style.opacity = "0.95";
-      auraRef.current.style.transform = `translate3d(${x - 160}px, ${y - 160}px, 0)`;
+      auraRef.current.style.transform = `translate3d(${x - 120}px, ${y - 120}px, 0)`;
     }
   };
 
@@ -153,7 +153,7 @@ export function PartnersHolographicSection() {
       const rect = stageRef.current.getBoundingClientRect();
       const x = e.touches[0].clientX - rect.left;
       const y = e.touches[0].clientY - rect.top;
-      auraRef.current.style.transform = `translate3d(${x - 160}px, ${y - 160}px, 0)`;
+      auraRef.current.style.transform = `translate3d(${x - 120}px, ${y - 120}px, 0)`;
     }
   };
 
@@ -175,7 +175,7 @@ export function PartnersHolographicSection() {
     <section
       id="ecosystem-partners"
       aria-labelledby="partners-heading"
-      className="relative overflow-hidden bg-white py-20 text-[#0F0F0F] sm:py-28"
+      className="relative overflow-hidden bg-white py-10 text-[#0F0F0F] sm:py-14"
     >
       <div className="aurum-container relative z-10">
         {/* 1. Section Header */}
@@ -189,7 +189,7 @@ export function PartnersHolographicSection() {
 
           <h2
             id="partners-heading"
-            className="mt-5 font-display text-3xl font-semibold leading-[1.08] tracking-[-0.03em] text-[#0F0F0F] sm:text-5xl lg:text-[54px]"
+            className="mt-3 font-display text-3xl font-semibold leading-[1.08] tracking-[-0.03em] text-[#0F0F0F] sm:text-5xl lg:text-[50px]"
           >
             Partners Who{" "}
             <span className="bg-gradient-to-r from-[#8E671D] via-[#D4A64A] to-[#8E671D] bg-clip-text text-transparent">
@@ -197,13 +197,13 @@ export function PartnersHolographicSection() {
             </span>
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#4E5154] sm:text-lg">
+          <p className="mx-auto mt-2.5 max-w-2xl text-sm leading-relaxed text-[#4E5154] sm:text-base">
             Building connections that move India&apos;s electric mobility ecosystem forward.
           </p>
         </RevealOnScroll>
 
         {/* 2. Minimalist Sleek 3D Ribbon Directly on Pure White Background */}
-        <RevealOnScroll delayMs={80} className="mt-8 sm:mt-12">
+        <RevealOnScroll delayMs={80} className="mt-4 sm:mt-5">
           <div
             ref={stageRef}
             data-paused={isPaused ? "true" : "false"}
@@ -216,7 +216,7 @@ export function PartnersHolographicSection() {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchEnd}
-            className="partner-holo-stage partner-perspective relative mx-auto select-none py-6 sm:py-8"
+            className="partner-holo-stage partner-perspective relative mx-auto select-none py-1"
             role="region"
             aria-roledescription="carousel"
             aria-label="Electric mobility ecosystem brands"
@@ -231,7 +231,7 @@ export function PartnersHolographicSection() {
             <div
               ref={auraRef}
               aria-hidden="true"
-              className="pointer-events-none absolute left-0 top-0 z-0 h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-300"
+              className="pointer-events-none absolute left-0 top-0 z-0 h-[240px] w-[240px] rounded-full opacity-0 transition-opacity duration-300"
               style={{
                 background:
                   "radial-gradient(circle, rgba(252,170,48,0.2) 0%, rgba(198,154,67,0.08) 45%, transparent 72%)",
@@ -251,7 +251,7 @@ export function PartnersHolographicSection() {
 
             {/* Infinite Right-to-Left Sleek Pearl-Glass Badges */}
             <div
-              className="relative z-10 overflow-hidden py-7 transition-transform duration-200 ease-out"
+              className="relative z-10 overflow-hidden py-5 transition-transform duration-200 ease-out"
               style={{ transform: `translate3d(${touchOffset}px, 0, 0)` }}
             >
               <div className="partner-marquee-track flex w-max items-center">
@@ -370,14 +370,14 @@ export function PartnersHolographicSection() {
         </RevealOnScroll>
 
         {/* 3. Section Bottom Statement & Subtle Metallic Gold Divider */}
-        <RevealOnScroll delayMs={120} className="mt-4 text-center sm:mt-6">
-          <p className="font-display text-lg font-medium tracking-[-0.015em] text-[#1A1A1A] sm:text-xl">
+        <RevealOnScroll delayMs={120} className="mt-1.5 text-center sm:mt-2">
+          <p className="font-display text-base font-medium tracking-[-0.015em] text-[#1A1A1A] sm:text-lg">
             Together, Moving Towards a Smarter Electric Future.
           </p>
 
           <div
             aria-hidden="true"
-            className="mx-auto mt-6 flex max-w-md items-center justify-center gap-3"
+            className="mx-auto mt-3.5 flex max-w-md items-center justify-center gap-3"
           >
             <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C69A43]/60" />
             <span className="h-2 w-2 rotate-45 border border-[#C69A43] bg-[#FCAA30]/40" />
