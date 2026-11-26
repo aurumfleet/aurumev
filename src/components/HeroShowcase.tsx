@@ -166,9 +166,14 @@ function PremiumHeroButton({
   );
 }
 
+let introPlayedThisVisit = false;
+
 export function HeroShowcase() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [introPhase, setIntroPhase] = useState<"active" | "fading" | "done">(() =>
+    introPlayedThisVisit ? "done" : "active"
+  );
 
   const sectionRef = useRef<HTMLElement>(null);
   const ambientLightRef = useRef<HTMLDivElement>(null);
@@ -190,6 +195,21 @@ export function HeroShowcase() {
     intensity: 0.45,
     pressPulse: 0,
   });
+
+  useEffect(() => {
+    if (introPhase === "done") return;
+    introPlayedThisVisit = true;
+    const fadeTimer = window.setTimeout(() => {
+      setIntroPhase("fading");
+    }, 3400);
+    const doneTimer = window.setTimeout(() => {
+      setIntroPhase("done");
+    }, 4500);
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(doneTimer);
+    };
+  }, [introPhase]);
 
   useEffect(() => {
     if (paused) return;
@@ -329,7 +349,13 @@ export function HeroShowcase() {
               alt={slide.alt}
               fill
               priority={idx === 0}
-              className="scale-105 object-cover object-center blur-[8px] brightness-90"
+              className={`scale-105 object-cover object-center transition-[filter] duration-1000 ease-out ${
+                introPhase === "active"
+                  ? "blur-[9px] brightness-90"
+                  : introPhase === "fading"
+                    ? "blur-[5px] brightness-95"
+                    : "blur-[3px] brightness-100"
+              }`}
               sizes="100vw"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/80" />
@@ -337,8 +363,14 @@ export function HeroShowcase() {
         ))}
       </div>
 
-      {/* Refractive Water Drops on Glass Simulation */}
-      <RaindropGlassCanvas imageSrc={current.image} pointerRef={rainPointerRef} />
+      {/* Intro-Only Refractive Water Drops on Glass (clears cleanly after website opens) */}
+      {introPhase !== "done" && (
+        <RaindropGlassCanvas
+          imageSrc={current.image}
+          fadingOut={introPhase === "fading"}
+          pointerRef={rainPointerRef}
+        />
+      )}
 
       {/* Warm Champagne Optical Studio Glow */}
       <div
