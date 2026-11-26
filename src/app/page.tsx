@@ -345,13 +345,13 @@ export default async function HomePage() {
       {/* 13. PURE BLACK FOOTER WITH TEAL CTA BANNER */}
       <Footer />
 
-      {/* Mobile Fixed Bottom Frosted Glass Quick-Action Bar */}
-      <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2.5 border-t border-black/[0.08] bg-white/80 px-4 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] backdrop-blur-2xl backdrop-saturate-150 md:hidden">
-        <Link href="/rentals#book" className="aurum-pill-dark py-3 text-xs">
-          Rent an EV
-        </Link>
-        <Link href="/contact" className="aurum-pill-mango py-3 text-xs">
+      {/* Mobile Floating Liquid Glass Bottom Quick-Action Bar */}
+      <div className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-2 gap-2.5 rounded-full border border-white/85 bg-white/[0.78] p-2 shadow-[0_14px_38px_rgba(15,15,15,0.14),inset_0_1px_1px_rgba(255,255,255,1)] ring-1 ring-black/[0.06] backdrop-blur-2xl backdrop-saturate-[180%] md:hidden">
+        <Link href="/contact" className="aurum-pill-dark py-2.5 text-xs">
           Contact Team
+        </Link>
+        <Link href="/invest" className="aurum-pill-mango py-2.5 text-xs">
+          Invest Now
         </Link>
       </div>
     </div>
