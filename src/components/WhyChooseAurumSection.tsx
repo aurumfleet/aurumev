@@ -294,13 +294,43 @@ export function WhyChooseAurumSection() {
                 <thead>
                   <tr className="border-b border-[#0B1F3A]/10 bg-[#F8FAFC] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#475569]">
                     <th className="px-5 py-4">EV Units</th>
-                    <th className="px-4 py-4">Investment</th>
-                    <th className="px-4 py-4">GST</th>
-                    <th className="px-4 py-4">Total Investment</th>
-                    <th className="px-4 py-4">Rental / EV / Month</th>
-                    <th className="px-4 py-4">Monthly Rental</th>
-                    <th className="px-4 py-4">Total Rental (48 Months)</th>
-                    <th className="px-5 py-4 text-right">Projected Rental Surplus</th>
+                    <th className="px-4 py-4">
+                      Investment
+                      <span className="mt-0.5 block text-[9px] font-medium normal-case tracking-normal text-[#64748B]">
+                        ₹66,500 per EV
+                      </span>
+                    </th>
+                    <th className="px-4 py-4">
+                      GST 5%
+                      <span className="mt-0.5 block text-[9px] font-medium normal-case tracking-normal text-[#64748B]">
+                        ₹3,500 per EV
+                      </span>
+                    </th>
+                    <th className="px-4 py-4">
+                      Total Investment
+                      <span className="mt-0.5 block text-[9px] font-medium normal-case tracking-normal text-[#64748B]">
+                        ₹70,000 per EV
+                      </span>
+                    </th>
+                    <th className="px-4 py-4">Per EV Rental</th>
+                    <th className="px-4 py-4">
+                      Monthly Payout
+                      <span className="mt-0.5 block text-[9px] font-medium normal-case tracking-normal text-[#64748B]">
+                        Investor Cut
+                      </span>
+                    </th>
+                    <th className="px-4 py-4">
+                      Total Rental
+                      <span className="mt-0.5 block text-[9px] font-medium normal-case tracking-normal text-[#64748B]">
+                        48 Months
+                      </span>
+                    </th>
+                    <th className="px-5 py-4 text-right">
+                      Projected Rental Surplus
+                      <span className="mt-0.5 block text-[9px] font-medium normal-case tracking-normal text-[#64748B]">
+                        Rental − Investment
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#0B1F3A]/[0.07] text-sm tabular-nums">
@@ -904,7 +934,7 @@ export function WhyChooseAurumSection() {
                       {INVESTMENT_MODEL_CONSTANTS.agreementMonths}-Month tenure
                     </p>
                     <Link
-                      href="/invest"
+                      href={`/invest?units=${activePlan.evUnits}`}
                       className="group inline-flex items-center gap-2 rounded-full bg-[#0B1F3A] px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#047857]"
                     >
                       <span>Invest Now</span>
