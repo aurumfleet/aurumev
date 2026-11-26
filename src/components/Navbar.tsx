@@ -268,21 +268,22 @@ export function Navbar() {
               Contact
             </Link>
             <Link
-              href="/rentals#book"
-              onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "header" })}
+              href="/invest"
+              onClick={() => trackAnalyticsEvent("invest_cta_click", { source: "header" })}
               className="relative inline-flex items-center justify-center whitespace-nowrap rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FFC563] to-[#FCAA30] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0F0F0F] shadow-[0_8px_24px_rgba(252,170,48,0.38),inset_0_1px_1px_rgba(255,255,255,0.75)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(252,170,48,0.5)] active:scale-[0.98]"
             >
-              Book an EV
+              Invest Now
             </Link>
           </div>
 
-          {/* Mobile Quick Book + Liquid Glass Hamburger */}
+          {/* Mobile Quick CTA + Liquid Glass Hamburger */}
           <div className="relative z-10 flex items-center gap-2 lg:hidden">
             <Link
-              href="/rentals#book"
+              href="/invest"
+              onClick={() => trackAnalyticsEvent("invest_cta_click", { source: "header_mobile" })}
               className="whitespace-nowrap rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FFC563] to-[#FCAA30] px-3.5 py-1.5 text-xs font-semibold text-[#0F0F0F] shadow-[0_4px_14px_rgba(252,170,48,0.35),inset_0_1px_0_rgba(255,255,255,0.7)]"
             >
-              Book EV
+              Invest Now
             </Link>
             <button
               type="button"
@@ -385,18 +386,18 @@ export function Navbar() {
 
           <div className="grid shrink-0 grid-cols-2 gap-3 border-t border-black/[0.06] bg-white/75 px-5 py-4 backdrop-blur-xl">
             <Link
-              href="/invest"
+              href="/rentals#book"
               onClick={() => setMobileOpen(false)}
               className="aurum-pill-dark py-3.5 text-center text-sm"
             >
-              Invest With Us
+              Rent an EV
             </Link>
             <Link
-              href="/rentals#book"
+              href="/invest"
               onClick={() => setMobileOpen(false)}
               className="aurum-pill-mango py-3.5 text-center text-sm"
             >
-              Book an EV
+              Invest Now
             </Link>
           </div>
         </div>
