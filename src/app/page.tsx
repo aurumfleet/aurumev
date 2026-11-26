@@ -81,11 +81,11 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* SECTION 02 – ABOUT AURUM FLEET SOLUTIONS */}
-        <AboutAurumSection />
-
-        {/* SECTION 03 – PARTNERS WHO BELIEVED IN US */}
+        {/* SECTION 02 – PARTNERS WHO BELIEVED IN US */}
         <PartnersHolographicSection />
+
+        {/* SECTION 03 – ABOUT AURUM FLEET SOLUTIONS */}
+        <AboutAurumSection />
 
         {/* 3 & 4. BENTO BRAND EDITORIAL + QUICK JOURNEY SELECTOR */}
         <section className="bg-[#F4F4F4] py-16 sm:py-24">
