@@ -213,10 +213,10 @@ export function HeroShowcase() {
     introPlayedThisVisit = true;
     const fadeTimer = window.setTimeout(() => {
       setIntroPhase("fading");
-    }, 4000);
+    }, 4400);
     const doneTimer = window.setTimeout(() => {
       setIntroPhase("done");
-    }, 5100);
+    }, 5500);
     return () => {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(doneTimer);
