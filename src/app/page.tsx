@@ -2,12 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  Bike,
-  Building2,
   MapPin,
   Sparkles,
-  TrendingUp,
-  Zap,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -94,113 +90,6 @@ export default async function HomePage() {
 
         {/* SECTION 05 – HOW IT WORKS */}
         <HowItWorksInvestmentSection />
-
-        {/* 3 & 4. BENTO BRAND EDITORIAL + QUICK JOURNEY SELECTOR */}
-        <section className="bg-[#F4F4F4] py-16 sm:py-24">
-          <div className="aurum-container grid gap-5 lg:grid-cols-12">
-            {/* Editorial Brand Bento Feature Card */}
-            <RevealOnScroll className="lg:col-span-5">
-              <div className="flex h-full flex-col justify-between rounded-[32px] bg-[#0F0F0F] p-8 text-white shadow-elevated sm:p-10">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#FCAA30]">
-                    Aurum Fleet Solutions Pvt Ltd
-                  </p>
-                  <h2 className="mt-4 font-display text-3xl font-semibold leading-[1.06] tracking-[-0.04em] sm:text-[46px]">
-                    Driven by Trust.{" "}
-                    <span className="text-[#828587]">Powered by Tomorrow.</span>
-                  </h2>
-                  <p className="mt-4 text-sm leading-relaxed text-[#B6B8B9] sm:text-base">
-                    Built for India&apos;s last-mile delivery ecosystem, daily urban commuters,
-                    enterprise fleets, and structured fleet partners.
-                  </p>
-                </div>
-
-                <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-white/15 pt-6">
-                  <Link href="/rentals#book" className="aurum-pill-mango px-6 py-3 text-xs">
-                    Start EV Rental <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link href="/how-it-works" className="aurum-pill-light px-5 py-3 text-xs">
-                    How It Works
-                  </Link>
-                </div>
-              </div>
-            </RevealOnScroll>
-
-            {/* 2x2 Interactive Journey Bento Cards */}
-            <div className="grid gap-5 sm:grid-cols-2 lg:col-span-7">
-              {[
-                {
-                  overline: "INDIVIDUALS",
-                  overlineColor: "text-[#0667F4]",
-                  title: "I Want to Rent an EV",
-                  desc: "Daily, weekly, and monthly electric scooters for everyday urban commuting.",
-                  href: "/rentals",
-                  cta: "Rent an EV",
-                  icon: Bike,
-                },
-                {
-                  overline: "DELIVERY PARTNERS",
-                  overlineColor: "text-[#13B75E]",
-                  title: "I Am a Delivery Partner",
-                  desc: "High-uptime EV plans with scheduled service built for gig & delivery riders.",
-                  href: "/riders",
-                  cta: "Explore Rider Plans",
-                  icon: Zap,
-                },
-                {
-                  overline: "ENTERPRISE",
-                  overlineColor: "text-[#FCAA30]",
-                  title: "I Need a Business Fleet",
-                  desc: "Bulk EV fleet deployments, SLA maintenance, and consolidated GST billing.",
-                  href: "/business",
-                  cta: "Request Proposal",
-                  icon: Building2,
-                },
-                {
-                  overline: "PARTNERSHIPS",
-                  overlineColor: "text-[#0F0F0F]",
-                  title: "Investment Opportunities",
-                  desc: "Structured EV fleet deployment and transparent asset management approach.",
-                  href: "/invest",
-                  cta: "Explore More",
-                  icon: TrendingUp,
-                },
-              ].map((card, i) => {
-                const Icon = card.icon;
-                return (
-                  <RevealOnScroll key={card.href} delayMs={i * 60}>
-                    <Link
-                      href={card.href}
-                      className="group flex h-full flex-col justify-between rounded-[28px] border border-black/[0.05] bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-[#FCAA30]/60 hover:shadow-elevated"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`text-[10px] font-bold uppercase tracking-[0.22em] ${card.overlineColor}`}
-                          >
-                            {card.overline}
-                          </span>
-                          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F4F4F4] text-[#0F0F0F] transition-colors group-hover:bg-[#FCAA30]">
-                            <Icon className="h-5 w-5" />
-                          </span>
-                        </div>
-                        <h3 className="mt-4 font-display text-xl font-medium tracking-[-0.02em] text-[#0F0F0F]">
-                          {card.title}
-                        </h3>
-                        <p className="mt-1.5 text-sm leading-relaxed text-[#666666]">{card.desc}</p>
-                      </div>
-
-                      <div className="mt-5 flex items-center justify-between border-t border-[#F0F0F0] pt-4 text-xs font-semibold text-[#0F0F0F] group-hover:text-[#0667F4]">
-                        <span>{card.cta}</span>
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </div>
-                    </Link>
-                  </RevealOnScroll>
-                );
-              })}
-            </div>
-          </div>
-        </section>
 
         {/* 5. INTERACTIVE ROLE TABS (Riders | Business Fleets | Investment Model) */}
         <OperationsShowcaseTabs />
