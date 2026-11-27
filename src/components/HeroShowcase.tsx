@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { RaindropGlassCanvas } from "./RaindropGlassCanvas";
 
@@ -164,7 +164,7 @@ export function HeroShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
   const ambientLightRef = useRef<HTMLDivElement>(null);
   const bgParallaxRef = useRef<HTMLDivElement>(null);
-  const stageCardRef = useRef<HTMLDivElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
   const copyColRef = useRef<HTMLDivElement>(null);
   const rainPointerRef = useRef({ x: 0.5, y: 0.5, inside: false });
 
@@ -223,9 +223,9 @@ export function HeroShowcase() {
 
       const destNx = p.inside ? p.targetNx : idleNx;
       const destNy = p.inside ? p.targetNy : idleNy;
-      const destX = p.inside ? p.targetX : 0.62 + Math.sin(clock * 0.35) * 0.08;
+      const destX = p.inside ? p.targetX : 0.64 + Math.sin(clock * 0.35) * 0.08;
       const destY = p.inside ? p.targetY : 0.45 + Math.cos(clock * 0.3) * 0.05;
-      const destIntensity = p.inside ? 1 : 0.5;
+      const destIntensity = p.inside ? 1 : 0.52;
 
       const ease = p.inside ? 0.09 : 0.045;
       p.nx += (destNx - p.nx) * ease;
@@ -240,9 +240,9 @@ export function HeroShowcase() {
 
       if (ambientLightRef.current) {
         const pulseBoost = p.pressPulse * 0.24;
-        const a1 = (0.2 * p.intensity + pulseBoost).toFixed(3);
-        const a2 = (0.07 * p.intensity + pulseBoost * 0.5).toFixed(3);
-        ambientLightRef.current.style.background = `radial-gradient(${640 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 44%, transparent 74%)`;
+        const a1 = (0.22 * p.intensity + pulseBoost).toFixed(3);
+        const a2 = (0.08 * p.intensity + pulseBoost * 0.5).toFixed(3);
+        ambientLightRef.current.style.background = `radial-gradient(${660 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 44%, transparent 74%)`;
       }
 
       if (bgParallaxRef.current) {
@@ -257,13 +257,13 @@ export function HeroShowcase() {
         copyColRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
       }
 
-      if (stageCardRef.current) {
-        const rotY = (p.nx * 6 - 2).toFixed(2);
-        const rotX = (-p.ny * 5 + 1).toFixed(2);
+      if (stackRef.current) {
+        const rotY = (p.nx * 6 - 3).toFixed(2);
+        const rotX = (-p.ny * 5 + 1.5).toFixed(2);
         const tx = (p.nx * 10).toFixed(2);
-        const ty = (p.ny * 7).toFixed(2);
-        const pressZ = (-p.pressPulse * 16).toFixed(2);
-        stageCardRef.current.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${tx}px, ${ty}px, ${pressZ}px)`;
+        const ty = (p.ny * 7 + Math.sin(clock * 1.4) * 4).toFixed(2);
+        const pressZ = (-p.pressPulse * 14).toFixed(2);
+        stackRef.current.style.transform = `perspective(1300px) rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${tx}px, ${ty}px, ${pressZ}px)`;
       }
 
       rafId = window.requestAnimationFrame(tick);
@@ -304,6 +304,7 @@ export function HeroShowcase() {
   }
 
   const current = HERO_SCENES[activeIdx];
+  const total = HERO_SCENES.length;
 
   return (
     <section
@@ -313,7 +314,7 @@ export function HeroShowcase() {
       onPointerLeave={handlePointerLeave}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative w-full overflow-hidden bg-[#0A0A0D]"
+      className="relative w-full overflow-hidden bg-[#09090C]"
     >
       {/* Ambient Blurred Background Wash Synced to Active Scene */}
       <div
@@ -325,7 +326,7 @@ export function HeroShowcase() {
           <div
             key={scene.id}
             className={`absolute inset-0 transition-opacity duration-[1200ms] ease-out ${
-              idx === activeIdx ? "opacity-45" : "opacity-0"
+              idx === activeIdx ? "opacity-50" : "opacity-0"
             }`}
           >
             <Image
@@ -338,17 +339,32 @@ export function HeroShowcase() {
             />
           </div>
         ))}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_70%_45%,rgba(10,10,13,0.45)_0%,rgba(10,10,13,0.92)_70%,#0A0A0D_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_68%_45%,rgba(9,9,12,0.42)_0%,rgba(9,9,12,0.9)_70%,#09090C_100%)]" />
       </div>
 
-      {/* Subtle Orbital Chrome + Gold Halo Behind Stage */}
+      {/* Subtle Architectural Perspective Grid Floor */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 top-1/2 z-[4] hidden -translate-y-1/2 items-center justify-center lg:flex"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-48 opacity-30"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(252,170,48,0.16) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)",
+          backgroundSize: "52px 36px",
+          maskImage: "linear-gradient(to top, rgba(0,0,0,0.9), transparent)",
+          WebkitMaskImage: "linear-gradient(to top, rgba(0,0,0,0.9), transparent)",
+          transform: "perspective(500px) rotateX(62deg) scale(1.4)",
+          transformOrigin: "bottom center",
+        }}
+      />
+
+      {/* Dual Orbital Chrome + Gold Halo Behind Stage */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-16 top-1/2 z-[4] hidden -translate-y-1/2 items-center justify-center lg:flex"
       >
         <div className="relative flex items-center justify-center">
-          <div className="h-[680px] w-[680px] rounded-full border border-white/[0.06] animate-[heroOrbit_38s_linear_infinite_reverse]" />
-          <div className="absolute h-[500px] w-[500px] rounded-full border border-[#FCAA30]/15 animate-[heroOrbit_24s_linear_infinite]" />
+          <div className="h-[700px] w-[700px] rounded-full border border-white/[0.07] animate-[heroOrbit_38s_linear_infinite_reverse]" />
+          <div className="absolute h-[520px] w-[520px] rounded-full border border-[#FCAA30]/20 animate-[heroOrbit_24s_linear_infinite]" />
         </div>
       </div>
 
@@ -368,10 +384,10 @@ export function HeroShowcase() {
         className="pointer-events-none absolute inset-0 z-[7] hidden md:block"
       />
 
-      {/* DESKTOP: Split Editorial Layout + 3D Brushed-Chrome Stage Slider (md+) */}
-      <div className="aurum-container relative z-10 hidden min-h-[90vh] flex-col justify-center pb-10 pt-28 md:flex">
-        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
-          {/* Left Column — Editorial Copy (Original Copy Preserved) */}
+      {/* DESKTOP: Split Editorial Layout + 3D Cascading Depth Card-Stack (md+) */}
+      <div className="aurum-container relative z-10 hidden min-h-[90vh] flex-col justify-between pb-8 pt-28 md:flex">
+        <div className="my-auto grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+          {/* Left Column — Editorial Copy (Exact Original Copy) */}
           <div ref={copyColRef} className="lg:col-span-6 will-change-transform">
             <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.05] px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-xl">
               <span className="relative flex h-2 w-2">
@@ -423,96 +439,153 @@ export function HeroShowcase() {
             </div>
           </div>
 
-          {/* Right Column — 3D Brushed-Chrome & Gold Showcase Slider */}
-          <div className="lg:col-span-6">
+          {/* Right Column — 3D Cascading Depth Card-Stack Deck */}
+          <div className="lg:col-span-6 lg:pr-8">
             <div
-              ref={stageCardRef}
-              className="relative rounded-[2rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.62)_0%,rgba(148,163,184,0.22)_26%,rgba(255,255,255,0.75)_50%,rgba(252,170,48,0.55)_76%,rgba(203,213,225,0.38)_100%)] p-[1.5px] shadow-[0_32px_90px_rgba(0,0,0,0.72)] will-change-transform"
+              ref={stackRef}
+              className="preserve-3d relative aspect-[16/11] w-full will-change-transform"
             >
-              <div className="relative aspect-[16/11] w-full overflow-hidden rounded-[calc(2rem-1.5px)] bg-[#111216]">
-                {HERO_SCENES.map((scene, idx) => {
-                  const isActive = idx === activeIdx;
-                  const isPrev =
-                    idx === (activeIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length;
-                  return (
-                    <div
-                      key={scene.id}
-                      style={{
-                        transform: isActive
-                          ? "translate3d(0,0,0) scale(1)"
-                          : isPrev
-                            ? "translate3d(-7%,0,0) scale(1.06)"
-                            : "translate3d(7%,0,0) scale(1.04)",
-                      }}
-                      className={`absolute inset-0 transition-all duration-[1000ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                        isActive ? "z-10 opacity-100" : "z-0 opacity-0"
-                      }`}
-                    >
+              {HERO_SCENES.map((scene, idx) => {
+                const rel = (idx - activeIdx + total) % total;
+                const isFront = rel === 0;
+                const isNext1 = rel === 1;
+                const isNext2 = rel === 2;
+                const isPrev = rel === total - 1;
+
+                let transform = "translate3d(-36px, 0, -140px) scale(0.86) rotateY(10deg)";
+                let opacity = 0;
+                let zIndex = 1;
+
+                if (isFront) {
+                  transform = "translate3d(0, 0, 20px) scale(1) rotateY(0deg)";
+                  opacity = 1;
+                  zIndex = 30;
+                } else if (isNext1) {
+                  transform = "translate3d(26px, 10px, -45px) scale(0.94) rotateY(-6deg)";
+                  opacity = 0.72;
+                  zIndex = 20;
+                } else if (isNext2) {
+                  transform = "translate3d(48px, 18px, -95px) scale(0.88) rotateY(-10deg)";
+                  opacity = 0.42;
+                  zIndex = 10;
+                } else if (isPrev) {
+                  transform = "translate3d(-44px, -6px, -60px) scale(0.92) rotateY(8deg)";
+                  opacity = 0;
+                  zIndex = 5;
+                }
+
+                return (
+                  <div
+                    key={scene.id}
+                    onClick={!isFront ? () => setActiveIdx(idx) : undefined}
+                    style={{ transform, opacity, zIndex }}
+                    className={`absolute inset-0 rounded-[2rem] p-[1.5px] transition-all duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      isFront
+                        ? "bg-[linear-gradient(135deg,rgba(255,255,255,0.68)_0%,rgba(148,163,184,0.25)_26%,rgba(255,255,255,0.8)_50%,rgba(252,170,48,0.62)_76%,rgba(203,213,225,0.4)_100%)] shadow-[0_32px_90px_rgba(0,0,0,0.75)]"
+                        : "cursor-pointer bg-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+                    }`}
+                  >
+                    <div className="relative h-full w-full overflow-hidden rounded-[calc(2rem-1.5px)] bg-[#111216]">
                       <Image
                         src={scene.image}
                         alt={scene.alt}
                         fill
                         priority={idx === 0}
                         className={`object-cover object-center transition-transform duration-[5200ms] ease-out ${
-                          isActive ? "scale-105" : "scale-100"
+                          isFront ? "scale-105" : "scale-100 brightness-75"
                         }`}
-                        sizes="(max-width: 1024px) 90vw, 50vw"
+                        sizes="(max-width: 1024px) 90vw, 48vw"
                       />
+
+                      {/* Diagonal Chrome Light Sweep on Active Card */}
+                      {isFront && (
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 overflow-hidden"
+                        >
+                          <div
+                            className="h-full w-1/3 motion-safe:animate-[partnerGoldSweep_5.5s_ease-in-out_infinite]"
+                            style={{
+                              background:
+                                "linear-gradient(110deg, transparent 15%, rgba(255,255,255,0.18) 48%, rgba(252,170,48,0.16) 55%, transparent 85%)",
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20"
+                      />
+
+                      {isFront && (
+                        <>
+                          {/* Top Scene Counter Pill */}
+                          <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-black/55 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-xl">
+                            <span className="tabular-nums text-[#FCAA30]">0{activeIdx + 1}</span>
+                            <span className="text-white/40">/</span>
+                            <span className="tabular-nums text-white/70">0{total}</span>
+                            <span className="mx-1 h-3 w-px bg-white/20" />
+                            <span>{current.thumbLabel}</span>
+                          </div>
+
+                          {/* Stage Prev / Next Chrome Controls */}
+                          <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                goPrev();
+                              }}
+                              aria-label="Previous scene"
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                goNext();
+                              }}
+                              aria-label="Next scene"
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </button>
+                          </div>
+
+                          {/* Live Animated Slide Progress Bar */}
+                          <div className="absolute bottom-5 left-4 right-28 z-30 h-1 overflow-hidden rounded-full bg-white/20">
+                            <span
+                              key={`stage-${activeIdx}-${paused ? "p" : "r"}`}
+                              className={`block h-full rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FDE6B6] to-[#FCAA30] ${
+                                paused ? "w-full" : "animate-slide-progress"
+                              }`}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
-                  );
-                })}
-
-                {/* Top Specular Chrome Edge & Bottom Vignette */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-0 top-0 z-20 h-20 bg-gradient-to-b from-white/15 to-transparent"
-                />
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/10 to-black/20"
-                />
-
-                {/* Top Scene Counter Pill */}
-                <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-black/55 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-xl">
-                  <span className="tabular-nums text-[#FCAA30]">0{activeIdx + 1}</span>
-                  <span className="text-white/40">/</span>
-                  <span className="tabular-nums text-white/70">0{HERO_SCENES.length}</span>
-                  <span className="mx-1 h-3 w-px bg-white/20" />
-                  <span>{current.thumbLabel}</span>
-                </div>
-
-                {/* Stage Prev / Next Chrome Controls */}
-                <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={goPrev}
-                    aria-label="Previous scene"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    aria-label="Next scene"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-
-                {/* Live Animated Slide Progress Bar */}
-                <div className="absolute bottom-5 left-4 right-28 z-30 h-1 overflow-hidden rounded-full bg-white/20">
-                  <span
-                    key={`stage-${activeIdx}-${paused ? "p" : "r"}`}
-                    className={`block h-full rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FDE6B6] to-[#FCAA30] ${
-                      paused ? "w-full" : "animate-slide-progress"
-                    }`}
-                  />
-                </div>
-              </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
+        </div>
+
+        {/* Animated Kinetic Scroll Cue */}
+        <div className="mt-6 flex justify-center">
+          <a
+            href="#ecosystem-partners"
+            aria-label="Scroll to explore"
+            className="group inline-flex flex-col items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/55 transition-colors hover:text-[#FCAA30]"
+          >
+            <span>Scroll</span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] transition-colors group-hover:border-[#FCAA30]/60">
+              <ChevronDown className="h-3.5 w-3.5 animate-bounce text-[#FCAA30]" />
+            </span>
+          </a>
         </div>
       </div>
 
