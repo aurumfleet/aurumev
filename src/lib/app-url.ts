@@ -12,5 +12,7 @@ export function getAppUrl(): string {
     return vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
   }
 
-  return "http://localhost:3000";
+  return process.env.NODE_ENV === "production"
+    ? "https://www.aurumfleets.com"
+    : "http://localhost:3000";
 }

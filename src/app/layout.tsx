@@ -35,20 +35,46 @@ export const metadata: Metadata = {
     "Electric two-wheeler fleet solutions",
     "EV fleet management",
   ],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: ["/favicon.ico"],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     type: "website",
+    locale: "en_IN",
+    url: appUrl,
     siteName: "AURUM EV",
     title: "AURUM EV | Driven by Trust. Powered by Tomorrow.",
     description:
       "Electric two-wheeler rentals, delivery partner EV plans, corporate fleet solutions, and mobility partnerships by Aurum Fleet Solutions Pvt Ltd.",
-    images: ["/images/aurum-ev-studio.png"],
+    images: [
+      {
+        url: "/images/aurum-og-preview.jpg",
+        width: 1200,
+        height: 630,
+        alt: "AURUM EV – Powering India's Delivery Future with Electric Mobility",
+        type: "image/jpeg",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AURUM EV | Driven by Trust. Powered by Tomorrow.",
     description:
       "Smart electric two-wheeler rental and fleet management ecosystem by Aurum Fleet Solutions Pvt Ltd.",
-    images: ["/images/aurum-ev-studio.png"],
+    images: [
+      {
+        url: "/images/aurum-og-preview.jpg",
+        width: 1200,
+        height: 630,
+        alt: "AURUM EV – Powering India's Delivery Future with Electric Mobility",
+      },
+    ],
   },
 };
 
