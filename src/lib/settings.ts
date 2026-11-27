@@ -1,4 +1,5 @@
 import { query, queryOne } from "./db";
+import { assertStaffSession, type AuthSession } from "./auth";
 
 export interface ContactSettings {
   phone: string;
@@ -111,8 +112,9 @@ export async function updateSiteSetting(
   key: string,
   value: unknown,
   description: string,
-  updatedBy: string | null
+  session: AuthSession | null | undefined
 ): Promise<void> {
+  assertStaffSession(session);
   await query(
     `INSERT INTO site_settings (key, value, description, updated_by)
      VALUES ($1, $2::jsonb, $3, $4)
@@ -121,6 +123,6 @@ export async function updateSiteSetting(
        description = COALESCE(EXCLUDED.description, site_settings.description),
        updated_by = EXCLUDED.updated_by,
        updated_at = NOW()`,
-    [key, JSON.stringify(value), description, updatedBy]
+    [key, JSON.stringify(value), description, session.userId]
   );
 }

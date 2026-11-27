@@ -46,9 +46,7 @@ export async function POST(request: Request) {
       },
       201
     );
-  } catch (err) {
-    return jsonError("Failed to submit enquiry", 500, {
-      message: err instanceof Error ? err.message : "Unknown error",
-    });
+  } catch {
+    return jsonError("Failed to submit enquiry", 500);
   }
 }

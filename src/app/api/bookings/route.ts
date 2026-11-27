@@ -1,4 +1,5 @@
 import { withTransaction } from "@/lib/db";
+import { getSessionFromRequest } from "@/lib/auth";
 import { bookingCreateSchema } from "@/lib/validation";
 import { jsonOk, jsonError } from "@/lib/api-helpers";
 
@@ -15,6 +16,7 @@ export async function POST(request: Request) {
       return jsonError("End date must be on or after start date.", 400);
     }
 
+    const session = await getSessionFromRequest(request);
     const bookingNumber = `BK-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
     const created = await withTransaction(async (tx) => {
@@ -26,17 +28,38 @@ export async function POST(request: Request) {
         throw new Error("Selected service location is not currently active.");
       }
 
+      if (d.vehicleModelId) {
+        const model = await tx.query<{ id: string }>(
+          "SELECT id FROM vehicle_models WHERE id = $1 AND is_published = TRUE",
+          [d.vehicleModelId]
+        );
+        if (model.rows.length === 0) {
+          throw new Error("Selected vehicle model is not available.");
+        }
+      }
+
+      if (d.rentalPlanId) {
+        const plan = await tx.query<{ id: string }>(
+          "SELECT id FROM rental_plans WHERE id = $1 AND is_active = TRUE",
+          [d.rentalPlanId]
+        );
+        if (plan.rows.length === 0) {
+          throw new Error("Selected rental plan is not currently active.");
+        }
+      }
+
       const bRes = await tx.query<Record<string, unknown>>(
         `INSERT INTO bookings (
-          booking_number, location_id, vehicle_model_id, rental_plan_id,
+          booking_number, customer_id, location_id, vehicle_model_id, rental_plan_id,
           vehicle_category, duration_type, start_date, end_date,
           customer_name, customer_email, customer_phone, terms_accepted, status, admin_notes
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7::date, $8::date, $9, $10, $11, TRUE, 'new_request', $12
+          $1, $2, $3, $4, $5, $6, $7, $8::date, $9::date, $10, $11, $12, TRUE, 'new_request', $13
         )
-        RETURNING *`,
+        RETURNING id, booking_number, status, start_date, end_date, vehicle_category, duration_type`,
         [
           bookingNumber,
+          session?.userId ?? null,
           d.locationId,
           d.vehicleModelId || null,
           d.rentalPlanId || null,
@@ -78,9 +101,15 @@ export async function POST(request: Request) {
       201
     );
   } catch (err) {
+    const businessRules = new Set([
+      "Selected service location is not currently active.",
+      "Selected vehicle model is not available.",
+      "Selected rental plan is not currently active.",
+    ]);
+    const isBusinessRule = err instanceof Error && businessRules.has(err.message);
     return jsonError(
-      err instanceof Error ? err.message : "Failed to submit booking request",
-      400
+      isBusinessRule ? err.message : "Failed to submit booking request",
+      isBusinessRule ? 400 : 500
     );
   }
 }

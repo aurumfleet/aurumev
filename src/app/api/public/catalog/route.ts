@@ -34,9 +34,7 @@ export async function GET() {
       },
       homepage: homePage.rows[0] ?? null,
     });
-  } catch (err) {
-    return jsonError("Failed to load public catalog", 500, {
-      message: err instanceof Error ? err.message : "Unknown error",
-    });
+  } catch {
+    return jsonError("Failed to load public catalog", 500);
   }
 }

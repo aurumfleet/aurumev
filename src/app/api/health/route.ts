@@ -12,9 +12,7 @@ export async function GET() {
       database: "connected",
       timestamp: new Date().toISOString(),
     });
-  } catch (err) {
-    return jsonError("Database health check failed", 500, {
-      message: err instanceof Error ? err.message : "Unknown error",
-    });
+  } catch {
+    return jsonError("Database health check failed", 500);
   }
 }

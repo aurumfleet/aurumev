@@ -5,8 +5,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { InvestorEnquiryForm } from "@/components/InvestorEnquiryForm";
 import { InvestmentCalculatorGlass } from "@/components/InvestmentCalculatorGlass";
+import { FleetTiersSchedule } from "@/components/FleetTiersSchedule";
 import {
-  ALL_COMPUTED_PLANS,
   INVESTMENT_MODEL_CONSTANTS,
   formatINR,
   type DefinedEvPlanUnits,
@@ -120,55 +120,10 @@ export default async function InvestPage({
           </div>
         </section>
 
-        {/* Complete 5-Tier Reference Table & Operational Pillars */}
+        {/* Complete 5-Tier Brushed-Chrome Schedule & Operational Pillars */}
         <section className="pb-14">
           <div className="aurum-container space-y-10">
-            <div className="overflow-hidden rounded-3xl bg-white shadow-card">
-              <div className="border-b border-[#EBEBEB] px-6 py-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#047857]">
-                  Investment Plans &amp; Illustrated Schedules
-                </p>
-                <h2 className="mt-1 font-display text-2xl font-semibold text-[#0F0F0F]">
-                  2 EVs to 50 EVs Plan Breakdown
-                </h2>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-sm tabular-nums">
-                  <thead>
-                    <tr className="border-b border-[#EBEBEB] bg-[#F8FAFC] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#475569]">
-                      <th className="px-5 py-3.5">EV Units</th>
-                      <th className="px-4 py-3.5">Investment (₹66,500/EV)</th>
-                      <th className="px-4 py-3.5">GST 5% (₹3,500/EV)</th>
-                      <th className="px-4 py-3.5">Total Investment</th>
-                      <th className="px-4 py-3.5">Per EV Rental</th>
-                      <th className="px-4 py-3.5">Investor Cut / Mo</th>
-                      <th className="px-4 py-3.5">Total Rental (48M)</th>
-                      <th className="px-5 py-3.5 text-right">Net Surplus</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F0F0F0]">
-                    {ALL_COMPUTED_PLANS.map((plan) => (
-                      <tr key={plan.evUnits} className="hover:bg-[#F8FAFC]">
-                        <td className="px-5 py-3.5 font-bold text-[#0B1F3A]">{plan.evUnits}</td>
-                        <td className="px-4 py-3.5 text-[#334155]">{formatINR(plan.investment)}</td>
-                        <td className="px-4 py-3.5 text-[#64748B]">{formatINR(plan.gst)}</td>
-                        <td className="px-4 py-3.5 font-semibold text-[#0B1F3A]">
-                          {formatINR(plan.totalInvestment)}
-                        </td>
-                        <td className="px-4 py-3.5">{formatINR(plan.rentalPerEvMonthly)}</td>
-                        <td className="px-4 py-3.5 font-semibold">{formatINR(plan.monthlyRental)}</td>
-                        <td className="px-4 py-3.5 font-semibold">
-                          {formatINR(plan.totalRental48Months)}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-bold text-[#047857]">
-                          {formatINR(plan.projectedRentalSurplus)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <FleetTiersSchedule />
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {[
