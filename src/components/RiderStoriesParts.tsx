@@ -89,8 +89,8 @@ export function CinematicIntroBanner() {
         const rect = wrap.getBoundingClientRect();
         const vh = window.innerHeight || 900;
         const progress = Math.max(-1, Math.min(1, (vh / 2 - (rect.top + rect.height / 2)) / vh));
-        const shiftY = progress * 24;
-        bg.style.transform = `translate3d(0, ${shiftY.toFixed(1)}px, 0) scale(1.06)`;
+        const shiftY = progress * 16;
+        bg.style.transform = `translate3d(0, ${shiftY.toFixed(1)}px, 0) scale(1.08)`;
       }
       rafId = 0;
     };
@@ -122,15 +122,15 @@ export function CinematicIntroBanner() {
       <div className="relative h-[480px] w-full overflow-hidden sm:h-[520px] lg:h-[560px]">
         <div
           ref={bgRef}
-          className="pointer-events-none absolute -inset-y-8 inset-x-0"
-          style={{ transform: "translate3d(0, 0, 0) scale(1.06)" }}
+          className="pointer-events-none absolute -inset-y-10 inset-x-0"
+          style={{ transform: "translate3d(0, 0, 0) scale(1.08)" }}
         >
           <Image
             src={RIDER_SECTION_COPY.cinematicBannerImage}
             alt={RIDER_SECTION_COPY.cinematicBannerAlt}
             fill
             sizes="(max-width: 768px) 100vw, 1360px"
-            className="object-cover object-center sm:object-[62%_38%]"
+            className="object-cover object-center sm:object-[64%_35%]"
             priority
           />
         </div>
