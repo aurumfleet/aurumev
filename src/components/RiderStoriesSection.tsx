@@ -7,7 +7,6 @@ import {
   CinematicIntroBanner,
   RiderHighlightsStrip,
   ShareStoryCtaBanner,
-  VideoStoriesShowcase,
 } from "@/components/RiderStoriesParts";
 import {
   RIDER_SECTION_COPY,
@@ -393,9 +392,6 @@ export function RiderStoriesSection({
             </div>
           </RevealOnScroll>
         </div>
-
-        {/* PART 4 — VIDEO TESTIMONIAL EXPERIENCE */}
-        <VideoStoriesShowcase />
 
         {/* PART 5 — RIDER EXPERIENCE HIGHLIGHTS */}
         <RiderHighlightsStrip />
