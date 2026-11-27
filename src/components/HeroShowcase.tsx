@@ -514,51 +514,6 @@ export function HeroShowcase() {
             </div>
           </div>
         </div>
-
-        {/* Bottom Minimalist Luxury Segmented Progress Capsule */}
-        <div className="mt-9 flex justify-center">
-          <div
-            role="tablist"
-            aria-label="Hero showcase scenes"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/55 px-3 py-2 shadow-[0_16px_44px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-2xl"
-          >
-            {HERO_SCENES.map((s, idx) => {
-              const isActive = idx === activeIdx;
-              return (
-                <button
-                  key={s.id}
-                  role="tab"
-                  aria-selected={isActive}
-                  type="button"
-                  onClick={() => setActiveIdx(idx)}
-                  aria-label={`Select scene ${idx + 1}: ${s.thumbLabel}`}
-                  className={`group relative flex items-center overflow-hidden rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                    isActive
-                      ? "h-8 gap-2 border border-[#FCAA30]/60 bg-white/[0.12] px-3.5 shadow-[0_0_20px_rgba(252,170,48,0.22)]"
-                      : "h-2.5 w-8 bg-white/25 hover:w-11 hover:bg-white/45"
-                  }`}
-                >
-                  {isActive && (
-                    <>
-                      <span
-                        key={`cap-${activeIdx}-${paused ? "p" : "r"}`}
-                        className={`pointer-events-none absolute inset-y-0 left-0 bg-gradient-to-r from-[#FCAA30]/25 via-[#FCAA30]/15 to-transparent ${
-                          paused ? "w-full" : "animate-slide-progress"
-                        }`}
-                      />
-                      <span className="relative z-10 text-[10px] font-bold tabular-nums text-[#FCAA30]">
-                        0{idx + 1}
-                      </span>
-                      <span className="relative z-10 whitespace-nowrap text-xs font-semibold tracking-tight text-white">
-                        {s.thumbLabel}
-                      </span>
-                    </>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
       </div>
 
       {/* MOBILE: Centered Unified Copy + 3D Floating Card (< md) */}
