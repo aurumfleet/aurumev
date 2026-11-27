@@ -9,21 +9,25 @@ interface HeroPointerState {
   pressPulse: number;
 }
 
-interface NodeParticle {
+interface FlowParticle {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
-  radius: number;
+  speed: number;
+  size: number;
   isGold: boolean;
   phase: number;
 }
 
-interface LightStreak {
+interface TrailPoint {
   x: number;
   y: number;
-  length: number;
-  speed: number;
+  age: number;
+}
+
+interface ShockWave {
+  x: number;
+  y: number;
+  radius: number;
   alpha: number;
 }
 
@@ -48,37 +52,23 @@ export function HeroInteractiveBackground({
     let dpr = 1;
     let isVisible = true;
     let rafId = 0;
+    let prevPress = 0;
 
-    const nodes: NodeParticle[] = [];
-    const streaks: LightStreak[] = [];
+    const particles: FlowParticle[] = [];
+    const trail: TrailPoint[] = [];
+    const waves: ShockWave[] = [];
 
-    const seedScene = () => {
-      nodes.length = 0;
-      streaks.length = 0;
-
-      const count = width < 768 ? 28 : 54;
+    const seed = () => {
+      particles.length = 0;
+      const count = width < 768 ? 24 : 44;
       for (let i = 0; i < count; i++) {
-        const angle = (i * 2.39996) % (Math.PI * 2);
-        const speed = 0.18 + (i % 5) * 0.06;
-        nodes.push({
-          x: ((i * 137.5) % Math.max(width, 1)),
-          y: ((i * 89.3) % Math.max(height, 1)),
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          radius: i % 4 === 0 ? 2.1 : 1.35,
+        particles.push({
+          x: (i * 173.3) % Math.max(width, 1),
+          y: height * (0.12 + ((i * 0.071) % 0.78)),
+          speed: 0.45 + (i % 5) * 0.18,
+          size: i % 4 === 0 ? 2.2 : 1.35,
           isGold: i % 3 !== 0,
-          phase: i * 0.7,
-        });
-      }
-
-      const streakCount = width < 768 ? 3 : 6;
-      for (let i = 0; i < streakCount; i++) {
-        streaks.push({
-          x: ((i * 290) % Math.max(width, 1)),
-          y: height * (0.18 + ((i * 0.17) % 0.68)),
-          length: 90 + (i % 3) * 65,
-          speed: 0.75 + (i % 4) * 0.35,
-          alpha: 0.08 + (i % 3) * 0.04,
+          phase: i * 0.65,
         });
       }
     };
@@ -94,8 +84,7 @@ export function HeroInteractiveBackground({
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      seedScene();
+      seed();
     };
 
     resize();
@@ -112,103 +101,153 @@ export function HeroInteractiveBackground({
 
     const render = () => {
       if (isVisible && width > 0 && height > 0) {
-        clock += 0.016;
+        clock += 0.015;
         ctx.clearRect(0, 0, width, height);
 
         const p = pointerRef.current;
         const mx = p.curX * width;
         const my = p.curY * height;
-        const linkDist = width < 768 ? 110 : 145;
-        const cursorRadius = width < 768 ? 140 : 210;
 
-        // 1. Subtle horizontal electric speed-light streaks
-        for (const s of streaks) {
-          s.x += s.speed;
-          if (s.x - s.length > width) {
-            s.x = -s.length;
+        // Detect click pulse edge to spawn electromagnetic wave
+        if (p.pressPulse > 0.85 && prevPress <= 0.85 && p.inside) {
+          waves.push({ x: mx, y: my, radius: 10, alpha: 0.75 });
+          if (waves.length > 4) waves.shift();
+        }
+        prevPress = p.pressPulse;
+
+        // Record cursor trail
+        if (p.inside) {
+          trail.push({ x: mx, y: my, age: 0 });
+          if (trail.length > 22) trail.shift();
+        }
+
+        // 1. Sculpted Aerodynamic Magnetic Ribbons (bend toward/around cursor)
+        const ribbonCount = 5;
+        const step = width < 768 ? 28 : 22;
+
+        for (let r = 0; r < ribbonCount; r++) {
+          const baseY = height * (0.24 + r * 0.14);
+          const isGoldRibbon = r % 2 === 0;
+          const grad = ctx.createLinearGradient(0, baseY - 40, width, baseY + 40);
+          if (isGoldRibbon) {
+            grad.addColorStop(0, "rgba(252,170,48,0)");
+            grad.addColorStop(0.25, "rgba(252,170,48,0.16)");
+            grad.addColorStop(0.55, "rgba(253,230,182,0.26)");
+            grad.addColorStop(0.85, "rgba(252,170,48,0.14)");
+            grad.addColorStop(1, "rgba(252,170,48,0)");
+          } else {
+            grad.addColorStop(0, "rgba(203,213,225,0)");
+            grad.addColorStop(0.3, "rgba(203,213,225,0.14)");
+            grad.addColorStop(0.6, "rgba(255,255,255,0.2)");
+            grad.addColorStop(1, "rgba(203,213,225,0)");
           }
-          const grad = ctx.createLinearGradient(s.x - s.length, s.y, s.x, s.y);
-          grad.addColorStop(0, "rgba(252,170,48,0)");
-          grad.addColorStop(0.6, `rgba(203,213,225,${(s.alpha * 0.65).toFixed(3)})`);
-          grad.addColorStop(1, `rgba(252,170,48,${s.alpha.toFixed(3)})`);
+
           ctx.strokeStyle = grad;
-          ctx.lineWidth = 1;
+          ctx.lineWidth = r === 2 ? 1.8 : 1.1;
           ctx.beginPath();
-          ctx.moveTo(s.x - s.length, s.y);
-          ctx.lineTo(s.x, s.y);
+
+          for (let x = 0; x <= width + step; x += step) {
+            const wave1 = Math.sin(x * 0.0045 + clock * (1.05 + r * 0.14) + r * 1.3) * 26;
+            const wave2 = Math.cos(x * 0.009 - clock * 0.7 + r) * 12;
+            let y = baseY + wave1 + wave2;
+
+            // Cursor magnetic field deflection
+            if (p.inside) {
+              const dx = x - mx;
+              const dy = y - my;
+              const dist = Math.hypot(dx, dy);
+              const influenceRadius = 220;
+              if (dist < influenceRadius) {
+                const factor = Math.pow(1 - dist / influenceRadius, 2);
+                const pushDir = dy >= 0 ? 1 : -1;
+                y += pushDir * factor * (48 + p.pressPulse * 34);
+              }
+            }
+
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
           ctx.stroke();
         }
 
-        // 2. Update particles + cursor magnetic wave
-        for (const n of nodes) {
-          n.x += n.vx;
-          n.y += n.vy;
+        // 2. Flowing Charge Particles riding the field + cursor filaments
+        const cursorRadius = width < 768 ? 140 : 200;
+        for (const pt of particles) {
+          pt.x += pt.speed;
+          if (pt.x > width + 16) pt.x = -16;
 
-          if (n.x < -10) n.x = width + 10;
-          if (n.x > width + 10) n.x = -10;
-          if (n.y < -10) n.y = height + 10;
-          if (n.y > height + 10) n.y = -10;
+          const driftY = Math.sin(pt.x * 0.006 + clock + pt.phase) * 0.35;
+          pt.y += driftY;
+
+          let drawX = pt.x;
+          let drawY = pt.y;
+          let near = false;
 
           if (p.inside) {
-            const dx = n.x - mx;
-            const dy = n.y - my;
+            const dx = pt.x - mx;
+            const dy = pt.y - my;
             const dist = Math.hypot(dx, dy);
-            if (dist > 1 && dist < cursorRadius) {
-              const force = (1 - dist / cursorRadius) * (0.45 + p.pressPulse * 1.4);
-              n.x += (dx / dist) * force * 1.4;
-              n.y += (dy / dist) * force * 1.4;
-            }
-          }
-        }
+            if (dist < cursorRadius && dist > 1) {
+              near = true;
+              const pull = (1 - dist / cursorRadius) * 18;
+              drawX -= (dx / dist) * pull;
+              drawY -= (dy / dist) * pull;
 
-        // 3. Connect nearby nodes with fine gold/chrome filaments
-        for (let i = 0; i < nodes.length; i++) {
-          const a = nodes[i];
-          for (let j = i + 1; j < nodes.length; j++) {
-            const b = nodes[j];
-            const dx = a.x - b.x;
-            const dy = a.y - b.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < linkDist) {
-              const alpha = (1 - dist / linkDist) * 0.22;
-              ctx.strokeStyle =
-                a.isGold || b.isGold
-                  ? `rgba(252,170,48,${alpha.toFixed(3)})`
-                  : `rgba(203,213,225,${alpha.toFixed(3)})`;
-              ctx.lineWidth = 0.8;
+              const lineAlpha = (1 - dist / cursorRadius) * 0.36;
+              ctx.strokeStyle = `rgba(252,170,48,${lineAlpha.toFixed(3)})`;
+              ctx.lineWidth = 0.85;
               ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(b.x, b.y);
+              ctx.moveTo(mx, my);
+              ctx.lineTo(drawX, drawY);
               ctx.stroke();
             }
           }
 
-          // 4. Cursor-reactive luminous filaments + node glow
-          const dxM = a.x - mx;
-          const dyM = a.y - my;
-          const distM = Math.hypot(dxM, dyM);
-          const nearCursor = p.inside && distM < cursorRadius;
+          const twinkle = 0.45 + 0.55 * Math.sin(clock * 2.5 + pt.phase);
+          const alpha = near ? 0.95 : 0.3 + twinkle * 0.4;
+          ctx.fillStyle = pt.isGold
+            ? `rgba(252,170,48,${alpha.toFixed(3)})`
+            : `rgba(226,232,240,${alpha.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(drawX, drawY, near ? pt.size * 1.6 : pt.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-          if (nearCursor) {
-            const cAlpha = (1 - distM / cursorRadius) * 0.42;
-            ctx.strokeStyle = `rgba(252,170,48,${cAlpha.toFixed(3)})`;
-            ctx.lineWidth = 1;
+        // 3. Silky Liquid-Gold Cursor Comet Trail
+        for (let i = trail.length - 1; i >= 0; i--) {
+          trail[i].age += 1;
+          if (trail[i].age > 20) {
+            trail.splice(i, 1);
+            continue;
+          }
+          if (i > 0) {
+            const prev = trail[i - 1];
+            const cur = trail[i];
+            const life = 1 - cur.age / 20;
+            ctx.strokeStyle = `rgba(252,170,48,${(life * 0.42).toFixed(3)})`;
+            ctx.lineWidth = Math.max(0.5, life * 2.6);
+            ctx.lineCap = "round";
             ctx.beginPath();
-            ctx.moveTo(mx, my);
-            ctx.lineTo(a.x, a.y);
+            ctx.moveTo(prev.x, prev.y);
+            ctx.lineTo(cur.x, cur.y);
             ctx.stroke();
           }
+        }
 
-          const twinkle = 0.55 + 0.45 * Math.sin(clock * 2.2 + a.phase);
-          const nodeAlpha = nearCursor ? 0.95 : 0.35 + twinkle * 0.35;
-          const nodeSize = nearCursor ? a.radius * 1.55 : a.radius;
-
-          ctx.fillStyle = a.isGold
-            ? `rgba(252,170,48,${nodeAlpha.toFixed(3)})`
-            : `rgba(226,232,240,${nodeAlpha.toFixed(3)})`;
+        // 4. Expanding Electromagnetic Click Shockwaves
+        for (let i = waves.length - 1; i >= 0; i--) {
+          const w = waves[i];
+          w.radius += 6.5;
+          w.alpha *= 0.93;
+          if (w.alpha < 0.02) {
+            waves.splice(i, 1);
+            continue;
+          }
+          ctx.strokeStyle = `rgba(252,170,48,${w.alpha.toFixed(3)})`;
+          ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.arc(a.x, a.y, nodeSize, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.arc(w.x, w.y, w.radius, 0, Math.PI * 2);
+          ctx.stroke();
         }
       }
 
