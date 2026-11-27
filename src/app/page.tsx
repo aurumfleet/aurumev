@@ -6,8 +6,6 @@ import { HeroShowcase } from "@/components/HeroShowcase";
 import { AboutAurumSection } from "@/components/AboutAurumSection";
 import { PartnersHolographicSection } from "@/components/PartnersHolographicSection";
 import { WhyChooseAurumSection } from "@/components/WhyChooseAurumSection";
-import { HowItWorksInvestmentSection } from "@/components/HowItWorksInvestmentSection";
-import { OperationsShowcaseTabs } from "@/components/OperationsShowcaseTabs";
 import { FaqAccordion, type FaqItem } from "@/components/FaqAccordion";
 import { query } from "@/lib/db";
 import { getSiteSettingsBundle } from "@/lib/settings";
@@ -64,12 +62,6 @@ export default async function HomePage() {
 
         {/* SECTION 04 – WHY CHOOSE AURUM */}
         <WhyChooseAurumSection />
-
-        {/* SECTION 05 – HOW IT WORKS */}
-        <HowItWorksInvestmentSection />
-
-        {/* 5. INTERACTIVE ROLE TABS (Riders | Business Fleets | Investment Model) */}
-        <OperationsShowcaseTabs />
 
         {/* 6. SUSTAINABILITY & VERIFIED TESTIMONIALS */}
         <section className="border-t border-[#EBEBEB] bg-[#F4F4F4] py-16">
