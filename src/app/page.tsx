@@ -1,10 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  MapPin,
-  Sparkles,
-} from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroShowcase } from "@/components/HeroShowcase";
@@ -12,39 +7,21 @@ import { AboutAurumSection } from "@/components/AboutAurumSection";
 import { PartnersHolographicSection } from "@/components/PartnersHolographicSection";
 import { WhyChooseAurumSection } from "@/components/WhyChooseAurumSection";
 import { HowItWorksInvestmentSection } from "@/components/HowItWorksInvestmentSection";
-import { FleetLineupCarousel } from "@/components/FleetLineupCarousel";
 import { OperationsShowcaseTabs } from "@/components/OperationsShowcaseTabs";
-import { AurumEcosystemSection } from "@/components/AurumEcosystemSection";
-import { SavingsCalculator } from "@/components/SavingsCalculator";
-import { LetsConnectSection } from "@/components/LetsConnectSection";
 import { FaqAccordion, type FaqItem } from "@/components/FaqAccordion";
-import { RevealOnScroll } from "@/components/MotionPrimitives";
-import type { PublicLocation, PublicRentalPlan, PublicVehicleModel } from "@/components/FleetShowcase";
 import { query } from "@/lib/db";
 import { getSiteSettingsBundle } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [locationsRes, modelsRes, plansRes, vehiclesCountRes, faqsRes, testimonialsRes, settings] =
-    await Promise.all([
-      query<PublicLocation>("SELECT id, city, state, hub_name FROM locations WHERE is_active = TRUE ORDER BY city ASC"),
-      query<PublicVehicleModel>("SELECT * FROM vehicle_models WHERE is_published = TRUE ORDER BY created_at ASC"),
-      query<PublicRentalPlan>("SELECT * FROM rental_plans WHERE is_active = TRUE"),
-      query<{ model_id: string; cnt: string }>(
-        "SELECT model_id, COUNT(*)::text AS cnt FROM vehicles WHERE status = 'available' AND model_id IS NOT NULL GROUP BY model_id"
-      ),
-      query<FaqItem>("SELECT id, category, question, answer FROM faqs WHERE is_published = TRUE ORDER BY sort_order ASC LIMIT 6"),
-      query<{ id: string; customer_name: string; customer_category: string; review_text: string; city: string | null }>(
-        "SELECT id, customer_name, customer_category, review_text, city FROM testimonials WHERE approval_status = 'approved' AND is_verified = TRUE ORDER BY created_at DESC LIMIT 6"
-      ),
-      getSiteSettingsBundle(),
-    ]);
-
-  const availableCountByModel: Record<string, number> = {};
-  for (const row of vehiclesCountRes.rows) {
-    availableCountByModel[row.model_id] = Number(row.cnt);
-  }
+  const [faqsRes, testimonialsRes, settings] = await Promise.all([
+    query<FaqItem>("SELECT id, category, question, answer FROM faqs WHERE is_published = TRUE ORDER BY sort_order ASC LIMIT 6"),
+    query<{ id: string; customer_name: string; customer_category: string; review_text: string; city: string | null }>(
+      "SELECT id, customer_name, customer_category, review_text, city FROM testimonials WHERE approval_status = 'approved' AND is_verified = TRUE ORDER BY created_at DESC LIMIT 6"
+    ),
+    getSiteSettingsBundle(),
+  ]);
 
   const verifiedStats = settings.sustainabilityStats.filter((s) => s.verified);
 
@@ -94,74 +71,7 @@ export default async function HomePage() {
         {/* 5. INTERACTIVE ROLE TABS (Riders | Business Fleets | Investment Model) */}
         <OperationsShowcaseTabs />
 
-        {/* 6. VEHICLE LINEUP CAROUSEL */}
-        <FleetLineupCarousel
-          models={modelsRes.rows}
-          plans={plansRes.rows}
-          availableCountByModel={availableCountByModel}
-        />
-
-        {/* 7. AURUM ECOSYSTEM ADVANTAGES + SMART FLEET INTELLIGENCE + REFER & WHO WE ARE */}
-        <AurumEcosystemSection />
-
-        {/* 8. MATH OF SWITCHING TO EV CALCULATOR (With Interactive Distance Slider) */}
-        <SavingsCalculator />
-
-        {/* 9. ACTIVE AURUM HUBS */}
-        <section className="bg-se-stores-gradient overflow-hidden pt-20 sm:pt-24">
-          <div className="aurum-container grid items-end gap-12 lg:grid-cols-12">
-            <RevealOnScroll className="pb-16 lg:col-span-6 lg:pb-24">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#0667F4] shadow-sm">
-                <MapPin className="h-6 w-6" />
-              </div>
-              <h2 className="mt-6 font-display text-4xl font-semibold tracking-[-0.04em] text-[#0F0F0F] sm:text-[58px] sm:leading-[1.03]">
-                Active Aurum Hubs.
-              </h2>
-              <p className="mt-4 max-w-lg text-base leading-relaxed text-[#666666] sm:text-lg">
-                Operating across verified urban mobility hubs with dedicated vehicle inspection,
-                scheduled servicing, and seamless handover.
-              </p>
-
-              <div className="mt-7 flex flex-wrap gap-3">
-                {locationsRes.rows.map((loc) => (
-                  <div
-                    key={loc.id}
-                    className="rounded-2xl bg-white/90 px-4 py-3 text-sm shadow-sm backdrop-blur-sm"
-                  >
-                    <p className="font-semibold text-[#0F0F0F]">{loc.city}</p>
-                    <p className="text-xs text-[#666666]">{loc.hub_name}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8">
-                <Link href="/rentals#book" className="aurum-pill-dark">
-                  Check Hub Availability
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </RevealOnScroll>
-
-            <RevealOnScroll direction="right" className="lg:col-span-6">
-              <div className="relative aspect-[16/11] w-full overflow-hidden rounded-t-3xl border border-white/70 bg-white p-2 shadow-elevated">
-                <div className="relative h-full w-full overflow-hidden rounded-t-2xl">
-                  <Image
-                    src="/images/aurum-zepto.jpg"
-                    alt="Aurum EV operations and urban fleet support"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                  />
-                </div>
-              </div>
-            </RevealOnScroll>
-          </div>
-        </section>
-
-        {/* 10. LET'S CONNECT (Interactive Reason Selector + Live Lead Form) */}
-        <LetsConnectSection />
-
-        {/* 11. SUSTAINABILITY & VERIFIED TESTIMONIALS */}
+        {/* 6. SUSTAINABILITY & VERIFIED TESTIMONIALS */}
         <section className="border-t border-[#EBEBEB] bg-[#F4F4F4] py-16">
           <div className="aurum-container text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#13B75E]">

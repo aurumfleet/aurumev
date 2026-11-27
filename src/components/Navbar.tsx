@@ -11,18 +11,14 @@ const PRIMARY_LINKS = [
   { href: "/", label: "Home" },
   { href: "/rentals", label: "EV Rentals" },
   { href: "/riders", label: "For Riders" },
-  { href: "/business", label: "Business" },
   { href: "/invest", label: "Invest" },
-  { href: "/fleet", label: "Our Fleet" },
 ];
 
 const MORE_LINKS = [
-  { href: "/locations", label: "Service Hubs", desc: "Active cities & hub facilities" },
   { href: "/about", label: "About Us", desc: "Aurum Fleet Solutions Pvt Ltd" },
-  { href: "/how-it-works", label: "How It Works", desc: "4-step rental onboarding" },
+  { href: "/how-it-works", label: "How It Works", desc: "Simple 6-step EV investment flow" },
   { href: "/faq", label: "FAQs", desc: "Answers on rentals & plans" },
   { href: "/blog", label: "Insights & Blog", desc: "EV mobility & fleet economics" },
-  { href: "/contact", label: "Contact Us", desc: "Speak with our operations team" },
 ];
 
 export function Navbar() {
