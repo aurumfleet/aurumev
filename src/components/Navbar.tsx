@@ -11,7 +11,7 @@ const PRIMARY_LINKS = [
   { href: "/", label: "Home" },
   { href: "/rentals", label: "EV Rentals" },
   { href: "/riders", label: "For Riders" },
-  { href: "/invest", label: "Invest" },
+  { href: "/invest", label: "Investment" },
 ];
 
 const MORE_LINKS = [
