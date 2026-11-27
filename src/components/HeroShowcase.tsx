@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { RaindropGlassCanvas } from "./RaindropGlassCanvas";
 
@@ -164,8 +164,8 @@ export function HeroShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
   const ambientLightRef = useRef<HTMLDivElement>(null);
   const bgParallaxRef = useRef<HTMLDivElement>(null);
-  const centerStage3dRef = useRef<HTMLDivElement>(null);
-  const dockRef = useRef<HTMLDivElement>(null);
+  const stageCardRef = useRef<HTMLDivElement>(null);
+  const copyColRef = useRef<HTMLDivElement>(null);
   const rainPointerRef = useRef({ x: 0.5, y: 0.5, inside: false });
 
   const pointer = useRef({
@@ -178,19 +178,15 @@ export function HeroShowcase() {
     targetNx: 0,
     targetNy: 0,
     inside: false,
-    intensity: 0.45,
+    intensity: 0.5,
     pressPulse: 0,
   });
 
   useEffect(() => {
     if (introPhase === "done") return;
     introPlayedThisVisit = true;
-    const fadeTimer = window.setTimeout(() => {
-      setIntroPhase("fading");
-    }, 4400);
-    const doneTimer = window.setTimeout(() => {
-      setIntroPhase("done");
-    }, 5500);
+    const fadeTimer = window.setTimeout(() => setIntroPhase("fading"), 4400);
+    const doneTimer = window.setTimeout(() => setIntroPhase("done"), 5500);
     return () => {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(doneTimer);
@@ -222,14 +218,14 @@ export function HeroShowcase() {
       clock += 0.016;
       const p = pointer.current;
 
-      const idleNx = Math.sin(clock * 0.6) * 0.14;
+      const idleNx = Math.sin(clock * 0.65) * 0.16;
       const idleNy = Math.cos(clock * 0.45) * 0.1;
 
       const destNx = p.inside ? p.targetNx : idleNx;
       const destNy = p.inside ? p.targetNy : idleNy;
-      const destX = p.inside ? p.targetX : 0.5 + Math.sin(clock * 0.35) * 0.08;
-      const destY = p.inside ? p.targetY : 0.42 + Math.cos(clock * 0.3) * 0.05;
-      const destIntensity = p.inside ? 1 : 0.45;
+      const destX = p.inside ? p.targetX : 0.62 + Math.sin(clock * 0.35) * 0.08;
+      const destY = p.inside ? p.targetY : 0.45 + Math.cos(clock * 0.3) * 0.05;
+      const destIntensity = p.inside ? 1 : 0.5;
 
       const ease = p.inside ? 0.09 : 0.045;
       p.nx += (destNx - p.nx) * ease;
@@ -244,32 +240,30 @@ export function HeroShowcase() {
 
       if (ambientLightRef.current) {
         const pulseBoost = p.pressPulse * 0.24;
-        const a1 = (0.18 * p.intensity + pulseBoost).toFixed(3);
-        const a2 = (0.06 * p.intensity + pulseBoost * 0.5).toFixed(3);
-        ambientLightRef.current.style.background = `radial-gradient(${620 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 44%, transparent 74%)`;
+        const a1 = (0.2 * p.intensity + pulseBoost).toFixed(3);
+        const a2 = (0.07 * p.intensity + pulseBoost * 0.5).toFixed(3);
+        ambientLightRef.current.style.background = `radial-gradient(${640 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 44%, transparent 74%)`;
       }
 
       if (bgParallaxRef.current) {
-        const px = (-p.nx * 14).toFixed(2);
-        const py = (-p.ny * 10).toFixed(2);
-        bgParallaxRef.current.style.transform = `scale(1.08) translate3d(${px}px, ${py}px, 0)`;
+        const px = (-p.nx * 16).toFixed(2);
+        const py = (-p.ny * 12).toFixed(2);
+        bgParallaxRef.current.style.transform = `scale(1.1) translate3d(${px}px, ${py}px, 0)`;
       }
 
-      if (centerStage3dRef.current) {
-        const rotY = (p.nx * 4.5).toFixed(2);
-        const rotX = (-p.ny * 3.5).toFixed(2);
-        const tx = (p.nx * 8).toFixed(2);
-        const ty = (p.ny * 6).toFixed(2);
+      if (copyColRef.current) {
+        const tx = (p.nx * 4).toFixed(2);
+        const ty = (p.ny * 3).toFixed(2);
+        copyColRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+      }
+
+      if (stageCardRef.current) {
+        const rotY = (p.nx * 6 - 2).toFixed(2);
+        const rotX = (-p.ny * 5 + 1).toFixed(2);
+        const tx = (p.nx * 10).toFixed(2);
+        const ty = (p.ny * 7).toFixed(2);
         const pressZ = (-p.pressPulse * 16).toFixed(2);
-        centerStage3dRef.current.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${tx}px, ${ty}px, ${pressZ}px)`;
-      }
-
-      if (dockRef.current) {
-        const dx = (p.nx * 10).toFixed(2);
-        const dy = (p.ny * 5).toFixed(2);
-        const dRotX = (4 - p.ny * 3).toFixed(2);
-        const dRotY = (p.nx * 3.5).toFixed(2);
-        dockRef.current.style.transform = `rotateX(${dRotX}deg) rotateY(${dRotY}deg) translate3d(${dx}px, ${dy}px, 16px)`;
+        stageCardRef.current.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${tx}px, ${ty}px, ${pressZ}px)`;
       }
 
       rafId = window.requestAnimationFrame(tick);
@@ -301,6 +295,14 @@ export function HeroShowcase() {
     rainPointerRef.current.inside = false;
   }
 
+  function goPrev() {
+    setActiveIdx((prev) => (prev - 1 + HERO_SCENES.length) % HERO_SCENES.length);
+  }
+
+  function goNext() {
+    setActiveIdx((prev) => (prev + 1) % HERO_SCENES.length);
+  }
+
   const current = HERO_SCENES[activeIdx];
 
   return (
@@ -311,63 +313,46 @@ export function HeroShowcase() {
       onPointerLeave={handlePointerLeave}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative w-full overflow-hidden bg-[#121212]"
+      className="relative w-full overflow-hidden bg-[#0A0A0D]"
     >
-      {/* Full-Bleed Softly Blurred Background with Unique 3D Depth Flip Transitions */}
+      {/* Ambient Blurred Background Wash Synced to Active Scene */}
       <div
         ref={bgParallaxRef}
-        className="hero-perspective pointer-events-none absolute inset-0 will-change-transform"
-        style={{ transform: "scale(1.08)" }}
+        className="pointer-events-none absolute inset-0 will-change-transform"
+        style={{ transform: "scale(1.1)" }}
       >
-        {HERO_SCENES.map((scene, idx) => {
-          const isActive = idx === activeIdx;
-          const isPrev = idx === (activeIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length;
-          return (
-            <div
-              key={scene.id}
-              style={{
-                transform: isActive
-                  ? "rotateY(0deg) translateZ(0px) scale(1.03)"
-                  : isPrev
-                    ? "rotateY(-12deg) translateZ(-120px) scale(1.14)"
-                    : "rotateY(12deg) translateZ(-80px) scale(1.1)",
-              }}
-              className={`absolute inset-0 transition-all duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                isActive ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <Image
-                src={scene.image}
-                alt={scene.alt}
-                fill
-                priority={idx === 0}
-                className={`scale-105 object-cover object-center transition-[filter] duration-1000 ease-out ${
-                  introPhase === "active"
-                    ? "blur-[9px] brightness-90"
-                    : introPhase === "fading"
-                      ? "blur-[5px] brightness-95"
-                      : "blur-[3px] brightness-100"
-                }`}
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/80" />
-            </div>
-          );
-        })}
+        {HERO_SCENES.map((scene, idx) => (
+          <div
+            key={scene.id}
+            className={`absolute inset-0 transition-opacity duration-[1200ms] ease-out ${
+              idx === activeIdx ? "opacity-45" : "opacity-0"
+            }`}
+          >
+            <Image
+              src={scene.image}
+              alt=""
+              fill
+              priority={idx === 0}
+              className="scale-110 object-cover object-center blur-2xl brightness-75"
+              sizes="100vw"
+            />
+          </div>
+        ))}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_70%_45%,rgba(10,10,13,0.45)_0%,rgba(10,10,13,0.92)_70%,#0A0A0D_100%)]" />
       </div>
 
-      {/* Dual Concentric 3D Orbital Chrome & Gold Halo */}
+      {/* Subtle Orbital Chrome + Gold Halo Behind Stage */}
       <div
         aria-hidden="true"
-        className="hero-perspective pointer-events-none absolute inset-0 z-[5] hidden items-center justify-center md:flex"
+        className="pointer-events-none absolute -right-24 top-1/2 z-[4] hidden -translate-y-1/2 items-center justify-center lg:flex"
       >
         <div className="relative flex items-center justify-center">
-          <div className="h-[760px] w-[760px] rounded-full border border-white/[0.08] animate-[heroOrbit_38s_linear_infinite_reverse]" />
-          <div className="absolute h-[580px] w-[580px] rounded-full border border-[#FCAA30]/20 animate-[heroOrbit_24s_linear_infinite]" />
+          <div className="h-[680px] w-[680px] rounded-full border border-white/[0.06] animate-[heroOrbit_38s_linear_infinite_reverse]" />
+          <div className="absolute h-[500px] w-[500px] rounded-full border border-[#FCAA30]/15 animate-[heroOrbit_24s_linear_infinite]" />
         </div>
       </div>
 
-      {/* Intro-Only Fast 3D Rain + Crystal Water Drops on Glass */}
+      {/* Intro-Only 3D Rain + Crystal Water Drops */}
       {introPhase !== "done" && (
         <RaindropGlassCanvas
           imageSrc={current.image}
@@ -376,50 +361,46 @@ export function HeroShowcase() {
         />
       )}
 
-      {/* Warm Champagne Optical Studio Glow */}
+      {/* Pointer-Tracked Champagne Optical Glow */}
       <div
         ref={ambientLightRef}
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[7] hidden md:block"
       />
 
-      {/* Desktop Centered Unified Copy + 3D Coverflow Filmstrip (md+) */}
-      <div className="hero-perspective relative z-10 hidden min-h-[92vh] flex-col justify-between pb-10 pt-24 md:flex">
-        {/* Static Rock-Solid Unified Headline, Subheadline & Two CTAs */}
-        <div className="aurum-container my-auto flex w-full flex-col items-center text-center">
-          <div
-            ref={centerStage3dRef}
-            className="preserve-3d max-w-4xl will-change-transform"
-          >
-            {/* Dark Anodized Chrome Eyebrow Badge */}
-            <div className="relative mx-auto inline-flex items-center gap-2.5 overflow-hidden rounded-full border border-white/20 bg-black/50 px-4 py-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.22)] backdrop-blur-xl">
+      {/* DESKTOP: Split Editorial Layout + 3D Brushed-Chrome Stage Slider (md+) */}
+      <div className="aurum-container relative z-10 hidden min-h-[90vh] flex-col justify-center pb-10 pt-28 md:flex">
+        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+          {/* Left Column — Editorial Copy (Original Copy Preserved) */}
+          <div ref={copyColRef} className="lg:col-span-6 will-change-transform">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.05] px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-xl">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FCAA30] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#FCAA30]" />
               </span>
-              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#F5CF7E]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-[#F5CF7E]">
                 {HERO_CONTENT.eyebrow}
               </p>
             </div>
 
-            <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.01] tracking-[-0.04em] text-white drop-shadow-[0_16px_42px_rgba(0,0,0,0.6)] sm:text-5xl lg:text-[66px]">
+            <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.03] tracking-[-0.04em] text-white drop-shadow-[0_14px_34px_rgba(0,0,0,0.5)] xl:text-[58px]">
               Powering India&apos;s Delivery Future{" "}
               <span className="bg-gradient-to-r from-white via-[#FBE3B4] to-[#FCAA30] bg-clip-text text-transparent">
                 with Electric Mobility.
               </span>
             </h1>
 
-            <div className="mx-auto mt-6 flex max-w-xs items-center justify-center gap-3">
-              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#FCAA30]/70" />
+            <div className="mt-6 flex max-w-[180px] items-center gap-3">
+              <span className="h-px flex-1 bg-gradient-to-r from-[#FCAA30] to-transparent" />
               <span className="h-1.5 w-1.5 rotate-45 border border-[#FCAA30] bg-[#FCAA30]/40" />
-              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#FCAA30]/70" />
+              <span className="h-px flex-1 bg-gradient-to-l from-[#FCAA30]/50 to-transparent" />
             </div>
 
-            <p className="mx-auto mt-5 max-w-2xl text-base font-normal leading-relaxed text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)] lg:text-[19px]">
+            <p className="mt-5 max-w-xl text-base font-normal leading-relaxed text-[#CBD5E1] lg:text-[18px]">
               {HERO_CONTENT.subtitle}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <PremiumHeroButton
                 href={HERO_CONTENT.primaryCta.href}
                 variant="mango"
@@ -440,85 +421,158 @@ export function HeroShowcase() {
                 <ArrowUpRight className="h-4 w-4 text-[#FCAA30] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </PremiumHeroButton>
             </div>
+          </div>
 
-            {/* Minimal Chrome-Glass Factual Pillars */}
-            <div className="mt-7 inline-flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-full border border-white/15 bg-black/35 px-5 py-2 text-[11px] font-medium tracking-[0.06em] text-white/80 backdrop-blur-xl">
-              <span>Delhi &amp; Noida Hubs</span>
-              <span aria-hidden="true" className="h-3 w-px bg-white/20" />
-              <span>2 to 50 EV Fleet Tiers</span>
-              <span aria-hidden="true" className="h-3 w-px bg-white/20" />
-              <span>48-Month Structured Plans</span>
+          {/* Right Column — 3D Brushed-Chrome & Gold Showcase Slider */}
+          <div className="lg:col-span-6">
+            <div
+              ref={stageCardRef}
+              className="relative rounded-[2rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.62)_0%,rgba(148,163,184,0.22)_26%,rgba(255,255,255,0.75)_50%,rgba(252,170,48,0.55)_76%,rgba(203,213,225,0.38)_100%)] p-[1.5px] shadow-[0_32px_90px_rgba(0,0,0,0.72)] will-change-transform"
+            >
+              <div className="relative aspect-[16/11] w-full overflow-hidden rounded-[calc(2rem-1.5px)] bg-[#111216]">
+                {HERO_SCENES.map((scene, idx) => {
+                  const isActive = idx === activeIdx;
+                  const isPrev =
+                    idx === (activeIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length;
+                  return (
+                    <div
+                      key={scene.id}
+                      style={{
+                        transform: isActive
+                          ? "translate3d(0,0,0) scale(1)"
+                          : isPrev
+                            ? "translate3d(-7%,0,0) scale(1.06)"
+                            : "translate3d(7%,0,0) scale(1.04)",
+                      }}
+                      className={`absolute inset-0 transition-all duration-[1000ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                        isActive ? "z-10 opacity-100" : "z-0 opacity-0"
+                      }`}
+                    >
+                      <Image
+                        src={scene.image}
+                        alt={scene.alt}
+                        fill
+                        priority={idx === 0}
+                        className={`object-cover object-center transition-transform duration-[5200ms] ease-out ${
+                          isActive ? "scale-105" : "scale-100"
+                        }`}
+                        sizes="(max-width: 1024px) 90vw, 50vw"
+                      />
+                    </div>
+                  );
+                })}
+
+                {/* Top Specular Chrome Edge & Bottom Vignette */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 top-0 z-20 h-20 bg-gradient-to-b from-white/15 to-transparent"
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/10 to-black/20"
+                />
+
+                {/* Top Scene Counter Pill */}
+                <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-black/55 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-xl">
+                  <span className="tabular-nums text-[#FCAA30]">0{activeIdx + 1}</span>
+                  <span className="text-white/40">/</span>
+                  <span className="tabular-nums text-white/70">0{HERO_SCENES.length}</span>
+                  <span className="mx-1 h-3 w-px bg-white/20" />
+                  <span>{current.thumbLabel}</span>
+                </div>
+
+                {/* Stage Prev / Next Chrome Controls */}
+                <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={goPrev}
+                    aria-label="Previous scene"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    aria-label="Next scene"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Live Animated Slide Progress Bar */}
+                <div className="absolute bottom-5 left-4 right-28 z-30 h-1 overflow-hidden rounded-full bg-white/20">
+                  <span
+                    key={`stage-${activeIdx}-${paused ? "p" : "r"}`}
+                    className={`block h-full rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FDE6B6] to-[#FCAA30] ${
+                      paused ? "w-full" : "animate-slide-progress"
+                    }`}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom 3D Coverflow Glass Thumbnail Dock */}
-        <div className="aurum-container hero-perspective mt-6 w-full">
-          <div
-            ref={dockRef}
-            className="preserve-3d mx-auto grid w-full max-w-5xl grid-cols-5 gap-3 will-change-transform"
-          >
-            {HERO_SCENES.map((s, idx) => {
-              const isActive = idx === activeIdx;
-              const offset = idx - activeIdx;
-              const coverflowTransform = isActive
-                ? "translateZ(26px) translateY(-6px) scale(1.04) rotateY(0deg)"
-                : `translateZ(${-Math.abs(offset) * 14}px) rotateY(${Math.max(-10, Math.min(10, -offset * 5))}deg) scale(0.97)`;
-
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => setActiveIdx(idx)}
-                  aria-label={`Select scene ${idx + 1}: ${s.thumbLabel}`}
-                  style={{ transform: coverflowTransform }}
-                  className={`group relative w-full overflow-hidden rounded-2xl border p-1.5 text-left backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                    isActive
-                      ? "border-[#FCAA30] bg-white/15 shadow-[0_18px_38px_rgba(0,0,0,0.5),0_0_24px_rgba(252,170,48,0.28)]"
-                      : "border-white/20 bg-black/40 opacity-75 hover:border-white/50 hover:opacity-100"
-                  }`}
-                >
-                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
-                    <Image
-                      src={s.image}
-                      alt={s.thumbLabel}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="220px"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-                    <span className="absolute right-2 top-2 rounded-full border border-white/15 bg-black/55 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums tracking-wider text-white/80 backdrop-blur-md">
-                      0{idx + 1}
-                    </span>
-                    <span className="absolute bottom-2 left-2.5 text-[11px] font-semibold tracking-tight text-white">
-                      {s.thumbLabel}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-white/20">
-                    {isActive && (
-                      <span
-                        key={`dock-${activeIdx}-${paused ? "p" : "r"}`}
-                        className={`block h-full rounded-full bg-[#FCAA30] ${
-                          paused ? "w-full" : "animate-slide-progress"
-                        }`}
-                      />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+        {/* Bottom Sleek Chrome Scene Selector Strip */}
+        <div className="mt-10 grid grid-cols-5 gap-2.5">
+          {HERO_SCENES.map((s, idx) => {
+            const isActive = idx === activeIdx;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setActiveIdx(idx)}
+                aria-label={`Select scene ${idx + 1}: ${s.thumbLabel}`}
+                className={`group relative flex items-center gap-3 overflow-hidden rounded-2xl border p-2 text-left backdrop-blur-xl transition-all duration-300 ${
+                  isActive
+                    ? "border-[#FCAA30]/80 bg-white/[0.11] shadow-[0_12px_30px_rgba(252,170,48,0.18)]"
+                    : "border-white/12 bg-white/[0.03] opacity-70 hover:border-white/30 hover:bg-white/[0.07] hover:opacity-100"
+                }`}
+              >
+                <div className="relative h-11 w-16 shrink-0 overflow-hidden rounded-xl">
+                  <Image
+                    src={s.image}
+                    alt={s.thumbLabel}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    sizes="96px"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-semibold tabular-nums text-[#FCAA30]">
+                    0{idx + 1}
+                  </p>
+                  <p className="truncate text-xs font-semibold text-white">
+                    {s.thumbLabel}
+                  </p>
+                </div>
+                {isActive && (
+                  <span
+                    key={`pill-${activeIdx}-${paused ? "p" : "r"}`}
+                    className={`absolute inset-x-0 bottom-0 h-[2px] bg-[#FCAA30] ${
+                      paused ? "w-full" : "animate-slide-progress"
+                    }`}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Mobile Centered Unified Copy + 3D Floating Card (< md) */}
+      {/* MOBILE: Centered Unified Copy + 3D Floating Card (< md) */}
       <div className="relative z-10 flex flex-col px-5 pb-8 pt-24 text-center text-white md:hidden">
         <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#FCAA30]">
           {HERO_CONTENT.eyebrow}
         </p>
 
         <h1 className="mt-3 font-display text-[32px] font-semibold leading-[1.06] tracking-[-0.03em] text-white">
-          {HERO_CONTENT.headline}
+          Powering India&apos;s Delivery Future{" "}
+          <span className="bg-gradient-to-r from-white via-[#FBE3B4] to-[#FCAA30] bg-clip-text text-transparent">
+            with Electric Mobility.
+          </span>
         </h1>
         <div className="mx-auto mt-4 h-px w-14 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
         <p className="mx-auto mt-3.5 max-w-sm text-sm leading-relaxed text-white/90">
@@ -541,14 +595,16 @@ export function HeroShowcase() {
             href={HERO_CONTENT.secondaryCta.href}
             variant="glass"
             fullWidth
-            onClick={() => trackAnalyticsEvent("invest_cta_click", { source: "hero_mobile_secondary" })}
+            onClick={() =>
+              trackAnalyticsEvent("invest_cta_click", { source: "hero_mobile_secondary" })
+            }
           >
             <span>{HERO_CONTENT.secondaryCta.label}</span>
             <ArrowUpRight className="h-4 w-4 text-[#FCAA30]" />
           </PremiumHeroButton>
         </div>
 
-        {/* Mobile 3D Rotating Scene Frame */}
+        {/* Mobile 3D Floating Scene Frame */}
         <div className="hero-perspective mt-7">
           <div className="preserve-3d relative aspect-[16/10] w-full overflow-hidden rounded-3xl border border-white/25 bg-black/40 p-1.5 shadow-elevated backdrop-blur-xl animate-[heroFloat3d_6.5s_ease-in-out_infinite]">
             <div className="relative h-full w-full overflow-hidden rounded-[20px]">
