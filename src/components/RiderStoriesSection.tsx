@@ -1,17 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  MapPin,
-  Pause,
-  Play,
-  Quote,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Pause, Play, Quote } from "lucide-react";
 import { RevealOnScroll } from "@/components/MotionPrimitives";
 import {
   CinematicIntroBanner,
@@ -23,7 +13,6 @@ import {
   RIDER_SECTION_COPY,
   resolveRiderStories,
   type DatabaseVerifiedTestimonial,
-  type RiderStoryItem,
 } from "@/data/rider-stories";
 
 interface RiderStoriesSectionProps {
@@ -40,9 +29,8 @@ function getCircularDistance(index: number, active: number, length: number): num
 
 /**
  * SECTION 13 — "Rider Experiences & Testimonials"
- * Features Part 1 Cinematic Urban Banner, Part 2 Compact Text-Only 3D Kinetic Review Deck
- * (Hindi & English stories, zero images inside review cards), Part 3 Split-Screen Spotlight
- * (with user-provided Aurum photography), Part 4 Video Showcase, Part 5 Highlights, Part 6 CTA.
+ * Minimalist Brushed-Chrome 3D Review Deck (Delhi & Noida, Hindi & English, zero duplicate preview card),
+ * paired with Cinematic Intro Banner, Video Showcase, Highlights, and Share Story CTA.
  */
 export function RiderStoriesSection({
   verifiedTestimonials = [],
@@ -57,9 +45,6 @@ export function RiderStoriesSection({
   const pointerStartXRef = useRef<number | null>(null);
   const dragDeltaRef = useRef(0);
 
-  const activeStory: RiderStoryItem = stories[activeIndex] ?? stories[0];
-
-  // Auto-advance gently unless visitor interacted or reduced motion is active
   useEffect(() => {
     if (userInteracted || count <= 1) return;
     if (
@@ -71,7 +56,7 @@ export function RiderStoriesSection({
 
     const timer = window.setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % count);
-    }, 4800);
+    }, 4500);
 
     return () => window.clearInterval(timer);
   }, [userInteracted, count]);
@@ -86,7 +71,7 @@ export function RiderStoriesSection({
     selectStory(activeIndex + delta, true);
   }
 
-  // Unique pointer-driven 3D magnetic tilt + specular Liquid Glass spotlight per card
+  // Real-time 60fps Chrome Specular Reflection + Magnetic 3D Tilt
   function handleCardPointerMove(e: React.PointerEvent<HTMLDivElement>, isActive: boolean) {
     if (e.pointerType !== "mouse") return;
     const el = e.currentTarget;
@@ -96,11 +81,11 @@ export function RiderStoriesSection({
 
     el.style.setProperty("--mx", `${(rx * 100).toFixed(1)}%`);
     el.style.setProperty("--my", `${(ry * 100).toFixed(1)}%`);
-    el.style.setProperty("--glow-on", "1");
+    el.style.setProperty("--chrome-glow", "1");
 
     if (isActive) {
-      const tiltY = ((rx - 0.5) * 12).toFixed(2);
-      const tiltX = (-(ry - 0.5) * 9).toFixed(2);
+      const tiltY = ((rx - 0.5) * 14).toFixed(2);
+      const tiltX = (-(ry - 0.5) * 10).toFixed(2);
       el.style.setProperty("--tilt-x", `${tiltX}deg`);
       el.style.setProperty("--tilt-y", `${tiltY}deg`);
     }
@@ -108,12 +93,12 @@ export function RiderStoriesSection({
 
   function handleCardPointerLeave(e: React.PointerEvent<HTMLDivElement>) {
     const el = e.currentTarget;
-    el.style.setProperty("--glow-on", "0");
+    el.style.setProperty("--chrome-glow", "0");
     el.style.setProperty("--tilt-x", "0deg");
     el.style.setProperty("--tilt-y", "0deg");
   }
 
-  // Mobile & desktop pointer drag / swipe
+  // Touch & drag navigation
   function handleStagePointerDown(e: React.PointerEvent<HTMLDivElement>) {
     setUserInteracted(true);
     pointerStartXRef.current = e.clientX;
@@ -124,7 +109,7 @@ export function RiderStoriesSection({
     if (pointerStartXRef.current === null) return;
     const delta = e.clientX - pointerStartXRef.current;
     dragDeltaRef.current = delta;
-    setDragOffsetPx(Math.max(-85, Math.min(85, delta * 0.45)));
+    setDragOffsetPx(Math.max(-90, Math.min(90, delta * 0.45)));
   }
 
   function handleStagePointerEnd() {
@@ -133,7 +118,7 @@ export function RiderStoriesSection({
     pointerStartXRef.current = null;
     dragDeltaRef.current = 0;
     setDragOffsetPx(0);
-    if (Math.abs(delta) > 42) {
+    if (Math.abs(delta) > 40) {
       stepStory(delta < 0 ? 1 : -1);
     }
   }
@@ -142,33 +127,33 @@ export function RiderStoriesSection({
     <section
       id="rider-stories"
       aria-labelledby="rider-stories-heading"
-      className="relative overflow-hidden border-t border-[#EBEBEB] bg-gradient-to-b from-white via-[#F9FAFB] to-white py-20 text-[#0B1F3A] sm:py-28"
+      className="relative overflow-hidden border-t border-[#EBEBEB] bg-white py-20 text-[#0F0F0F] sm:py-28"
     >
-      {/* Subtle Ambient Background Halo */}
+      {/* Subtle Ambient Gold/Chrome Mist */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(19,183,94,0.06),rgba(252,170,48,0.05),transparent_70%)] blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-0 h-[360px] w-[780px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(252,170,48,0.06),rgba(148,163,184,0.07),transparent_70%)] blur-3xl"
       />
 
       <div className="aurum-container relative z-10">
-        {/* SECTION HEADER */}
+        {/* SECTION HEADER (Aligned to Website Obsidian + Metallic Gold Typography) */}
         <RevealOnScroll className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#0B1F3A]/10 bg-white/85 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#047857] shadow-[0_6px_22px_rgba(11,31,58,0.06)] backdrop-blur-xl">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#13B75E]" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#C69A43]/30 bg-[#FAF7F0] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#9E7524]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#FCAA30]" />
             {RIDER_SECTION_COPY.eyebrow}
           </span>
 
           <h2
             id="rider-stories-heading"
-            className="mt-4 font-display text-3xl font-semibold leading-[1.06] tracking-[-0.035em] text-[#0B1F3A] sm:text-5xl lg:text-[3.4rem]"
+            className="mt-4 font-display text-3xl font-semibold leading-[1.06] tracking-[-0.035em] text-[#0F0F0F] sm:text-5xl lg:text-[3.4rem]"
           >
             {RIDER_SECTION_COPY.headingLead}{" "}
-            <span className="bg-gradient-to-r from-[#047857] via-[#13B75E] to-[#C69A43] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#8E671D] via-[#FCAA30] to-[#8E671D] bg-clip-text text-transparent">
               {RIDER_SECTION_COPY.headingAccent}
             </span>
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#475569] sm:text-base">
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#666666] sm:text-base">
             {RIDER_SECTION_COPY.supportingHeadline}
           </p>
         </RevealOnScroll>
@@ -178,15 +163,15 @@ export function RiderStoriesSection({
           <CinematicIntroBanner />
         </div>
 
-        {/* PART 2 — COMPACT ZERO-IMAGE 3D KINETIC RIDER REVIEW DECK */}
+        {/* PART 2 — MINIMALIST BRUSHED-CHROME 3D REVIEW DECK (No Redundant Preview Below) */}
         <div id="rider-story-carousel" className="mt-20">
           <RevealOnScroll>
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#9E7524]">
-                  Rider Voices · हिंदी &amp; English
+                  Delhi &amp; Noida Riders · हिंदी &amp; English
                 </p>
-                <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-[#0B1F3A] sm:text-4xl">
+                <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-[#0F0F0F] sm:text-4xl">
                   Voices Moving Through the City
                 </h3>
               </div>
@@ -197,10 +182,10 @@ export function RiderStoriesSection({
                   onClick={() => setUserInteracted((p) => !p)}
                   aria-label={
                     userInteracted
-                      ? "Resume automatic review deck"
-                      : "Pause automatic review deck"
+                      ? "Resume automatic chrome deck"
+                      : "Pause automatic chrome deck"
                   }
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#0F0F0F]/15 bg-white px-3.5 py-2 text-xs font-medium text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A]/30"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#0F0F0F]/15 bg-[#F4F4F4] px-3.5 py-2 text-xs font-medium text-[#0F0F0F] transition hover:bg-[#EBEBEB]"
                 >
                   {userInteracted ? (
                     <Play className="h-3.5 w-3.5" />
@@ -214,7 +199,7 @@ export function RiderStoriesSection({
                   type="button"
                   onClick={() => stepStory(-1)}
                   aria-label="Previous rider review"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/15 bg-white text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/15 bg-white text-[#0F0F0F] shadow-sm transition hover:border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -222,14 +207,14 @@ export function RiderStoriesSection({
                   type="button"
                   onClick={() => stepStory(1)}
                   aria-label="Next rider review"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/15 bg-white text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/15 bg-white text-[#0F0F0F] shadow-sm transition hover:border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>
 
-            {/* 3D Compact Orbital Kinetic Deck (Zero Images Inside Review Cards) */}
+            {/* 3D Precision Brushed-Chrome Orbital Stage */}
             <div
               onPointerEnter={() => setUserInteracted(true)}
               onPointerDown={handleStagePointerDown}
@@ -242,30 +227,31 @@ export function RiderStoriesSection({
               }}
               tabIndex={0}
               aria-roledescription="carousel"
-              aria-label="Rider reviews carousel"
-              className="partner-perspective relative mt-8 touch-pan-y select-none overflow-hidden py-4 focus:outline-none"
+              aria-label="Delhi and Noida rider reviews carousel"
+              className="partner-perspective relative mt-8 touch-pan-y select-none overflow-hidden py-6 focus:outline-none"
             >
-              {/* Soft Horizontal Energy Orbit Behind Cards */}
+              {/* Hairline Chrome Rail */}
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-10 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-[#C69A43]/35 to-transparent"
+                className="pointer-events-none absolute inset-x-10 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-[#94A3B8]/40 to-transparent"
               />
 
-              <div className="relative mx-auto flex min-h-[300px] items-center justify-center sm:min-h-[315px]">
+              <div className="relative mx-auto flex min-h-[268px] items-center justify-center sm:min-h-[280px]">
                 {stories.map((story, idx) => {
                   const dist = getCircularDistance(idx, activeIndex, count);
                   const absDist = Math.abs(dist);
                   const isActive = dist === 0;
+                  const isSide = absDist === 1;
                   const isVisible = absDist <= 1;
 
-                  // Unique fanned 3D orbital curve across compact cards
-                  const translateX = dist * 92;
-                  const translateY = isActive ? -6 : absDist === 1 ? 10 : 22;
-                  const rotateY = isActive ? 0 : dist * -14;
-                  const rotateZ = isActive ? 0 : dist * 1.8;
-                  const scale = isActive ? 1.03 : absDist === 1 ? 0.91 : 0.8;
-                  const opacity = isActive ? 1 : absDist === 1 ? 0.72 : 0;
-                  const zIndex = isActive ? 30 : absDist === 1 ? 20 : 10;
+                  // Smooth spatial depth: active rises forward; flanking cards recede cleanly in 3D
+                  const translateX = dist * 98;
+                  const translateY = isActive ? -6 : isSide ? 8 : 18;
+                  const rotateY = isActive ? 0 : dist * -18;
+                  const rotateZ = isActive ? 0 : dist * 1.4;
+                  const scale = isActive ? 1.03 : isSide ? 0.9 : 0.78;
+                  const opacity = isActive ? 1 : isSide ? 0.65 : 0;
+                  const zIndex = isActive ? 30 : isSide ? 20 : 10;
 
                   return (
                     <div
@@ -277,104 +263,106 @@ export function RiderStoriesSection({
                       onPointerLeave={handleCardPointerLeave}
                       style={{
                         transform: `translate3d(calc(${translateX}% + ${dragOffsetPx}px), ${translateY}px, ${
-                          isActive ? 36 : -30
+                          isActive ? 48 : -36
                         }px) rotateX(var(--tilt-x, 0deg)) rotateY(calc(${rotateY}deg + var(--tilt-y, 0deg))) rotateZ(${rotateZ}deg) scale(${scale})`,
                         opacity,
                         zIndex,
-                        transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
                         pointerEvents: isVisible ? "auto" : "none",
                       }}
-                      className={`group absolute w-[295px] rounded-[1.75rem] p-[1.5px] transition-all duration-700 sm:w-[345px] ${
+                      /* Brushed Metallic Chrome Outer Bevel Ring */
+                      className={`group absolute w-[295px] rounded-[1.65rem] p-[1.5px] transition-all duration-[780ms] sm:w-[340px] ${
                         isActive
-                          ? "bg-gradient-to-br from-[#FCAA30]/65 via-white to-[#13B75E]/60 shadow-[0_24px_60px_rgba(11,31,58,0.14),0_0_28px_rgba(252,170,48,0.16)]"
-                          : "cursor-pointer bg-gradient-to-br from-[#CBD5E1]/60 via-white to-[#CBD5E1]/60 shadow-[0_12px_30px_rgba(11,31,58,0.06)]"
+                          ? "bg-[linear-gradient(135deg,#FFFFFF_0%,#94A3B8_22%,#F8FAFC_48%,#FCAA30_74%,#CBD5E1_100%)] shadow-[0_26px_65px_rgba(15,15,15,0.14),0_2px_18px_rgba(148,163,184,0.28)]"
+                          : "cursor-pointer bg-[linear-gradient(135deg,#E2E8F0_0%,#CBD5E1_50%,#F1F5F9_100%)] shadow-[0_12px_28px_rgba(15,15,15,0.06)]"
                       }`}
                     >
-                      {/* Compact Inner Liquid Glass Card (Strictly Text-Only, Zero Images) */}
+                      {/* Inner Anodized Polished Chrome Card Surface */}
                       <div
-                        className={`relative flex h-full flex-col justify-between overflow-hidden rounded-[calc(1.75rem-1.5px)] px-5 py-5 backdrop-blur-2xl sm:px-6 sm:py-5 ${
+                        className={`relative flex h-full min-h-[228px] flex-col justify-between overflow-hidden rounded-[calc(1.65rem-1.5px)] px-5 py-5 backdrop-blur-2xl sm:min-h-[238px] sm:px-6 ${
                           isActive
-                            ? "bg-white/[0.92] motion-safe:animate-float-subtle"
-                            : "bg-white/80 hover:bg-white/90"
+                            ? "bg-[linear-gradient(155deg,#FFFFFF_0%,#F3F4F6_46%,#E5E7EB_100%)] motion-safe:animate-float-subtle"
+                            : "bg-[linear-gradient(155deg,#FAFAFA_0%,#EFEFEF_100%)] hover:bg-white"
                         }`}
                       >
-                        {/* Cursor Optical Specular Sheen */}
+                        {/* Top Specular Chrome Horizon Reflection */}
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/95 to-transparent"
+                        />
+
+                        {/* Pointer-Tracked Mirror Chrome Reflection */}
                         <div
                           aria-hidden="true"
                           className="pointer-events-none absolute inset-0 transition-opacity duration-300"
                           style={{
-                            opacity: "var(--glow-on, 0)",
+                            opacity: "var(--chrome-glow, 0)",
                             background:
-                              "radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(252,170,48,0.16), rgba(19,183,94,0.06) 45%, transparent 72%)",
+                              "radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.95), rgba(252,170,48,0.16) 38%, transparent 72%)",
                           }}
                         />
 
-                        {/* Active Card Sweeping Gold Prismatic Shimmer */}
+                        {/* Diagonal Brushed-Chrome Light Sweep on Active Card */}
                         {isActive && (
                           <div
                             aria-hidden="true"
                             className="pointer-events-none absolute inset-0 overflow-hidden"
                           >
-                            <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-[#FCAA30]/20 to-transparent motion-safe:animate-[partnerGoldSweep_4.8s_ease-in-out_infinite]" />
+                            <div
+                              className="h-full w-1/2 motion-safe:animate-[partnerGoldSweep_4.4s_ease-in-out_infinite]"
+                              style={{
+                                background:
+                                  "linear-gradient(110deg, transparent 15%, rgba(255,255,255,0.75) 45%, rgba(252,170,48,0.18) 54%, transparent 80%)",
+                              }}
+                            />
                           </div>
                         )}
 
                         <div className="relative z-10">
-                          {/* Top Meta Row */}
+                          {/* Minimalist Top Bar: Language Tag + Gold Quote Icon */}
                           <div className="flex items-center justify-between gap-2">
-                            <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] ${
-                                story.language === "Hindi"
-                                  ? "border border-[#FCAA30]/40 bg-[#FFF8EB] text-[#9E7524]"
-                                  : "border border-[#13B75E]/30 bg-[#ECFDF5] text-[#047857]"
-                              }`}
-                            >
-                              <Sparkles className="h-2.5 w-2.5" />
-                              {story.language === "Hindi" ? "हिंदी रिव्यू" : "English"}
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#0F0F0F]/10 bg-white/85 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#0F0F0F] shadow-sm">
+                              <span
+                                className={`h-1.5 w-1.5 rounded-full ${
+                                  story.language === "Hindi" ? "bg-[#FCAA30]" : "bg-[#0F0F0F]"
+                                }`}
+                              />
+                              {story.language === "Hindi" ? "हिंदी" : "English"}
                             </span>
 
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#64748B]">
-                              <Quote className="h-3.5 w-3.5 text-[#C69A43]" />
-                              {story.slotCode}
-                            </span>
+                            <Quote className="h-4 w-4 text-[#C69A43]" />
                           </div>
 
-                          {/* Story Headline + Quote */}
-                          <h4 className="mt-3 font-display text-base font-semibold leading-snug tracking-tight text-[#0B1F3A]">
-                            {story.storyTitle}
-                          </h4>
-
-                          <blockquote className="mt-2 line-clamp-4 text-[13px] leading-relaxed text-[#334155]">
+                          {/* Crisp Single-Statement Review Quote */}
+                          <blockquote className="mt-4 text-[13.5px] font-medium leading-[1.6] text-[#1F1F1F] sm:text-sm">
                             “{story.quote}”
                           </blockquote>
                         </div>
 
-                        {/* Compact Monogram Footer (No Photo Needed) */}
-                        <div className="relative z-10 mt-4 flex items-center justify-between gap-3 border-t border-[#0F0F0F]/10 pt-3">
+                        {/* Minimalist Brushed-Chrome Author Footer */}
+                        <div className="relative z-10 mt-5 flex items-center justify-between gap-3 border-t border-[#0F0F0F]/10 pt-3.5">
                           <div className="flex items-center gap-2.5">
                             <div
-                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold tracking-wider shadow-inner ${
+                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-xs font-bold tracking-wider ${
                                 isActive
-                                  ? "bg-gradient-to-br from-[#0B1F3A] to-[#047857] text-[#FCD38D]"
-                                  : "bg-[#F1F5F9] text-[#0B1F3A]"
+                                  ? "border-white/70 bg-gradient-to-br from-[#1F1F1F] via-[#3A3D42] to-[#0F0F0F] text-[#FCAA30] shadow-md"
+                                  : "border-[#CBD5E1] bg-gradient-to-br from-white to-[#E2E8F0] text-[#0F0F0F]"
                               }`}
                             >
                               {story.initials}
                             </div>
                             <div className="min-w-0">
-                              <p className="truncate font-display text-xs font-semibold text-[#0B1F3A] sm:text-sm">
+                              <p className="truncate font-display text-xs font-semibold text-[#0F0F0F] sm:text-[13px]">
                                 {story.name}
                               </p>
-                              <p className="truncate text-[11px] text-[#64748B]">{story.role}</p>
+                              <p className="truncate text-[11px] text-[#666666]">{story.role}</p>
                             </div>
                           </div>
 
-                          {story.city && (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#F8FAFC] px-2 py-0.5 text-[10px] font-semibold text-[#047857] ring-1 ring-[#0F0F0F]/5">
-                              <MapPin className="h-2.5 w-2.5" />
-                              {story.city}
-                            </span>
-                          )}
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#0F0F0F]/10 bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold text-[#0F0F0F]">
+                            <MapPin className="h-2.5 w-2.5 text-[#FCAA30]" />
+                            {story.city}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -382,21 +370,21 @@ export function RiderStoriesSection({
                 })}
               </div>
 
-              {/* Pagination Indicators */}
-              <div className="mt-4 flex items-center justify-center gap-2">
+              {/* Minimalist Pagination Track */}
+              <div className="mt-5 flex items-center justify-center gap-2">
                 {stories.map((story, idx) => {
                   const selected = idx === activeIndex;
                   return (
                     <button
                       key={story.id}
                       type="button"
-                      aria-label={`View review ${idx + 1}: ${story.name}`}
+                      aria-label={`View review ${idx + 1}: ${story.name} (${story.city})`}
                       aria-current={selected ? "true" : undefined}
                       onClick={() => selectStory(idx, true)}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                      className={`h-2 rounded-full transition-all duration-500 ${
                         selected
-                          ? "w-8 bg-gradient-to-r from-[#047857] to-[#C69A43]"
-                          : "w-2.5 bg-[#CBD5E1] hover:bg-[#94A3B8]"
+                          ? "w-8 bg-gradient-to-r from-[#0F0F0F] via-[#666666] to-[#FCAA30]"
+                          : "w-2 bg-[#D4D4D8] hover:bg-[#A1A1AA]"
                       }`}
                     />
                   );
@@ -405,125 +393,6 @@ export function RiderStoriesSection({
             </div>
           </RevealOnScroll>
         </div>
-
-        {/* PART 3 — SPLIT-SCREEN IMMERSIVE "MEET THE RIDER" EXPERIENCE (User-Provided Aurum Photos) */}
-        <RevealOnScroll className="mt-20">
-          <div className="overflow-hidden rounded-[2.25rem] border border-white/90 bg-white/85 shadow-[0_24px_70px_rgba(11,31,58,0.08),inset_0_1px_1px_rgba(255,255,255,1)] ring-1 ring-[#0F0F0F]/[0.05] backdrop-blur-2xl">
-            <div
-              key={activeStory.id}
-              className="grid items-stretch motion-safe:animate-[fadeIn_0.55s_ease-out] lg:grid-cols-12"
-            >
-              {/* LEFT SIDE: User-Provided Aurum EV Portrait Frame */}
-              <div className="relative min-h-[340px] overflow-hidden bg-[#07111E] sm:min-h-[430px] lg:col-span-5">
-                <Image
-                  src={activeStory.photoUrl}
-                  alt={activeStory.photoAlt}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 560px"
-                  className="object-cover object-center transition-transform duration-700"
-                />
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-[#07111E]/90 via-[#07111E]/25 to-transparent"
-                />
-
-                <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-4 rounded-2xl border border-white/25 bg-[#07111E]/80 p-4 text-white shadow-[0_12px_32px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:inset-x-5 sm:bottom-5">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#FCD38D]">
-                      RIDER SPOTLIGHT · {activeStory.slotCode}
-                    </p>
-                    <p className="mt-0.5 font-display text-lg font-semibold">{activeStory.name}</p>
-                    <p className="text-xs text-white/80">{activeStory.role}</p>
-                  </div>
-                  {activeStory.city && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[#13B75E]/25 px-2.5 py-1 text-[11px] font-medium text-[#6EE7B7]">
-                      <MapPin className="h-3 w-3" /> {activeStory.city}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* RIGHT SIDE: Editorial "Meet the Rider" Narrative Panel */}
-              <div className="flex flex-col justify-between p-7 sm:p-10 lg:col-span-7 lg:p-12">
-                <div>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-[#047857]/20 bg-[#ECFDF5] px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#047857]">
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                      Meet the Rider
-                    </span>
-                    <span className="font-display text-xs font-semibold tracking-[0.2em] text-[#64748B]">
-                      {String(activeIndex + 1).padStart(2, "0")} /{" "}
-                      {String(count).padStart(2, "0")}
-                    </span>
-                  </div>
-
-                  <h3 className="mt-5 font-display text-2xl font-semibold leading-tight tracking-[-0.03em] text-[#0B1F3A] sm:text-4xl">
-                    {activeStory.storyTitle}
-                  </h3>
-
-                  <p className="mt-2 text-sm font-medium text-[#9E7524]">
-                    {activeStory.name} · {activeStory.role}
-                    {activeStory.city ? ` · ${activeStory.city}` : ""}
-                  </p>
-
-                  <p className="mt-5 text-sm leading-relaxed text-[#475569] sm:text-base">
-                    {activeStory.experienceSummary}
-                  </p>
-
-                  {/* Pull Quote Card */}
-                  <div className="relative mt-7 rounded-2xl border border-[#0F0F0F]/10 bg-[#F8FAFC] p-5 sm:p-6">
-                    <Quote className="h-6 w-6 text-[#C69A43]/60" />
-                    <p className="mt-2 font-display text-base font-medium leading-relaxed text-[#0B1F3A] sm:text-lg">
-                      “{activeStory.quote}”
-                    </p>
-                    <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#64748B]">
-                      {activeStory.language === "Hindi"
-                        ? "Aurum Rider Experience · Hindi"
-                        : "Aurum Rider Experience · English"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Story Switch Controls */}
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[#0F0F0F]/10 pt-5">
-                  <div className="flex flex-wrap gap-2">
-                    {stories.map((s, idx) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => selectStory(idx, true)}
-                        className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
-                          idx === activeIndex
-                            ? "bg-[#0B1F3A] text-white shadow-sm"
-                            : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0B1F3A]"
-                        }`}
-                      >
-                        {s.slotCode}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => stepStory(-1)}
-                      className="inline-flex items-center gap-1 rounded-full border border-[#0F0F0F]/15 px-4 py-2 text-xs font-semibold text-[#0B1F3A] transition hover:bg-[#0B1F3A] hover:text-white"
-                    >
-                      <ChevronLeft className="h-3.5 w-3.5" /> Prev
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => stepStory(1)}
-                      className="inline-flex items-center gap-1 rounded-full border border-[#0F0F0F]/15 px-4 py-2 text-xs font-semibold text-[#0B1F3A] transition hover:bg-[#0B1F3A] hover:text-white"
-                    >
-                      Next <ChevronRight className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </RevealOnScroll>
 
         {/* PART 4 — VIDEO TESTIMONIAL EXPERIENCE */}
         <VideoStoriesShowcase />

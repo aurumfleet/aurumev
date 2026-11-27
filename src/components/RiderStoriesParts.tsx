@@ -116,10 +116,10 @@ export function CinematicIntroBanner() {
   return (
     <div
       ref={bannerRef}
-      className="relative overflow-hidden rounded-[2rem] border border-[#0F0F0F]/10 bg-[#07111E] shadow-[0_28px_80px_rgba(7,17,30,0.18)]"
+      className="relative overflow-hidden rounded-[2rem] border border-[#0F0F0F]/10 bg-[#0F0F0F] shadow-[0_28px_80px_rgba(15,15,15,0.16)]"
     >
       {/* Parallax Urban Banner Backdrop */}
-      <div className="relative h-[480px] w-full overflow-hidden sm:h-[520px] lg:h-[560px]">
+      <div className="relative h-[460px] w-full overflow-hidden sm:h-[510px] lg:h-[540px]">
         <div
           ref={bgRef}
           className="pointer-events-none absolute -inset-y-10 inset-x-0"
@@ -135,13 +135,13 @@ export function CinematicIntroBanner() {
           />
         </div>
 
-        {/* Directional Dark Obsidian Scrims for Sharp Foreground Contrast & Clear Rider Visibility */}
+        {/* Directional Website-Aligned Obsidian Scrims */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              "linear-gradient(90deg, rgba(7, 17, 30, 0.88) 0%, rgba(7, 17, 30, 0.58) 46%, rgba(7, 17, 30, 0.14) 100%)",
+              "linear-gradient(90deg, rgba(15, 15, 15, 0.90) 0%, rgba(15, 15, 15, 0.58) 46%, rgba(15, 15, 15, 0.14) 100%)",
           }}
         />
         <div
@@ -149,7 +149,7 @@ export function CinematicIntroBanner() {
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              "linear-gradient(0deg, rgba(7, 17, 30, 0.84) 0%, rgba(7, 17, 30, 0.12) 48%, rgba(7, 17, 30, 0.38) 100%)",
+              "linear-gradient(0deg, rgba(15, 15, 15, 0.86) 0%, rgba(15, 15, 15, 0.10) 48%, rgba(15, 15, 15, 0.36) 100%)",
           }}
         />
 
@@ -157,11 +157,11 @@ export function CinematicIntroBanner() {
         <div className="relative z-10 flex h-full flex-col justify-between p-6 sm:p-10 lg:p-14">
           {/* Top Glass Tag */}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#07111E]/70 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-xl">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#13B75E]" />
-              Aurum Rider Chronicles
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#0F0F0F]/70 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-xl">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#FCAA30]" />
+              Delhi &amp; Noida Rider Chronicles
             </span>
-            <span className="hidden rounded-full border border-[#FCAA30]/40 bg-[#07111E]/65 px-3.5 py-1 text-[11px] font-medium tracking-wide text-[#FCD38D] backdrop-blur-xl sm:inline-flex">
+            <span className="hidden rounded-full border border-[#FCAA30]/40 bg-[#0F0F0F]/65 px-3.5 py-1 text-[11px] font-medium tracking-wide text-[#FCD38D] backdrop-blur-xl sm:inline-flex">
               Authentic Urban Journeys
             </span>
           </div>
@@ -182,7 +182,7 @@ export function CinematicIntroBanner() {
                       : "translate-y-4 opacity-0 blur-[3px]"
                   } ${
                     word.toLowerCase().startsWith("journey")
-                      ? "bg-gradient-to-r from-[#FCAA30] via-[#FFE0A3] to-[#13B75E] bg-clip-text text-transparent"
+                      ? "bg-gradient-to-r from-[#FCAA30] via-[#FFE0A3] to-[#FCAA30] bg-clip-text text-transparent"
                       : ""
                   }`}
                 >
@@ -191,9 +191,9 @@ export function CinematicIntroBanner() {
               ))}
             </h3>
             <div className="mt-5 flex items-center gap-3">
-              <span className="h-[2px] w-14 rounded-full bg-gradient-to-r from-[#FCAA30] to-[#13B75E]" />
+              <span className="h-[2px] w-14 rounded-full bg-gradient-to-r from-[#FCAA30] to-white/60" />
               <p className="text-xs font-medium tracking-wide text-white/75 sm:text-sm">
-                Aurum Fleet Solutions Pvt. Ltd. · Urban EV Mobility
+                Aurum Fleet Solutions Pvt. Ltd. · Delhi &amp; Noida EV Mobility
               </p>
             </div>
           </div>
@@ -207,7 +207,7 @@ export function CinematicIntroBanner() {
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#FCAA30] text-[#0F0F0F]">
                 <ArrowDown className="h-3.5 w-3.5 motion-safe:animate-bounce" />
               </span>
-              <span>Scroll to Explore Stories</span>
+              <span>Scroll to Explore Reviews</span>
             </a>
 
             <div className="hidden items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-white/60 sm:flex">
@@ -252,22 +252,22 @@ export function VideoStoriesShowcase({
     <RevealOnScroll className="mt-20">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#047857]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#9E7524]">
             Video Testimonial Experience
           </p>
-          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-[#0B1F3A] sm:text-4xl">
+          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-[#0F0F0F] sm:text-4xl">
             Rider Stories in Motion
           </h3>
         </div>
-        <p className="max-w-md text-xs leading-relaxed text-[#475569] sm:text-sm">
+        <p className="max-w-md text-xs leading-relaxed text-[#666666] sm:text-sm">
           {hasVerifiedVideos
-            ? "Watch verified Aurum EV riders share first-hand experiences across daily routes."
+            ? "Watch verified Aurum EV riders share first-hand experiences across Delhi & Noida routes."
             : "Only genuine customer-submitted and approved rider videos are published here."}
         </p>
       </div>
 
       {/* Large Cinematic Video Showcase Frame */}
-      <div className="group relative mt-7 overflow-hidden rounded-[2rem] border border-[#0F0F0F]/10 bg-[#07111E] shadow-[0_24px_70px_rgba(7,17,30,0.16)]">
+      <div className="group relative mt-7 overflow-hidden rounded-[2rem] border border-[#0F0F0F]/10 bg-[#0F0F0F] shadow-[0_24px_70px_rgba(15,15,15,0.16)]">
         <div className="relative min-h-[360px] w-full sm:min-h-[420px] lg:aspect-[16/7.5] lg:min-h-[460px]">
           <Image
             src={activePreview?.thumbnailUrl || RIDER_SECTION_COPY.videoShowcasePoster}
@@ -481,41 +481,41 @@ export function RiderHighlightsStrip() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#9E7524]">
             Rider Experience Highlights
           </p>
-          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-[#0B1F3A] sm:text-3xl">
+          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-[#0F0F0F] sm:text-3xl">
             Built Around Practical Everyday Riding
           </h3>
         </div>
-        <p className="max-w-md text-xs text-[#475569] sm:text-sm">
-          Operational pillars structured to keep daily riders supported under clear written rental
-          agreements.
+        <p className="max-w-md text-xs text-[#666666] sm:text-sm">
+          Operational pillars structured to keep Delhi &amp; Noida riders supported under clear
+          written rental agreements.
         </p>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {RIDER_EXPERIENCE_HIGHLIGHTS.map((item, idx) => {
           const Icon = HIGHLIGHT_ICON_MAP[item.id as keyof typeof HIGHLIGHT_ICON_MAP] || ShieldCheck;
-          const isEmerald = item.accent === "emerald";
+          const isGold = item.accent === "gold";
           return (
             <div
               key={item.id}
-              className="group relative overflow-hidden rounded-3xl border border-white/90 bg-white/80 p-6 shadow-[0_12px_36px_rgba(11,31,58,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] ring-1 ring-[#0F0F0F]/[0.05] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(11,31,58,0.1)]"
+              className="group relative overflow-hidden rounded-3xl border border-[#CBD5E1]/70 bg-gradient-to-br from-white via-[#F8F9FB] to-[#ECEFF4] p-6 shadow-[0_14px_38px_rgba(15,15,15,0.06),inset_0_1px_1px_rgba(255,255,255,1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,15,15,0.11)]"
             >
-              {/* Animated Top Accent Line */}
+              {/* Animated Chrome / Gold Top Accent Line */}
               <div
                 aria-hidden="true"
                 className={`absolute inset-x-0 top-0 h-[2px] origin-left scale-x-50 transition-transform duration-500 group-hover:scale-x-100 ${
-                  isEmerald
-                    ? "bg-gradient-to-r from-[#13B75E] to-[#C69A43]"
-                    : "bg-gradient-to-r from-[#FCAA30] to-[#13B75E]"
+                  isGold
+                    ? "bg-gradient-to-r from-[#FCAA30] to-[#0F0F0F]"
+                    : "bg-gradient-to-r from-[#0F0F0F] via-[#94A3B8] to-[#FCAA30]"
                 }`}
               />
 
               <div className="flex items-center justify-between">
                 <div
                   className={`flex h-11 w-11 items-center justify-center rounded-2xl border transition-transform duration-300 group-hover:scale-105 ${
-                    isEmerald
-                      ? "border-[#13B75E]/25 bg-[#13B75E]/10 text-[#047857]"
-                      : "border-[#FCAA30]/35 bg-[#FCAA30]/15 text-[#9E7524]"
+                    isGold
+                      ? "border-[#FCAA30]/40 bg-[#FCAA30]/15 text-[#9E7524]"
+                      : "border-[#0F0F0F]/15 bg-[#0F0F0F]/5 text-[#0F0F0F]"
                   }`}
                 >
                   <Icon className="h-5 w-5" />
@@ -525,10 +525,10 @@ export function RiderHighlightsStrip() {
                 </span>
               </div>
 
-              <h4 className="mt-5 font-display text-lg font-semibold tracking-tight text-[#0B1F3A]">
+              <h4 className="mt-5 font-display text-lg font-semibold tracking-tight text-[#0F0F0F]">
                 {item.title}
               </h4>
-              <p className="mt-2 text-xs leading-relaxed text-[#475569] sm:text-[13px]">
+              <p className="mt-2 text-xs leading-relaxed text-[#666666] sm:text-[13px]">
                 {item.description}
               </p>
             </div>
@@ -540,12 +540,12 @@ export function RiderHighlightsStrip() {
 }
 
 /**
- * PART 6 — Full-Width "Share Your Story" Campaign CTA Banner.
+ * PART 6 — Full-Width "Share Your Story" Campaign CTA Banner aligned to Website Obsidian + Gold Theme.
  */
 export function ShareStoryCtaBanner() {
   return (
     <RevealOnScroll className="mt-20">
-      <div className="relative overflow-hidden rounded-[2.25rem] border border-white/15 bg-gradient-to-br from-[#07111E] via-[#0B1F3A] to-[#0D2421] p-8 text-white shadow-[0_28px_80px_rgba(7,17,30,0.24)] sm:p-12 lg:p-14">
+      <div className="relative overflow-hidden rounded-[2.25rem] border border-white/15 bg-gradient-to-br from-[#0B0C0E] via-[#121417] to-[#1B1813] p-8 text-white shadow-[0_28px_80px_rgba(0,0,0,0.28)] sm:p-12 lg:p-14">
         {/* Ambient Decorative Glows */}
         <div
           aria-hidden="true"
@@ -553,19 +553,19 @@ export function ShareStoryCtaBanner() {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-20 left-10 h-64 w-64 rounded-full bg-[#13B75E]/15 blur-3xl"
+          className="pointer-events-none absolute -bottom-20 left-10 h-64 w-64 rounded-full bg-white/[0.06] blur-3xl"
         />
 
-        {/* Animated Emerald-Gold Top Accent Hairline */}
+        {/* Animated Chrome-Gold Top Accent Hairline */}
         <div
           aria-hidden="true"
-          className="mb-7 h-[2px] w-24 rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FDE68A] to-[#13B75E]"
+          className="mb-7 h-[2px] w-24 rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FFE0A3] to-white/70"
         />
 
         <div className="relative z-10 flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FCD38D] backdrop-blur-xl">
-              <MessageSquareHeart className="h-3.5 w-3.5 text-[#13B75E]" />
+              <MessageSquareHeart className="h-3.5 w-3.5 text-[#FCAA30]" />
               Rider Community
             </span>
 
