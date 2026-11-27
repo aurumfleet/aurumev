@@ -5,6 +5,7 @@ export interface ContactSettings {
   whatsapp: string;
   supportEmail: string;
   officeAddress: string;
+  officeAddressDelhi?: string;
   operatingHours: string;
   socialLinks: {
     linkedin: string;
@@ -49,6 +50,8 @@ export const DEFAULT_CONTACT_SETTINGS: ContactSettings = {
   supportEmail: "info@aurumfleets.com",
   officeAddress:
     "Ground Floor, B 130, Dharampal Satyapal Rd, B Block, Sector 65, Noida, Uttar Pradesh 201301",
+  officeAddressDelhi:
+    "Office No. 201-202, Pearl Best Heights-1, Netaji Subhash Place, New Delhi",
   operatingHours: "Mon – Sat, 09:00 AM – 07:00 PM IST",
   socialLinks: {
     linkedin: "",

@@ -206,7 +206,7 @@ export function FooterClient({ contact }: { contact: ContactSettings }) {
         </div>
 
         {/* Contact Info Strip (Minimal Dark Chrome Cards) */}
-        <div className="grid gap-3 border-b border-white/10 py-8 text-xs text-[#D4D4D8] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 border-b border-white/10 py-8 text-xs text-[#D4D4D8] sm:grid-cols-2 lg:grid-cols-5">
           <a
             href={`tel:${contact.phone.replace(/\s+/g, "")}`}
             className="flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 transition-colors hover:border-[#FCAA30]/40 hover:bg-white/[0.05]"
@@ -223,9 +223,22 @@ export function FooterClient({ contact }: { contact: ContactSettings }) {
             <span>{contact.supportEmail}</span>
           </a>
 
+          {/* Noida Office */}
           <div className="flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#FCAA30]" />
-            <span className="leading-relaxed">{contact.officeAddress}</span>
+            <div className="leading-relaxed">
+              <p className="mb-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#FCAA30]/80">Noida Office</p>
+              <span>{contact.officeAddress}</span>
+            </div>
+          </div>
+
+          {/* Delhi Office */}
+          <div className="flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#FCAA30]" />
+            <div className="leading-relaxed">
+              <p className="mb-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#FCAA30]/80">Delhi Office</p>
+              <span>{contact.officeAddressDelhi ?? "Office No. 201-202, Pearl Best Heights-1, Netaji Subhash Place, New Delhi"}</span>
+            </div>
           </div>
 
           <div className="flex items-start gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5">

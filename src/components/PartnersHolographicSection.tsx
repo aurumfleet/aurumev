@@ -4,19 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import { ECOSYSTEM_PARTNERS, type EcosystemPartner } from "@/data/partners";
 import { RevealOnScroll } from "@/components/MotionPrimitives";
 
-function logoFrameClasses(sizeHint: EcosystemPartner["sizeHint"]) {
-  if (sizeHint === "square") {
-    return "h-11 w-11 rounded-xl sm:h-12 sm:w-12";
-  }
-  if (sizeHint === "wide") {
-    return "h-11 w-[112px] rounded-lg sm:h-12 sm:w-[126px]";
-  }
-  return "max-h-10 max-w-[144px] sm:max-h-11 sm:max-w-[162px]";
+// -------------------------------------------------
+// Logo inner frame sizing
+// -------------------------------------------------
+function logoImgClasses(sizeHint: EcosystemPartner["sizeHint"]) {
+  if (sizeHint === "square") return "h-10 w-10 sm:h-11 sm:w-11";
+  if (sizeHint === "wide") return "h-9 w-[108px] sm:h-10 sm:w-[120px]";
+  return "max-h-9 max-w-[130px] sm:max-h-10 sm:max-w-[150px]";
 }
 
+// -------------------------------------------------
+// Main Section
+// -------------------------------------------------
 export function PartnersHolographicSection() {
   const stageRef = useRef<HTMLDivElement>(null);
-  const auraRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const [isPaused, setIsPaused] = useState(false);
@@ -28,7 +29,7 @@ export function PartnersHolographicSection() {
   const touchMovedRef = useRef(false);
   const lastPointerTypeRef = useRef<string>("mouse");
 
-  // Subtle curved 3D depth arc + cursor-driven 3D magnetic card tilt (zero React re-renders)
+  // ---- RAF-based curved 3-D depth arc (no re-renders) ----
   useEffect(() => {
     const prefersReduced =
       typeof window !== "undefined" &&
@@ -37,14 +38,13 @@ export function PartnersHolographicSection() {
     if (prefersReduced) {
       cardRefs.current.forEach((card) => {
         if (!card) return;
-        card.style.transform = "perspective(1100px) translate3d(0, 0, 0) rotateY(0deg) scale(1)";
+        card.style.transform = "perspective(1100px) translate3d(0,0,0) rotateY(0deg) scale(1)";
         card.style.opacity = "1";
       });
       return;
     }
 
     let rafId = 0;
-
     const updateCurve = () => {
       const stage = stageRef.current;
       if (stage) {
@@ -54,334 +54,305 @@ export function PartnersHolographicSection() {
 
         for (const card of cardRefs.current) {
           if (!card) continue;
-          const isCardFocused = card.dataset.focused === "true";
-          const isCardDimmed = card.dataset.dimmed === "true";
+          const isFocused = card.dataset.focused === "true";
+          const isDimmed = card.dataset.dimmed === "true";
           const cRect = card.getBoundingClientRect();
-          const cCenter = cRect.left + cRect.width / 2;
-          const rawNorm = (cCenter - centerX) / halfWidth;
+          const rawNorm = (cRect.left + cRect.width / 2 - centerX) / halfWidth;
           const norm = Math.max(-1.2, Math.min(1.2, rawNorm));
           const absNorm = Math.min(1, Math.abs(norm));
 
-          const tiltX = isCardFocused ? Number(card.dataset.tiltX || 0) : 0;
-          const tiltY = isCardFocused ? Number(card.dataset.tiltY || 0) : -norm * 11;
+          const tiltX = isFocused ? Number(card.dataset.tiltX || 0) : 0;
+          const tiltY = isFocused ? Number(card.dataset.tiltY || 0) : -norm * 10;
+          const scale = isFocused ? 1.07 : 1.01 - absNorm * 0.1;
+          const tz = isFocused ? 28 : 10 - absNorm * 32;
+          const ty = isFocused ? -4 : 0;
 
-          const scale = isCardFocused ? 1.08 : 1.02 - absNorm * 0.11;
-          const tz = isCardFocused ? 30 : 12 - absNorm * 38;
-          const ty = isCardFocused ? -5 : 0;
-
-          card.style.transform = `perspective(1100px) translate3d(0, ${ty}px, ${tz.toFixed(
-            1,
-          )}px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) scale(${scale.toFixed(
-            3,
-          )})`;
-          card.style.opacity = isCardFocused
-            ? "1"
-            : isCardDimmed
-              ? "0.62"
-              : (1 - absNorm * 0.18).toFixed(3);
+          card.style.transform = `perspective(1100px) translate3d(0,${ty}px,${tz.toFixed(1)}px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+          card.style.opacity = isFocused ? "1" : isDimmed ? "0.55" : (1 - absNorm * 0.2).toFixed(3);
         }
       }
-
       rafId = window.requestAnimationFrame(updateCurve);
     };
-
     rafId = window.requestAnimationFrame(updateCurve);
     return () => window.cancelAnimationFrame(rafId);
   }, []);
 
-  // Liquid-gold aura follows mouse seamlessly across ribbon
-  const handleStagePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!stageRef.current || !auraRef.current) return;
-    const rect = stageRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    auraRef.current.style.opacity = "1";
-    auraRef.current.style.transform = `translate3d(${x - 120}px, ${y - 120}px, 0)`;
-  };
-
+  // ---- Stage pointer ----
   const handleStagePointerLeave = () => {
     setIsPaused(false);
     setFocusedKey(null);
-    if (auraRef.current) {
-      auraRef.current.style.opacity = "0";
-    }
   };
 
-  // Interactive 3D tilt + gold optical prism glint inside focused card
+  // ---- Card 3-D tilt + chrome glint ----
   const handleCardPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
     const rect = el.getBoundingClientRect();
     const nx = (e.clientX - rect.left) / rect.width;
     const ny = (e.clientY - rect.top) / rect.height;
-
-    const tiltY = (nx - 0.5) * 14;
-    const tiltX = -(ny - 0.5) * 12;
-
-    el.dataset.tiltX = tiltX.toFixed(2);
-    el.dataset.tiltY = tiltY.toFixed(2);
+    el.dataset.tiltX = (-(ny - 0.5) * 12).toFixed(2);
+    el.dataset.tiltY = ((nx - 0.5) * 14).toFixed(2);
     el.style.setProperty("--mx", `${(nx * 100).toFixed(1)}%`);
     el.style.setProperty("--my", `${(ny * 100).toFixed(1)}%`);
   };
 
-  // Mobile horizontal swipe & touch prism tracking
+  // ---- Mobile swipe ----
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length !== 1) return;
     touchStartXRef.current = e.touches[0].clientX;
     baseTouchOffsetRef.current = touchOffset;
     touchMovedRef.current = false;
     setIsPaused(true);
-
-    if (stageRef.current && auraRef.current) {
-      const rect = stageRef.current.getBoundingClientRect();
-      const x = e.touches[0].clientX - rect.left;
-      const y = e.touches[0].clientY - rect.top;
-      auraRef.current.style.opacity = "0.95";
-      auraRef.current.style.transform = `translate3d(${x - 120}px, ${y - 120}px, 0)`;
-    }
   };
-
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (touchStartXRef.current === null || e.touches.length !== 1) return;
-    const deltaX = e.touches[0].clientX - touchStartXRef.current;
-    if (Math.abs(deltaX) > 6) {
-      touchMovedRef.current = true;
-    }
-    const clamped = Math.max(-220, Math.min(220, baseTouchOffsetRef.current + deltaX));
-    setTouchOffset(clamped);
-
-    if (stageRef.current && auraRef.current) {
-      const rect = stageRef.current.getBoundingClientRect();
-      const x = e.touches[0].clientX - rect.left;
-      const y = e.touches[0].clientY - rect.top;
-      auraRef.current.style.transform = `translate3d(${x - 120}px, ${y - 120}px, 0)`;
-    }
+    if (touchStartXRef.current === null) return;
+    touchMovedRef.current = true;
+    const delta = e.touches[0].clientX - touchStartXRef.current;
+    setTouchOffset(baseTouchOffsetRef.current + delta);
   };
-
   const handleTouchEnd = () => {
     touchStartXRef.current = null;
-    setTouchOffset(0);
-    if (auraRef.current) {
-      auraRef.current.style.opacity = "0";
-    }
-    if (touchMovedRef.current) {
-      setIsPaused(false);
-      setFocusedKey(null);
-    }
+    if (!touchMovedRef.current) return;
+    setTimeout(() => setIsPaused(false), 1800);
   };
 
-  const loopedPartners = [...ECOSYSTEM_PARTNERS, ...ECOSYSTEM_PARTNERS];
+  // Duplicate partners for seamless marquee
+  const partners = [...ECOSYSTEM_PARTNERS, ...ECOSYSTEM_PARTNERS];
 
   return (
     <section
-      id="ecosystem-partners"
       aria-labelledby="partners-heading"
-      className="relative overflow-hidden bg-white py-10 text-[#0F0F0F] sm:py-14"
+      className="relative overflow-hidden bg-[#060608] py-16 sm:py-20"
     >
-      <div className="aurum-container relative z-10">
-        {/* 1. Section Header */}
-        <RevealOnScroll className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#C69A43]/30 bg-[#FAF7F0] px-3.5 py-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#C69A43]" aria-hidden="true" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#9E7524]">
-              OUR ECOSYSTEM
-            </span>
-          </div>
+      {/* ── Subtle obsidian chrome background texture ── */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(252,170,48,0.055) 0%, transparent 70%), radial-gradient(ellipse 60% 40% at 50% 100%, rgba(148,163,184,0.04) 0%, transparent 70%)",
+        }}
+      />
 
+      {/* ── Top chrome edge line ── */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
+      />
+
+      <div className="aurum-container">
+        {/* ── 1. Section Header ── */}
+        <RevealOnScroll className="mb-10 text-center sm:mb-12">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#FCAA30]">
+            Ecosystem Partners
+          </p>
           <h2
             id="partners-heading"
-            className="mt-3 font-display text-3xl font-semibold leading-[1.08] tracking-[-0.03em] text-[#0F0F0F] sm:text-5xl lg:text-[50px]"
+            className="mt-3 font-display text-2xl font-semibold leading-tight tracking-[-0.025em] text-white sm:text-3xl"
           >
-            Partners Who{" "}
-            <span className="bg-gradient-to-r from-[#8E671D] via-[#D4A64A] to-[#8E671D] bg-clip-text text-transparent">
-              Believed In Us
-            </span>
+            Partners Who Believed In Us
           </h2>
-
-          <p className="mx-auto mt-2.5 max-w-2xl text-sm leading-relaxed text-[#4E5154] sm:text-base">
-            Building connections that move India&apos;s electric mobility ecosystem forward.
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#94A3B8]">
+            Aurum EV riders serve India&apos;s leading delivery and mobility platforms
+            across Delhi-NCR.
           </p>
+
+          {/* Gold-chrome divider */}
+          <div
+            aria-hidden="true"
+            className="mx-auto mt-5 flex max-w-[200px] items-center gap-3"
+          >
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C69A43]/50" />
+            <span className="h-1.5 w-1.5 rotate-45 border border-[#C69A43]/60 bg-[#FCAA30]/30" />
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#C69A43]/50" />
+          </div>
         </RevealOnScroll>
 
-        {/* 2. Minimalist Sleek 3D Ribbon Directly on Pure White Background */}
-        <RevealOnScroll delayMs={80} className="mt-4 sm:mt-5">
+        {/* ── 2. Chrome Card Marquee Ribbon ── */}
+        <RevealOnScroll delayMs={60}>
           <div
             ref={stageRef}
-            data-paused={isPaused ? "true" : "false"}
-            onPointerEnter={(e) => {
-              if (e.pointerType === "mouse") setIsPaused(true);
-            }}
-            onPointerMove={handleStagePointerMove}
+            role="list"
+            aria-label="Ecosystem partner logos"
+            className="partner-holo-stage relative overflow-hidden"
+            data-paused={isPaused ? "true" : undefined}
             onPointerLeave={handleStagePointerLeave}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            onTouchCancel={handleTouchEnd}
-            className="partner-holo-stage partner-perspective relative mx-auto select-none py-1"
-            role="region"
-            aria-roledescription="carousel"
-            aria-label="Electric mobility ecosystem brands"
           >
-            {/* Subtle metallic-gold light thread behind floating badges */}
+            {/* Edge fade masks */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-8 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-[#C69A43]/30 to-transparent sm:inset-x-20"
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#060608] to-transparent sm:w-24"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#060608] to-transparent sm:w-24"
             />
 
-            {/* Liquid-gold pointer/touch aura tracking across pure white background */}
+            {/* Scrolling track */}
             <div
-              ref={auraRef}
-              aria-hidden="true"
-              className="pointer-events-none absolute left-0 top-0 z-0 h-[240px] w-[240px] rounded-full opacity-0 transition-opacity duration-300"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(252,170,48,0.2) 0%, rgba(198,154,67,0.08) 45%, transparent 72%)",
-                filter: "blur(16px)",
-              }}
-            />
-
-            {/* Seamless pure-white edge dissolve masks */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 bg-gradient-to-r from-white via-white/90 to-transparent sm:w-28"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-white via-white/90 to-transparent sm:w-28"
-            />
-
-            {/* Infinite Right-to-Left Sleek Pearl-Glass Badges */}
-            <div
-              className="relative z-10 overflow-hidden py-5 transition-transform duration-200 ease-out"
-              style={{ transform: `translate3d(${touchOffset}px, 0, 0)` }}
+              className="partner-marquee-track flex gap-4 pb-4 pt-2"
+              data-paused={isPaused ? "true" : undefined}
+              style={
+                touchOffset !== 0
+                  ? { transform: `translateX(${touchOffset}px)`, animationPlayState: "paused" }
+                  : isPaused
+                    ? { animationPlayState: "paused" }
+                    : undefined
+              }
             >
-              <div className="partner-marquee-track flex w-max items-center">
-                {loopedPartners.map((partner, idx) => {
-                  const key = `${partner.id}-${idx}`;
-                  const isDuplicate = idx >= ECOSYSTEM_PARTNERS.length;
-                  const isCardFocused = focusedKey === key;
-                  const isDimmed = focusedKey !== null && !isCardFocused;
+              {partners.map((partner, idx) => {
+                const key = `${partner.id}-${idx}`;
+                const isDuplicate = idx >= ECOSYSTEM_PARTNERS.length;
+                const isCardFocused = focusedKey === key;
+                const isCardDimmed = focusedKey !== null && !isCardFocused;
 
-                  return (
+                return (
+                  <div
+                    role="listitem"
+                    key={key}
+                    ref={(el) => {
+                      cardRefs.current[idx] = el;
+                    }}
+                    data-focused={isCardFocused ? "true" : "false"}
+                    data-dimmed={isCardDimmed ? "true" : "false"}
+                    style={{ "--mx": "50%", "--my": "50%" } as React.CSSProperties}
+                    className="shrink-0 cursor-pointer"
+                    onPointerEnter={() => {
+                      lastPointerTypeRef.current = "mouse";
+                    }}
+                    onPointerMove={(e) => {
+                      if (e.pointerType !== "mouse") return;
+                      handleCardPointerMove(e);
+                      if (!isCardFocused) {
+                        setFocusedKey(key);
+                        setIsPaused(true);
+                      }
+                    }}
+                    onPointerLeave={() => {
+                      cardRefs.current[idx]!.dataset.tiltX = "0";
+                      cardRefs.current[idx]!.dataset.tiltY = "0";
+                    }}
+                    onClick={() => {
+                      if (lastPointerTypeRef.current === "mouse") return;
+                      setFocusedKey((prev) => {
+                        const next = prev === key ? null : key;
+                        setIsPaused(next !== null);
+                        return next;
+                      });
+                    }}
+                  >
+                    {/* ── Dark anodized chrome card ── */}
                     <div
-                      key={key}
-                      aria-hidden={isDuplicate ? "true" : undefined}
-                      className="w-[172px] shrink-0 px-2 sm:w-[198px] sm:px-2.5"
+                      className={`relative flex h-[82px] min-w-[148px] items-center justify-center overflow-hidden rounded-2xl border p-[1.5px] transition-all duration-300 sm:h-[90px] sm:min-w-[164px] ${
+                        isCardFocused
+                          ? "border-transparent shadow-[0_20px_48px_rgba(252,170,48,0.22),0_6px_18px_rgba(0,0,0,0.5)]"
+                          : "border-transparent shadow-[0_6px_20px_rgba(0,0,0,0.38)]"
+                      }`}
+                      style={{
+                        background: isCardFocused
+                          ? "linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(148,163,184,0.22) 25%, rgba(255,255,255,0.72) 48%, rgba(252,170,48,0.42) 72%, rgba(203,213,225,0.32) 100%)"
+                          : "linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(148,163,184,0.06) 30%, rgba(255,255,255,0.18) 55%, rgba(252,170,48,0.1) 78%, rgba(148,163,184,0.08) 100%)",
+                      }}
                     >
+                      {/* Inner obsidian surface */}
                       <div
-                        ref={(el) => {
-                          cardRefs.current[idx] = el;
+                        className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[calc(1rem-1.5px)]"
+                        style={{
+                          background:
+                            "linear-gradient(145deg, #1E2126 0%, #12141A 42%, #0A0B0E 76%, #181B20 100%)",
                         }}
-                        data-focused={isCardFocused ? "true" : "false"}
-                        data-dimmed={isDimmed ? "true" : "false"}
-                        data-tilt-x="0"
-                        data-tilt-y="0"
-                        onPointerDown={(e) => {
-                          lastPointerTypeRef.current = e.pointerType;
-                        }}
-                        onPointerEnter={(e) => {
-                          lastPointerTypeRef.current = e.pointerType;
-                          if (e.pointerType === "mouse") {
-                            setFocusedKey(key);
-                            setIsPaused(true);
-                          }
-                        }}
-                        onPointerMove={handleCardPointerMove}
-                        onPointerLeave={(e) => {
-                          if (e.pointerType === "mouse") {
-                            e.currentTarget.dataset.tiltX = "0";
-                            e.currentTarget.dataset.tiltY = "0";
-                            setFocusedKey((prev) => (prev === key ? null : prev));
-                          }
-                        }}
-                        onClick={() => {
-                          if (lastPointerTypeRef.current === "mouse") {
-                            setFocusedKey(key);
-                            setIsPaused(true);
-                            return;
-                          }
-                          setFocusedKey((prev) => {
-                            const next = prev === key ? null : key;
-                            setIsPaused(next !== null);
-                            return next;
-                          });
-                        }}
-                        style={{ "--mx": "50%", "--my": "50%" } as React.CSSProperties}
-                        className="group relative cursor-pointer"
                       >
+                        {/* Top specular chrome horizon */}
                         <div
-                          className={`relative flex h-[76px] w-full items-center justify-center overflow-hidden rounded-2xl border bg-white/95 px-4 transition-[border-color,box-shadow] duration-300 sm:h-[84px] ${
-                            isCardFocused
-                              ? "border-[#C69A43] shadow-[0_18px_42px_rgba(198,154,67,0.24),0_6px_16px_rgba(15,15,15,0.06)]"
-                              : "border-[#0F0F0F]/10 shadow-[0_8px_24px_rgba(15,15,15,0.045),inset_0_1px_0_rgba(255,255,255,1)]"
-                          }`}
-                        >
-                          {/* Cursor-reactive champagne-gold refraction shimmer */}
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/[0.09] to-transparent"
+                        />
+
+                        {/* Cursor-reactive gold shimmer */}
+                        {isCardFocused && (
                           <div
                             aria-hidden="true"
-                            className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${
-                              isCardFocused ? "opacity-100" : "opacity-0"
-                            }`}
+                            className="pointer-events-none absolute inset-0"
                             style={{
                               background:
-                                "radial-gradient(130px circle at var(--mx) var(--my), rgba(252,170,48,0.18), rgba(198,154,67,0.05) 55%, transparent 78%)",
+                                "radial-gradient(110px circle at var(--mx) var(--my), rgba(252,170,48,0.22), rgba(198,154,67,0.06) 55%, transparent 78%)",
                             }}
                           />
+                        )}
 
-                          {/* Clean Framed Brand Logo */}
+                        {/* Diagonal chrome sweep */}
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 overflow-hidden"
+                        >
                           <div
-                            className={`relative z-10 flex items-center justify-center overflow-hidden transition-transform duration-300 ${
-                              isCardFocused ? "scale-[1.06]" : ""
-                            } ${logoFrameClasses(partner.sizeHint)}`}
-                            style={
-                              partner.tileBackdrop
-                                ? { backgroundColor: partner.tileBackdrop }
-                                : undefined
-                            }
-                          >
-                            <img
-                              src={partner.logoUrl}
-                              alt={isDuplicate ? "" : partner.alt}
-                              loading="lazy"
-                              decoding="async"
-                              draggable={false}
-                              className="h-full w-full object-contain select-none"
-                            />
-                          </div>
+                            className="h-full w-1/2 motion-safe:animate-[partnerGoldSweep_5s_ease-in-out_infinite]"
+                            style={{
+                              background:
+                                "linear-gradient(110deg, transparent 15%, rgba(255,255,255,0.1) 48%, rgba(252,170,48,0.09) 55%, transparent 85%)",
+                            }}
+                          />
                         </div>
 
-                        {/* Subtle floating micro-tag below glass pill revealed only on hover/tap */}
+                        {/* Logo image */}
+                        <div className="relative z-10 flex items-center justify-center px-5">
+                          <img
+                            src={partner.logoUrl}
+                            alt={isDuplicate ? "" : partner.alt}
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                            className={`select-none object-contain transition-all duration-300 ${logoImgClasses(partner.sizeHint)} ${isCardFocused ? "scale-105 brightness-110" : "opacity-90 brightness-100"}`}
+                            style={
+                              partner.tileBackdrop
+                                ? {
+                                    borderRadius: "6px",
+                                    backgroundColor: partner.tileBackdrop,
+                                    padding: "4px 8px",
+                                  }
+                                : undefined
+                            }
+                          />
+                        </div>
+
+                        {/* Partner name micro-tag revealed on focus */}
                         <span
                           aria-hidden="true"
-                          className={`pointer-events-none absolute -bottom-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#C69A43]/40 bg-[#0F0F0F] px-2.5 py-[2px] text-[9px] font-semibold uppercase tracking-[0.14em] text-[#F5CF7E] shadow-sm transition-all duration-200 ${
+                          className={`pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.14em] transition-all duration-200 ${
                             isCardFocused
-                              ? "translate-y-0 opacity-100"
-                              : "translate-y-1 opacity-0"
+                              ? "opacity-100 text-[#F5CF7E]"
+                              : "opacity-0 text-transparent"
                           }`}
                         >
                           {partner.name}
                         </span>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </RevealOnScroll>
 
-        {/* 3. Section Bottom Statement & Subtle Metallic Gold Divider */}
-        <RevealOnScroll delayMs={120} className="mt-1.5 text-center sm:mt-2">
-          <p className="font-display text-base font-medium tracking-[-0.015em] text-[#1A1A1A] sm:text-lg">
-            Together, Moving Towards a Smarter Electric Future.
+        {/* ── 3. Bottom statement ── */}
+        <RevealOnScroll delayMs={120} className="mt-8 text-center sm:mt-10">
+          <p className="font-display text-sm font-medium tracking-[-0.01em] text-[#94A3B8] sm:text-base">
+            Together, moving towards a smarter electric future.
           </p>
-
           <div
             aria-hidden="true"
-            className="mx-auto mt-3.5 flex max-w-md items-center justify-center gap-3"
+            className="mx-auto mt-4 flex max-w-md items-center gap-3"
           >
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C69A43]/60" />
-            <span className="h-2 w-2 rotate-45 border border-[#C69A43] bg-[#FCAA30]/40" />
-            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#C69A43]/60" />
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C69A43]/40" />
+            <span className="h-1.5 w-1.5 rotate-45 border border-[#C69A43]/50 bg-[#FCAA30]/25" />
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#C69A43]/40" />
           </div>
         </RevealOnScroll>
       </div>
