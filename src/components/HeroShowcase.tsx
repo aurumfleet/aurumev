@@ -520,15 +520,6 @@ export function HeroShowcase() {
 
                       {isFront && (
                         <>
-                          {/* Top Scene Counter Pill */}
-                          <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-black/55 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-xl">
-                            <span className="tabular-nums text-[#FCAA30]">0{activeIdx + 1}</span>
-                            <span className="text-white/40">/</span>
-                            <span className="tabular-nums text-white/70">0{total}</span>
-                            <span className="mx-1 h-3 w-px bg-white/20" />
-                            <span>{current.thumbLabel}</span>
-                          </div>
-
                           {/* Stage Prev / Next Chrome Controls */}
                           <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
                             <button
