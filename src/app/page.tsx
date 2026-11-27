@@ -15,6 +15,7 @@ import { HeroShowcase } from "@/components/HeroShowcase";
 import { AboutAurumSection } from "@/components/AboutAurumSection";
 import { PartnersHolographicSection } from "@/components/PartnersHolographicSection";
 import { WhyChooseAurumSection } from "@/components/WhyChooseAurumSection";
+import { HowItWorksInvestmentSection } from "@/components/HowItWorksInvestmentSection";
 import { FleetLineupCarousel } from "@/components/FleetLineupCarousel";
 import { OperationsShowcaseTabs } from "@/components/OperationsShowcaseTabs";
 import { AurumEcosystemSection } from "@/components/AurumEcosystemSection";
@@ -90,6 +91,9 @@ export default async function HomePage() {
 
         {/* SECTION 04 – WHY CHOOSE AURUM */}
         <WhyChooseAurumSection />
+
+        {/* SECTION 05 – HOW IT WORKS */}
+        <HowItWorksInvestmentSection />
 
         {/* 3 & 4. BENTO BRAND EDITORIAL + QUICK JOURNEY SELECTOR */}
         <section className="bg-[#F4F4F4] py-16 sm:py-24">
