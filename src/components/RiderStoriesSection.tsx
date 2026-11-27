@@ -187,7 +187,7 @@ export function RiderStoriesSection({
                 type="button"
                 onClick={() => setUserInteracted((p) => !p)}
                 aria-label={userInteracted ? "Resume automatic story carousel" : "Pause automatic story carousel"}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#0F0F0F]/12 bg-white px-3.5 py-2 text-xs font-medium text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A]/30"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#0F0F0F]/15 bg-white px-3.5 py-2 text-xs font-medium text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A]/30"
               >
                 {userInteracted ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
                 <span>{userInteracted ? "Paused" : "Auto-Play"}</span>
@@ -197,7 +197,7 @@ export function RiderStoriesSection({
                 type="button"
                 onClick={() => stepStory(-1)}
                 aria-label="Previous rider story"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/12 bg-white text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/15 bg-white text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -205,7 +205,7 @@ export function RiderStoriesSection({
                 type="button"
                 onClick={() => stepStory(1)}
                 aria-label="Next rider story"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/12 bg-white text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0F0F0F]/15 bg-white text-[#0B1F3A] shadow-sm transition hover:border-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -411,19 +411,19 @@ export function RiderStoriesSection({
                 />
                 <div
                   aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-[#07111E]/88 via-transparent to-[#07111E]/25"
+                  className="absolute inset-0 bg-gradient-to-t from-[#07111E]/90 via-[#07111E]/25 to-transparent"
                 />
 
-                <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-4 rounded-2xl border border-white/20 bg-white/10 p-4 text-white backdrop-blur-xl">
+                <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-4 rounded-2xl border border-white/25 bg-[#07111E]/80 p-4 text-white shadow-[0_12px_32px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:inset-x-5 sm:bottom-5">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#FCD38D]">
                       {activeStory.slotCode}
                     </p>
                     <p className="mt-0.5 font-display text-lg font-semibold">{activeStory.name}</p>
-                    <p className="text-xs text-white/75">{activeStory.role}</p>
+                    <p className="text-xs text-white/80">{activeStory.role}</p>
                   </div>
                   {activeStory.city && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[#13B75E]/20 px-2.5 py-1 text-[11px] font-medium text-[#6EE7B7]">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#13B75E]/25 px-2.5 py-1 text-[11px] font-medium text-[#6EE7B7]">
                       <MapPin className="h-3 w-3" /> {activeStory.city}
                     </span>
                   )}
@@ -457,7 +457,7 @@ export function RiderStoriesSection({
                   </p>
 
                   {/* Pull Quote Card */}
-                  <div className="relative mt-7 rounded-2xl border border-[#0F0F0F]/8 bg-[#F8FAFC] p-5 sm:p-6">
+                  <div className="relative mt-7 rounded-2xl border border-[#0F0F0F]/10 bg-[#F8FAFC] p-5 sm:p-6">
                     <Quote className="h-6 w-6 text-[#C69A43]/60" />
                     <p className="mt-2 font-display text-base font-medium leading-relaxed text-[#0B1F3A] sm:text-lg">
                       “{activeStory.quote}”

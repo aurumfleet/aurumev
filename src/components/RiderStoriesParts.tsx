@@ -89,8 +89,8 @@ export function CinematicIntroBanner() {
         const rect = wrap.getBoundingClientRect();
         const vh = window.innerHeight || 900;
         const progress = Math.max(-1, Math.min(1, (vh / 2 - (rect.top + rect.height / 2)) / vh));
-        const shiftY = progress * 34;
-        bg.style.transform = `translate3d(0, ${shiftY.toFixed(1)}px, 0) scale(1.09)`;
+        const shiftY = progress * 24;
+        bg.style.transform = `translate3d(0, ${shiftY.toFixed(1)}px, 0) scale(1.06)`;
       }
       rafId = 0;
     };
@@ -119,58 +119,56 @@ export function CinematicIntroBanner() {
       className="relative overflow-hidden rounded-[2rem] border border-[#0F0F0F]/10 bg-[#07111E] shadow-[0_28px_80px_rgba(7,17,30,0.18)]"
     >
       {/* Parallax Urban Banner Backdrop */}
-      <div className="relative min-h-[430px] w-full overflow-hidden sm:min-h-[500px] lg:min-h-[560px]">
+      <div className="relative h-[480px] w-full overflow-hidden sm:h-[520px] lg:h-[560px]">
         <div
           ref={bgRef}
-          className="absolute inset-0 will-change-transform"
-          style={{ transform: "translate3d(0, 0, 0) scale(1.09)" }}
+          className="pointer-events-none absolute -inset-y-8 inset-x-0"
+          style={{ transform: "translate3d(0, 0, 0) scale(1.06)" }}
         >
           <Image
             src={RIDER_SECTION_COPY.cinematicBannerImage}
             alt={RIDER_SECTION_COPY.cinematicBannerAlt}
             fill
             sizes="(max-width: 768px) 100vw, 1360px"
-            className="object-cover object-center"
-            priority={false}
+            className="object-cover object-center sm:object-[62%_38%]"
+            priority
           />
         </div>
 
-        {/* Multi-layer Obsidian + Emerald Editorial Scrim */}
+        {/* Directional Dark Obsidian Scrims for Sharp Foreground Contrast & Clear Rider Visibility */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-r from-[#07111E]/92 via-[#07111E]/68 to-[#07111E]/28"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(90deg, rgba(7, 17, 30, 0.88) 0%, rgba(7, 17, 30, 0.58) 46%, rgba(7, 17, 30, 0.14) 100%)",
+          }}
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-[#07111E]/90 via-transparent to-[#07111E]/45"
-        />
-
-        {/* Subtle Floating Accent Motes */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute right-[14%] top-12 hidden h-32 w-32 rounded-full bg-[#FCAA30]/15 blur-3xl lg:block"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-16 right-[26%] hidden h-28 w-28 rounded-full bg-[#13B75E]/15 blur-3xl lg:block"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(0deg, rgba(7, 17, 30, 0.84) 0%, rgba(7, 17, 30, 0.12) 48%, rgba(7, 17, 30, 0.38) 100%)",
+          }}
         />
 
         {/* Banner Content */}
-        <div className="relative z-10 flex min-h-[430px] flex-col justify-between p-6 sm:min-h-[500px] sm:p-10 lg:min-h-[560px] lg:p-14">
+        <div className="relative z-10 flex h-full flex-col justify-between p-6 sm:p-10 lg:p-14">
           {/* Top Glass Tag */}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#07111E]/70 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-xl">
               <span className="h-1.5 w-1.5 rounded-full bg-[#13B75E]" />
               Aurum Rider Chronicles
             </span>
-            <span className="hidden rounded-full border border-[#FCAA30]/35 bg-[#FCAA30]/10 px-3.5 py-1 text-[11px] font-medium tracking-wide text-[#FCD38D] backdrop-blur-xl sm:inline-flex">
+            <span className="hidden rounded-full border border-[#FCAA30]/40 bg-[#07111E]/65 px-3.5 py-1 text-[11px] font-medium tracking-wide text-[#FCD38D] backdrop-blur-xl sm:inline-flex">
               Authentic Urban Journeys
             </span>
           </div>
 
           {/* Center-Left Editorial Quote Headline (Word-by-Word Reveal) */}
-          <div className="my-8 max-w-3xl">
-            <h3 className="font-display text-2xl font-semibold leading-[1.14] tracking-[-0.03em] text-white sm:text-4xl lg:text-[2.75rem]">
+          <div className="my-6 max-w-2xl">
+            <h3 className="font-display text-2xl font-semibold leading-[1.14] tracking-[-0.03em] text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.6)] sm:text-4xl lg:text-[2.75rem]">
               {headlineWords.map((word, idx) => (
                 <span
                   key={`${word}-${idx}`}
@@ -270,7 +268,7 @@ export function VideoStoriesShowcase({
 
       {/* Large Cinematic Video Showcase Frame */}
       <div className="group relative mt-7 overflow-hidden rounded-[2rem] border border-[#0F0F0F]/10 bg-[#07111E] shadow-[0_24px_70px_rgba(7,17,30,0.16)]">
-        <div className="relative aspect-[16/10] w-full sm:aspect-[16/8]">
+        <div className="relative min-h-[360px] w-full sm:min-h-[420px] lg:aspect-[16/7.5] lg:min-h-[460px]">
           <Image
             src={activePreview?.thumbnailUrl || RIDER_SECTION_COPY.videoShowcasePoster}
             alt={
@@ -286,11 +284,15 @@ export function VideoStoriesShowcase({
           {/* Dark Translucent Overlay */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-[#07111E]/92 via-[#07111E]/55 to-[#07111E]/40"
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(0deg, rgba(7, 17, 30, 0.92) 0%, rgba(7, 17, 30, 0.58) 52%, rgba(7, 17, 30, 0.42) 100%)",
+            }}
           />
 
           {/* Center Glowing Circular Play Trigger */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+          <div className="relative z-10 flex min-h-[360px] flex-col items-center justify-center px-5 py-8 text-center sm:min-h-[420px] sm:p-8 lg:h-full">
             <button
               type="button"
               onClick={() => {
