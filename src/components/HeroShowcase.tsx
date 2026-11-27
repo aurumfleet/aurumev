@@ -52,8 +52,8 @@ const HERO_CONTENT = {
   headline: "Powering India's Delivery Future with Electric Mobility.",
   subtitle:
     "Aurum Fleet Solutions brings together EV rentals, delivery fleet operations and structured EV investment opportunities.",
-  primaryCta: { label: "Explore Investment Plans", href: "/invest" },
-  secondaryCta: { label: "Rent an EV", href: "/rentals#book" },
+  primaryCta: { label: "Explore Investment Plans", href: "#why-choose-aurum" },
+  secondaryCta: { label: "Invest Now", href: "/invest" },
 };
 
 function PremiumHeroButton({
@@ -417,7 +417,7 @@ export function HeroShowcase() {
               <PremiumHeroButton
                 href={HERO_CONTENT.secondaryCta.href}
                 variant="glass"
-                onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero" })}
+                onClick={() => trackAnalyticsEvent("invest_cta_click", { source: "hero_secondary" })}
               >
                 <span>{HERO_CONTENT.secondaryCta.label}</span>
                 <ArrowUpRight className="h-4 w-4 text-[#FCAA30] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -512,7 +512,7 @@ export function HeroShowcase() {
             href={HERO_CONTENT.secondaryCta.href}
             variant="glass"
             fullWidth
-            onClick={() => trackAnalyticsEvent("rent_cta_click", { source: "hero_mobile" })}
+            onClick={() => trackAnalyticsEvent("invest_cta_click", { source: "hero_mobile_secondary" })}
           >
             <span>{HERO_CONTENT.secondaryCta.label}</span>
             <ArrowUpRight className="h-4 w-4 text-[#FCAA30]" />

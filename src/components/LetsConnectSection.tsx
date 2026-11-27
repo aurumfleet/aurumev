@@ -7,7 +7,7 @@ import { LeadForm } from "./LeadForm";
 const REASONS = [
   {
     category: "rental" as const,
-    label: "Rent an EV",
+    label: "Commuter EV Plans",
     desc: "Daily, weekly, or monthly commuter EV rentals.",
     icon: Bike,
   },
@@ -25,8 +25,8 @@ const REASONS = [
   },
   {
     category: "investor" as const,
-    label: "Investor Enquiry",
-    desc: "Explore structured EV fleet participation opportunities.",
+    label: "Invest Now",
+    desc: "Explore structured EV fleet investment plans (2 to 50 EVs).",
     icon: TrendingUp,
   },
 ];

@@ -386,11 +386,11 @@ export function Navbar() {
 
           <div className="grid shrink-0 grid-cols-2 gap-3 border-t border-black/[0.06] bg-white/75 px-5 py-4 backdrop-blur-xl">
             <Link
-              href="/rentals#book"
+              href="/contact"
               onClick={() => setMobileOpen(false)}
               className="aurum-pill-dark py-3.5 text-center text-sm"
             >
-              Rent an EV
+              Contact Team
             </Link>
             <Link
               href="/invest"

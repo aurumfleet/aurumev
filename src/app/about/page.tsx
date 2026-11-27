@@ -83,7 +83,7 @@ const SEGMENTS = [
     label: "Individual Commuters",
     desc: "Daily and weekly riders who want zero-fuel urban mobility without the burden of vehicle ownership.",
     href: "/rentals",
-    cta: "Rent an EV",
+    cta: "Explore Rentals",
     color: "#0667F4",
   },
   {
@@ -107,7 +107,7 @@ const SEGMENTS = [
     label: "Fleet Partners",
     desc: "Structured EV fleet deployment partners who want transparent asset management and periodic operational reporting.",
     href: "/invest",
-    cta: "Partner With Us",
+    cta: "Invest Now",
     color: "#0F0F0F",
   },
 ];
