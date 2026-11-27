@@ -193,6 +193,15 @@ body {
     }
   }
 
+  @keyframes partnerMarqueeLtr {
+    0% {
+      transform: translate3d(-50%, 0, 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
   @keyframes partnerHoloFloat {
     0%,
     100% {
@@ -223,12 +232,19 @@ body {
   }
 
   .partner-marquee-track {
-    animation: partnerMarqueeRtl 36s linear infinite;
+    animation: partnerMarqueeRtl 48s linear infinite;
+    will-change: transform;
+  }
+
+  .partner-marquee-track-reverse {
+    animation: partnerMarqueeLtr 48s linear infinite;
     will-change: transform;
   }
 
   .partner-holo-stage:hover .partner-marquee-track,
-  .partner-holo-stage[data-paused="true"] .partner-marquee-track {
+  .partner-holo-stage:hover .partner-marquee-track-reverse,
+  .partner-holo-stage[data-paused="true"] .partner-marquee-track,
+  .partner-holo-stage[data-paused="true"] .partner-marquee-track-reverse {
     animation-play-state: paused;
   }
 

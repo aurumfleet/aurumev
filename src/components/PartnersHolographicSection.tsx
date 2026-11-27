@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ECOSYSTEM_PARTNERS } from "@/data/partners";
+import { ECOSYSTEM_PARTNERS, type EcosystemPartner } from "@/data/partners";
 import { RevealOnScroll } from "@/components/MotionPrimitives";
 
 export function PartnersHolographicSection() {
@@ -112,7 +112,143 @@ export function PartnersHolographicSection() {
     setTimeout(() => setIsPaused(false), 1800);
   };
 
-  const partners = [...ECOSYSTEM_PARTNERS, ...ECOSYSTEM_PARTNERS];
+  const midpoint = Math.ceil(ECOSYSTEM_PARTNERS.length / 2);
+  const rowOneBase = ECOSYSTEM_PARTNERS.slice(0, midpoint);
+  const rowTwoBase = ECOSYSTEM_PARTNERS.slice(midpoint);
+  const rowOnePartners = [...rowOneBase, ...rowOneBase, ...rowOneBase, ...rowOneBase];
+  const rowTwoPartners = [...rowTwoBase, ...rowTwoBase, ...rowTwoBase, ...rowTwoBase];
+
+  const renderPartnerCard = (
+    partner: EcosystemPartner,
+    idx: number,
+    rowTag: "r1" | "r2",
+    baseLen: number
+  ) => {
+    const refIndex = rowTag === "r1" ? idx : rowOnePartners.length + idx;
+    const key = `${rowTag}-${partner.id}-${idx}`;
+    const isDuplicate = idx >= baseLen;
+    const isCardFocused = focusedKey === key;
+    const isCardDimmed = focusedKey !== null && !isCardFocused;
+
+    return (
+      <div
+        role="listitem"
+        key={key}
+        ref={(el) => {
+          cardRefs.current[refIndex] = el;
+        }}
+        data-focused={isCardFocused ? "true" : "false"}
+        data-dimmed={isCardDimmed ? "true" : "false"}
+        style={{ "--mx": "50%", "--my": "50%" } as React.CSSProperties}
+        className="relative shrink-0 cursor-pointer"
+        onPointerEnter={() => {
+          lastPointerTypeRef.current = "mouse";
+        }}
+        onPointerMove={(e) => {
+          if (e.pointerType !== "mouse") return;
+          handleCardPointerMove(e);
+          if (!isCardFocused) {
+            setFocusedKey(key);
+            setIsPaused(true);
+          }
+        }}
+        onPointerLeave={() => {
+          const card = cardRefs.current[refIndex];
+          if (card) {
+            card.dataset.tiltX = "0";
+            card.dataset.tiltY = "0";
+          }
+        }}
+        onClick={() => {
+          if (lastPointerTypeRef.current === "mouse") return;
+          setFocusedKey((prev) => {
+            const next = prev === key ? null : key;
+            setIsPaused(next !== null);
+            return next;
+          });
+        }}
+      >
+        {/* 2px Brushed-Chrome Metallic Bevel Frame */}
+        <div
+          className={`relative h-[88px] w-[176px] rounded-2xl p-[2px] transition-shadow duration-300 sm:h-[96px] sm:w-[192px] ${
+            isCardFocused
+              ? "shadow-[0_20px_44px_rgba(198,154,67,0.28),0_8px_18px_rgba(15,15,15,0.08)]"
+              : "shadow-[0_10px_28px_rgba(15,15,15,0.07),0_2px_6px_rgba(15,15,15,0.04)]"
+          }`}
+          style={{
+            background: isCardFocused
+              ? "linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 24%, #FFFFFF 48%, #FCAA30 74%, #9E7524 100%)"
+              : "linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 30%, #F8FAFC 55%, #94A3B8 82%, #E2E8F0 100%)",
+          }}
+        >
+          {/* Inner Brand Tile */}
+          <div
+            className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[calc(1rem-2px)]"
+            style={{
+              backgroundColor: partner.tileBackdrop ?? "#FFFFFF",
+            }}
+          >
+            <img
+              src={partner.logoUrl}
+              alt={isDuplicate ? "" : partner.alt}
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+              className={`select-none transition-transform duration-300 ${
+                partner.fit === "cover"
+                  ? "h-full w-full object-cover"
+                  : "h-full w-full object-contain px-5 py-3"
+              } ${isCardFocused ? "scale-[1.05]" : ""}`}
+            />
+
+            {/* Subtle Top Chrome Glass Specular Sheen */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/25 to-transparent"
+            />
+
+            {/* Pointer-Tracked Liquid Chrome Highlight */}
+            {isCardFocused && (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "radial-gradient(130px circle at var(--mx) var(--my), rgba(255,255,255,0.34), rgba(252,170,48,0.12) 55%, transparent 80%)",
+                }}
+              />
+            )}
+
+            {/* Diagonal Chrome Sweep */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 overflow-hidden"
+            >
+              <div
+                className="h-full w-1/2 motion-safe:animate-[partnerGoldSweep_5.5s_ease-in-out_infinite]"
+                style={{
+                  background:
+                    "linear-gradient(110deg, transparent 15%, rgba(255,255,255,0.38) 48%, rgba(252,170,48,0.14) 55%, transparent 85%)",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Partner Name Micro-Tag on Focus */}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute -bottom-3 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#C69A43]/50 bg-[#0F0F0F] px-2.5 py-[2px] text-[9px] font-semibold uppercase tracking-[0.14em] text-[#F5CF7E] shadow-md transition-all duration-200 ${
+            isCardFocused
+              ? "translate-y-0 opacity-100"
+              : "translate-y-1 opacity-0"
+          }`}
+        >
+          {partner.name}
+        </span>
+      </div>
+    );
+  };
 
   return (
     <section
@@ -191,9 +327,9 @@ export function PartnersHolographicSection() {
               className="pointer-events-none absolute inset-y-0 right-0 z-20 w-12 bg-gradient-to-l from-[#FAFBFD] to-transparent sm:w-24"
             />
 
-            {/* Scrolling track */}
+            {/* Row 1: Slides Left (RTL) */}
             <div
-              className="partner-marquee-track flex w-max gap-5 pb-5 pt-2"
+              className="partner-marquee-track flex w-max gap-5 pb-4 pt-2"
               data-paused={isPaused ? "true" : undefined}
               style={
                 touchOffset !== 0
@@ -206,131 +342,29 @@ export function PartnersHolographicSection() {
                     : undefined
               }
             >
-              {partners.map((partner, idx) => {
-                const key = `${partner.id}-${idx}`;
-                const isDuplicate = idx >= ECOSYSTEM_PARTNERS.length;
-                const isCardFocused = focusedKey === key;
-                const isCardDimmed = focusedKey !== null && !isCardFocused;
+              {rowOnePartners.map((partner, idx) =>
+                renderPartnerCard(partner, idx, "r1", rowOneBase.length)
+              )}
+            </div>
 
-                return (
-                  <div
-                    role="listitem"
-                    key={key}
-                    ref={(el) => {
-                      cardRefs.current[idx] = el;
-                    }}
-                    data-focused={isCardFocused ? "true" : "false"}
-                    data-dimmed={isCardDimmed ? "true" : "false"}
-                    style={{ "--mx": "50%", "--my": "50%" } as React.CSSProperties}
-                    className="relative shrink-0 cursor-pointer"
-                    onPointerEnter={() => {
-                      lastPointerTypeRef.current = "mouse";
-                    }}
-                    onPointerMove={(e) => {
-                      if (e.pointerType !== "mouse") return;
-                      handleCardPointerMove(e);
-                      if (!isCardFocused) {
-                        setFocusedKey(key);
-                        setIsPaused(true);
-                      }
-                    }}
-                    onPointerLeave={() => {
-                      const card = cardRefs.current[idx];
-                      if (card) {
-                        card.dataset.tiltX = "0";
-                        card.dataset.tiltY = "0";
-                      }
-                    }}
-                    onClick={() => {
-                      if (lastPointerTypeRef.current === "mouse") return;
-                      setFocusedKey((prev) => {
-                        const next = prev === key ? null : key;
-                        setIsPaused(next !== null);
-                        return next;
-                      });
-                    }}
-                  >
-                    {/* 1.5px Brushed-Chrome Metallic Bevel Frame */}
-                    <div
-                      className={`relative h-[88px] w-[176px] rounded-2xl p-[2px] transition-shadow duration-300 sm:h-[96px] sm:w-[192px] ${
-                        isCardFocused
-                          ? "shadow-[0_20px_44px_rgba(198,154,67,0.28),0_8px_18px_rgba(15,15,15,0.08)]"
-                          : "shadow-[0_10px_28px_rgba(15,15,15,0.07),0_2px_6px_rgba(15,15,15,0.04)]"
-                      }`}
-                      style={{
-                        background: isCardFocused
-                          ? "linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 24%, #FFFFFF 48%, #FCAA30 74%, #9E7524 100%)"
-                          : "linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 30%, #F8FAFC 55%, #94A3B8 82%, #E2E8F0 100%)",
-                      }}
-                    >
-                      {/* Inner Brand Tile */}
-                      <div
-                        className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[calc(1rem-2px)]"
-                        style={{
-                          backgroundColor: partner.tileBackdrop ?? "#FFFFFF",
-                        }}
-                      >
-                        <img
-                          src={partner.logoUrl}
-                          alt={isDuplicate ? "" : partner.alt}
-                          loading="lazy"
-                          decoding="async"
-                          draggable={false}
-                          className={`select-none transition-transform duration-300 ${
-                            partner.fit === "cover"
-                              ? "h-full w-full object-cover"
-                              : "h-full w-full object-contain px-5 py-3"
-                          } ${isCardFocused ? "scale-[1.05]" : ""}`}
-                        />
-
-                        {/* Subtle Top Chrome Glass Specular Sheen */}
-                        <div
-                          aria-hidden="true"
-                          className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/25 to-transparent"
-                        />
-
-                        {/* Pointer-Tracked Liquid Chrome Highlight */}
-                        {isCardFocused && (
-                          <div
-                            aria-hidden="true"
-                            className="pointer-events-none absolute inset-0"
-                            style={{
-                              background:
-                                "radial-gradient(130px circle at var(--mx) var(--my), rgba(255,255,255,0.34), rgba(252,170,48,0.12) 55%, transparent 80%)",
-                            }}
-                          />
-                        )}
-
-                        {/* Diagonal Chrome Sweep */}
-                        <div
-                          aria-hidden="true"
-                          className="pointer-events-none absolute inset-0 overflow-hidden"
-                        >
-                          <div
-                            className="h-full w-1/2 motion-safe:animate-[partnerGoldSweep_5.5s_ease-in-out_infinite]"
-                            style={{
-                              background:
-                                "linear-gradient(110deg, transparent 15%, rgba(255,255,255,0.38) 48%, rgba(252,170,48,0.14) 55%, transparent 85%)",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Floating Partner Name Micro-Tag on Focus */}
-                    <span
-                      aria-hidden="true"
-                      className={`pointer-events-none absolute -bottom-3 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#C69A43]/50 bg-[#0F0F0F] px-2.5 py-[2px] text-[9px] font-semibold uppercase tracking-[0.14em] text-[#F5CF7E] shadow-md transition-all duration-200 ${
-                        isCardFocused
-                          ? "translate-y-0 opacity-100"
-                          : "translate-y-1 opacity-0"
-                      }`}
-                    >
-                      {partner.name}
-                    </span>
-                  </div>
-                );
-              })}
+            {/* Row 2: Slides Opposite Right (LTR) */}
+            <div
+              className="partner-marquee-track-reverse flex w-max gap-5 pb-5 pt-2"
+              data-paused={isPaused ? "true" : undefined}
+              style={
+                touchOffset !== 0
+                  ? {
+                      transform: `translateX(${-touchOffset}px)`,
+                      animationPlayState: "paused",
+                    }
+                  : isPaused
+                    ? { animationPlayState: "paused" }
+                    : undefined
+              }
+            >
+              {rowTwoPartners.map((partner, idx) =>
+                renderPartnerCard(partner, idx, "r2", rowTwoBase.length)
+              )}
             </div>
           </div>
         </RevealOnScroll>
