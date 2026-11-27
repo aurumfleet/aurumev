@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionFromRequest, hasStaffRole } from "@/lib/auth";
+import {
+  getSessionFromRequest,
+  hasStaffRole,
+  SESSION_COOKIE_NAME,
+} from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+
+const MAX_API_BODY_BYTES = 65_536; // 64 KB
+
+const STATE_CHANGING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 const PUBLIC_PAGE_EXACT = new Set<string>([
   "/",
@@ -59,12 +68,80 @@ function isAdminPath(pathname: string): boolean {
   );
 }
 
+function hasSessionCookie(request: NextRequest): boolean {
+  const cookie = request.headers.get("cookie") || "";
+  return cookie.includes(`${SESSION_COOKIE_NAME}=`);
+}
+
+function validateSameOriginForCsrf(request: NextRequest): boolean {
+  const expectedOrigin = request.nextUrl.origin;
+  const origin = request.headers.get("origin");
+  if (origin) {
+    return origin === expectedOrigin;
+  }
+  const referer = request.headers.get("referer");
+  if (referer) {
+    try {
+      return new URL(referer).origin === expectedOrigin;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method.toUpperCase();
 
-  // 1. Allow explicitly allowlisted public API (method + path)
+  // 1. API protection: body size cap, rate limit, CSRF, allowlist & deny-by-default authz
   if (pathname.startsWith("/api/")) {
+    const contentLength = Number(request.headers.get("content-length") || "0");
+    if (Number.isFinite(contentLength) && contentLength > MAX_API_BODY_BYTES) {
+      return NextResponse.json(
+        { error: "Payload too large" },
+        { status: 413 }
+      );
+    }
+
+    const shouldRateLimit =
+      process.env.VITEST !== "true" ||
+      request.headers.get("x-test-ratelimit") === "1";
+    if (shouldRateLimit) {
+      const ip = getClientIp(request);
+      const isWrite = STATE_CHANGING_METHODS.has(method);
+      const rl = checkRateLimit(
+        `${ip}:${isWrite ? "write" : "read"}:${pathname}`,
+        isWrite ? 20 : 120,
+        60_000
+      );
+      if (!rl.allowed) {
+        return NextResponse.json(
+          { error: "Too many requests. Please try again later." },
+          {
+            status: 429,
+            headers: { "Retry-After": String(rl.retryAfterSeconds) },
+          }
+        );
+      }
+    }
+
+    // CSRF protection for cookie-authenticated state-changing requests (without Bearer token)
+    const hasBearer =
+      request.headers.get("authorization")?.toLowerCase().startsWith("bearer ") ??
+      false;
+    if (
+      STATE_CHANGING_METHODS.has(method) &&
+      !hasBearer &&
+      hasSessionCookie(request) &&
+      !validateSameOriginForCsrf(request)
+    ) {
+      return NextResponse.json(
+        { error: "CSRF validation failed: invalid origin" },
+        { status: 403 }
+      );
+    }
+
     if (isPublicApi(pathname, method)) {
       return NextResponse.next();
     }

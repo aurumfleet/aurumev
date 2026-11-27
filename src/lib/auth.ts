@@ -3,6 +3,23 @@ import { NextResponse } from "next/server";
 
 export const SESSION_COOKIE_NAME = "aurum_session";
 
+export function buildSessionCookieHeader(
+  token: string,
+  maxAgeSeconds = 60 * 60 * 8
+): string {
+  const parts = [
+    `${SESSION_COOKIE_NAME}=${encodeURIComponent(token)}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    `Max-Age=${maxAgeSeconds}`,
+  ];
+  if (process.env.NODE_ENV === "production") {
+    parts.push("Secure");
+  }
+  return parts.join("; ");
+}
+
 export const STAFF_ROLES = [
   "super_admin",
   "admin",
@@ -36,13 +53,20 @@ export class AuthorizationError extends Error {
 const JWT_ISSUER = "aurum-ev";
 const JWT_AUDIENCE = "aurum-ev-api";
 
+const KNOWN_WEAK_SECRETS = new Set([
+  "aurum-dev-secret-change-in-production-min-32-chars",
+  "changeme",
+  "secret",
+  "development-secret",
+]);
+
 function getEncodedSecret(overrideSecret?: string): Uint8Array | null {
   const raw =
     overrideSecret?.trim() ||
     process.env.AUTH_SECRET?.trim() ||
     process.env.JWT_SECRET?.trim();
 
-  if (!raw || raw.length < 16) {
+  if (!raw || raw.length < 16 || KNOWN_WEAK_SECRETS.has(raw)) {
     return null;
   }
   return new TextEncoder().encode(raw);

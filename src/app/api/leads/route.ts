@@ -1,6 +1,6 @@
 import { query } from "@/lib/db";
 import { leadCreateSchema } from "@/lib/validation";
-import { jsonOk, jsonError } from "@/lib/api-helpers";
+import { jsonOk, jsonError, generateReferenceCode } from "@/lib/api-helpers";
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     }
 
     const data = parsed.data;
-    const leadCode = `LEAD-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+    const leadCode = generateReferenceCode("LEAD");
 
     const res = await query<{ id: string; lead_code: string }>(
       `INSERT INTO leads (

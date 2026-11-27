@@ -83,8 +83,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const ga4Id = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+  const rawGa4 = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID?.trim() || "";
+  const rawGtm = process.env.NEXT_PUBLIC_GTM_ID?.trim() || "";
+  const ga4Id = /^G-[A-Z0-9]+$/.test(rawGa4) ? rawGa4 : "";
+  const gtmId = /^GTM-[A-Z0-9]+$/.test(rawGtm) ? rawGtm : "";
 
   const orgJsonLd = {
     "@context": "https://schema.org",

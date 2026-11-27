@@ -1,7 +1,7 @@
 import { withTransaction } from "@/lib/db";
 import { getSessionFromRequest } from "@/lib/auth";
 import { bookingCreateSchema } from "@/lib/validation";
-import { jsonOk, jsonError } from "@/lib/api-helpers";
+import { jsonOk, jsonError, generateReferenceCode } from "@/lib/api-helpers";
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     const session = await getSessionFromRequest(request);
-    const bookingNumber = `BK-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+    const bookingNumber = generateReferenceCode("BK");
 
     const created = await withTransaction(async (tx) => {
       const loc = await tx.query<{ id: string; city: string }>(
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         ]
       );
 
-      const leadCode = `LEAD-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+      const leadCode = generateReferenceCode("LEAD");
       await tx.query(
         `INSERT INTO leads (
           lead_code, full_name, phone, email, city, lead_category, source, requirement, status

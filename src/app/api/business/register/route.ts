@@ -1,6 +1,6 @@
 import { withTransaction } from "@/lib/db";
 import { businessRegistrationSchema } from "@/lib/validation";
-import { jsonOk, jsonError } from "@/lib/api-helpers";
+import { jsonOk, jsonError, generateReferenceCode } from "@/lib/api-helpers";
 
 export async function POST(request: Request) {
   try {
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       );
       const businessId = bizRes.rows[0].id;
 
-      const leadCode = `BIZ-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+      const leadCode = generateReferenceCode("BIZ");
       const leadRes = await tx.query<{ id: string }>(
         `INSERT INTO leads (
           lead_code, full_name, phone, email, city, lead_category, source, requirement, status
