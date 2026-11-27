@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, type ReactNode } from "react";
 import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { RaindropGlassCanvas } from "./RaindropGlassCanvas";
+import { HeroInteractiveBackground } from "./HeroInteractiveBackground";
 
 interface HeroScene {
   id: string;
@@ -376,6 +377,9 @@ export function HeroShowcase() {
           pointerRef={rainPointerRef}
         />
       )}
+
+      {/* Live Cursor-Reactive Aurum Gold & Chrome Energy Constellation */}
+      <HeroInteractiveBackground pointerRef={pointer} />
 
       {/* Pointer-Tracked Champagne Optical Glow */}
       <div
