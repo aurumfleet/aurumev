@@ -6,6 +6,7 @@ import { HeroShowcase } from "@/components/HeroShowcase";
 import { AboutAurumSection } from "@/components/AboutAurumSection";
 import { PartnersHolographicSection } from "@/components/PartnersHolographicSection";
 import { WhyChooseAurumSection } from "@/components/WhyChooseAurumSection";
+import { RiderStoriesSection } from "@/components/RiderStoriesSection";
 import { FaqAccordion, type FaqItem } from "@/components/FaqAccordion";
 import { query } from "@/lib/db";
 import { getSiteSettingsBundle } from "@/lib/settings";
@@ -15,8 +16,8 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const [faqsRes, testimonialsRes, settings] = await Promise.all([
     query<FaqItem>("SELECT id, category, question, answer FROM faqs WHERE is_published = TRUE ORDER BY sort_order ASC LIMIT 6"),
-    query<{ id: string; customer_name: string; customer_category: string; review_text: string; city: string | null }>(
-      "SELECT id, customer_name, customer_category, review_text, city FROM testimonials WHERE approval_status = 'approved' AND is_verified = TRUE ORDER BY created_at DESC LIMIT 6"
+    query<{ id: string; customer_name: string; customer_category: string; review_text: string; photo_url: string | null; city: string | null }>(
+      "SELECT id, customer_name, customer_category, review_text, photo_url, city FROM testimonials WHERE approval_status = 'approved' AND is_verified = TRUE ORDER BY created_at DESC LIMIT 6"
     ),
     getSiteSettingsBundle(),
   ]);
@@ -115,6 +116,9 @@ export default async function HomePage() {
             )}
           </div>
         </section>
+
+        {/* SECTION 13 – RIDER EXPERIENCES & TESTIMONIALS */}
+        <RiderStoriesSection verifiedTestimonials={testimonialsRes.rows} />
 
         {/* 12. FAQ ACCORDION */}
         <section className="bg-white py-20">
