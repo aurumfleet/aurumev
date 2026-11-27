@@ -356,12 +356,15 @@ export function HeroShowcase() {
         })}
       </div>
 
-      {/* Subtle 3D Orbital Champagne Ring Halo */}
+      {/* Dual Concentric 3D Orbital Chrome & Gold Halo */}
       <div
         aria-hidden="true"
         className="hero-perspective pointer-events-none absolute inset-0 z-[5] hidden items-center justify-center md:flex"
       >
-        <div className="h-[640px] w-[640px] rounded-full border border-[#FCAA30]/20 animate-[heroOrbit_24s_linear_infinite]" />
+        <div className="relative flex items-center justify-center">
+          <div className="h-[760px] w-[760px] rounded-full border border-white/[0.08] animate-[heroOrbit_38s_linear_infinite_reverse]" />
+          <div className="absolute h-[580px] w-[580px] rounded-full border border-[#FCAA30]/20 animate-[heroOrbit_24s_linear_infinite]" />
+        </div>
       </div>
 
       {/* Intro-Only Fast 3D Rain + Crystal Water Drops on Glass */}
@@ -388,17 +391,31 @@ export function HeroShowcase() {
             ref={centerStage3dRef}
             className="preserve-3d max-w-4xl will-change-transform"
           >
-            <p className="text-[11px] font-bold uppercase tracking-[0.36em] text-[#FCAA30]">
-              {HERO_CONTENT.eyebrow}
-            </p>
+            {/* Dark Anodized Chrome Eyebrow Badge */}
+            <div className="relative mx-auto inline-flex items-center gap-2.5 overflow-hidden rounded-full border border-white/20 bg-black/50 px-4 py-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.22)] backdrop-blur-xl">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FCAA30] opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#FCAA30]" />
+              </span>
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#F5CF7E]">
+                {HERO_CONTENT.eyebrow}
+              </p>
+            </div>
 
-            <h1 className="mt-4 font-display text-4xl font-semibold leading-[1.02] tracking-[-0.04em] text-white drop-shadow-[0_12px_36px_rgba(0,0,0,0.45)] sm:text-5xl lg:text-[64px]">
-              {HERO_CONTENT.headline}
+            <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.01] tracking-[-0.04em] text-white drop-shadow-[0_16px_42px_rgba(0,0,0,0.6)] sm:text-5xl lg:text-[66px]">
+              Powering India&apos;s Delivery Future{" "}
+              <span className="bg-gradient-to-r from-white via-[#FBE3B4] to-[#FCAA30] bg-clip-text text-transparent">
+                with Electric Mobility.
+              </span>
             </h1>
 
-            <div className="mx-auto mt-6 h-px w-20 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
+            <div className="mx-auto mt-6 flex max-w-xs items-center justify-center gap-3">
+              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#FCAA30]/70" />
+              <span className="h-1.5 w-1.5 rotate-45 border border-[#FCAA30] bg-[#FCAA30]/40" />
+              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#FCAA30]/70" />
+            </div>
 
-            <p className="mx-auto mt-5 max-w-2xl text-base font-normal leading-relaxed text-white/90 lg:text-[19px]">
+            <p className="mx-auto mt-5 max-w-2xl text-base font-normal leading-relaxed text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)] lg:text-[19px]">
               {HERO_CONTENT.subtitle}
             </p>
 
@@ -422,6 +439,15 @@ export function HeroShowcase() {
                 <span>{HERO_CONTENT.secondaryCta.label}</span>
                 <ArrowUpRight className="h-4 w-4 text-[#FCAA30] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </PremiumHeroButton>
+            </div>
+
+            {/* Minimal Chrome-Glass Factual Pillars */}
+            <div className="mt-7 inline-flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-full border border-white/15 bg-black/35 px-5 py-2 text-[11px] font-medium tracking-[0.06em] text-white/80 backdrop-blur-xl">
+              <span>Delhi &amp; Noida Hubs</span>
+              <span aria-hidden="true" className="h-3 w-px bg-white/20" />
+              <span>2 to 50 EV Fleet Tiers</span>
+              <span aria-hidden="true" className="h-3 w-px bg-white/20" />
+              <span>48-Month Structured Plans</span>
             </div>
           </div>
         </div>
@@ -460,7 +486,10 @@ export function HeroShowcase() {
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       sizes="220px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+                    <span className="absolute right-2 top-2 rounded-full border border-white/15 bg-black/55 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums tracking-wider text-white/80 backdrop-blur-md">
+                      0{idx + 1}
+                    </span>
                     <span className="absolute bottom-2 left-2.5 text-[11px] font-semibold tracking-tight text-white">
                       {s.thumbLabel}
                     </span>
