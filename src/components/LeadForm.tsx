@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, AlertCircle, MessageCircle, Send } from "lucide-react";
+import { CheckCircle2, AlertCircle, MapPin, MessageCircle, Send } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
+import { AURUM_NCR_HUBS } from "@/data/hubs";
 
 const WHATSAPP_LEAD_NUMBER = "917779990277";
 
@@ -11,6 +12,7 @@ interface LeadFormProps {
   title?: string;
   subtitle?: string;
   source?: "website" | "business_partnerships";
+  riderHubMode?: boolean;
 }
 
 export function LeadForm({
@@ -18,15 +20,18 @@ export function LeadForm({
   title = "Send an Enquiry",
   subtitle = "Share your requirement and our team will respond with verified availability and options.",
   source = "website",
+  riderHubMode = false,
 }: LeadFormProps) {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState(riderHubMode ? "Delhi" : "Delhi");
   const [leadCategory, setLeadCategory] = useState(defaultCategory);
   const [requirement, setRequirement] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string; waUrl?: string } | null>(null);
+
+  const activeHub = AURUM_NCR_HUBS.find((h) => h.city === city) ?? AURUM_NCR_HUBS[0];
 
   function buildWhatsAppUrl(leadCode?: string): string {
     const lines = [
@@ -34,9 +39,9 @@ export function LeadForm({
       leadCode ? `Reference: ${leadCode}` : null,
       fullName ? `Name: ${fullName}` : null,
       phone ? `Mobile: ${phone}` : null,
-      city ? `City: ${city}` : null,
+      `City Hub: ${activeHub.city} (${activeHub.hub})`,
       `Category: ${leadCategory}`,
-      requirement ? `Requirement: ${requirement}` : null,
+      requirement ? `Details: ${requirement}` : null,
     ].filter(Boolean);
     return `https://wa.me/${WHATSAPP_LEAD_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
   }
@@ -45,6 +50,10 @@ export function LeadForm({
     e.preventDefault();
     setSubmitting(true);
     setResult(null);
+
+    const effectiveRequirement =
+      requirement.trim() || `${leadCategory} enquiry for ${activeHub.city} (${activeHub.hub})`;
+
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
@@ -52,11 +61,11 @@ export function LeadForm({
         body: JSON.stringify({
           fullName,
           phone,
-          email,
+          email: riderHubMode ? "" : email,
           city,
           leadCategory,
           source,
-          requirement,
+          requirement: effectiveRequirement,
         }),
       });
       const data = await res.json();
@@ -77,7 +86,6 @@ export function LeadForm({
         setFullName("");
         setPhone("");
         setEmail("");
-        setCity("");
         setRequirement("");
       }
     } catch {
@@ -90,13 +98,13 @@ export function LeadForm({
   return (
     <form onSubmit={handleSubmit} className="aurum-card space-y-4">
       <div>
-        <h3 className="font-display text-xl font-bold text-[#101D35]">{title}</h3>
-        <p className="mt-1 text-sm text-[#747D8B]">{subtitle}</p>
+        <h3 className="font-display text-xl font-bold text-[#0F0F0F]">{title}</h3>
+        <p className="mt-1 text-sm text-[#666666]">{subtitle}</p>
       </div>
 
       {result && (
         <div
-          className={`flex items-start gap-2.5 rounded-lg p-3.5 text-sm ${
+          className={`flex items-start gap-2.5 rounded-xl p-3.5 text-sm ${
             result.ok ? "bg-[#15865B]/10 text-[#15865B]" : "bg-[#D94B4B]/10 text-[#D94B4B]"
           }`}
         >
@@ -124,6 +132,49 @@ export function LeadForm({
         </div>
       )}
 
+      {/* Delhi / Noida Location Hub Selector */}
+      <div>
+        <label className="aurum-label flex items-center gap-1.5">
+          <MapPin className="h-3.5 w-3.5 text-[#9E7524]" />
+          Select Hub Location *
+        </label>
+        <div className="grid grid-cols-2 gap-2.5">
+          {AURUM_NCR_HUBS.map((hub) => {
+            const active = city === hub.city;
+            return (
+              <button
+                key={hub.city}
+                type="button"
+                onClick={() => setCity(hub.city)}
+                className={`rounded-2xl border px-3.5 py-2.5 text-left transition ${
+                  active
+                    ? "border-[#0F0F0F] bg-[#0F0F0F] text-white shadow-sm"
+                    : "border-[#0F0F0F]/12 bg-[#F8F9FA] text-[#0F0F0F] hover:border-[#0F0F0F]/30"
+                }`}
+              >
+                <span
+                  className={`block text-sm font-semibold ${
+                    active ? "text-[#FCAA30]" : "text-[#0F0F0F]"
+                  }`}
+                >
+                  {hub.city}
+                </span>
+                <span
+                  className={`block truncate text-[11px] ${
+                    active ? "text-[#CBD5E1]" : "text-[#666666]"
+                  }`}
+                >
+                  {hub.hub}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-[11px] leading-snug text-[#666666]">
+          <strong className="text-[#0F0F0F]">{activeHub.hub}:</strong> {activeHub.address}
+        </p>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="aurum-label">Full Name *</label>
@@ -136,7 +187,7 @@ export function LeadForm({
           />
         </div>
         <div>
-          <label className="aurum-label">Mobile Number *</label>
+          <label className="aurum-label">Mobile / WhatsApp No. *</label>
           <input
             required
             value={phone}
@@ -145,57 +196,63 @@ export function LeadForm({
             className="aurum-input"
           />
         </div>
-        <div>
-          <label className="aurum-label">Email Address</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="aurum-input"
-          />
-        </div>
-        <div>
-          <label className="aurum-label">City</label>
-          <input
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Delhi or Noida"
-            className="aurum-input"
-          />
-        </div>
       </div>
 
-      <div>
-        <label className="aurum-label">Enquiry Category</label>
-        <select
-          value={leadCategory}
-          onChange={(e) => setLeadCategory(e.target.value as typeof leadCategory)}
-          className="aurum-input"
-        >
-          <option value="rental">EV Rental</option>
-          <option value="delivery_partner">Delivery Partner Plan</option>
-          <option value="individual">Individual Commuter</option>
-          <option value="corporate">Corporate / Business Fleet</option>
-          <option value="investor">Investor Information</option>
-        </select>
-      </div>
+      {!riderHubMode && (
+        <>
+          <div>
+            <label className="aurum-label">Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="aurum-input"
+            />
+          </div>
+
+          <div>
+            <label className="aurum-label">Enquiry Category</label>
+            <select
+              value={leadCategory}
+              onChange={(e) => setLeadCategory(e.target.value as typeof leadCategory)}
+              className="aurum-input"
+            >
+              <option value="rental">EV Rental</option>
+              <option value="delivery_partner">Delivery Partner Plan</option>
+              <option value="individual">Individual Commuter</option>
+              <option value="corporate">Corporate / Business Fleet</option>
+              <option value="investor">Investor Information</option>
+            </select>
+          </div>
+        </>
+      )}
 
       <div>
-        <label className="aurum-label">Requirement Details *</label>
+        <label className="aurum-label">
+          {riderHubMode ? "Plan & Delivery App (Optional)" : "Requirement Details *"}
+        </label>
         <textarea
-          required
-          rows={3}
+          required={!riderHubMode}
+          rows={riderHubMode ? 2 : 3}
           value={requirement}
           onChange={(e) => setRequirement(e.target.value)}
-          placeholder="Tell us your preferred rental duration, vehicle count, or questions..."
+          placeholder={
+            riderHubMode
+              ? "e.g. Weekly / Monthly plan, Blinkit / Zepto / Swiggy / Zomato..."
+              : "Tell us your preferred rental duration, vehicle count, or questions..."
+          }
           className="aurum-input"
         />
       </div>
 
-      <button type="submit" disabled={submitting} className="aurum-btn-primary w-full">
-        <Send className="h-4 w-4" />
-        {submitting ? "Submitting..." : "Submit Enquiry"}
+      <button type="submit" disabled={submitting} className="aurum-btn-primary w-full justify-center">
+        <Send className="h-4 w-4 text-[#FCAA30]" />
+        {submitting
+          ? "Submitting..."
+          : riderHubMode
+            ? "Request Callback & Open WhatsApp"
+            : "Submit Enquiry"}
       </button>
     </form>
   );

@@ -1,14 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck, Wrench, Zap, Clock, ArrowRight, FileCheck2, CheckCircle2 } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  FileCheck2,
+  MapPin,
+  ShieldCheck,
+  Wrench,
+  Zap,
+} from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LeadForm } from "@/components/LeadForm";
+import { AURUM_NCR_HUBS } from "@/data/hubs";
 
 export const metadata: Metadata = {
-  title: "EV Rentals for Delivery Partners",
+  title: "EV Rentals for Delivery Partners | Delhi & Noida",
   description:
-    "Reliable weekly and monthly electric two-wheeler rentals designed for last-mile delivery partners and gig workers.",
+    "Reliable weekly and monthly electric two-wheeler rentals designed for last-mile delivery partners and gig workers in Delhi & Noida.",
 };
 
 export default function RidersPage() {
@@ -43,8 +53,9 @@ export default function RidersPage() {
             <div className="text-[#0F0F0F] lg:col-span-5">
               <LeadForm
                 defaultCategory="delivery_partner"
-                title="Rider Callback Request"
-                subtitle="Share your city and delivery platform to check rider fleet availability."
+                riderHubMode
+                title="Rider Callback · Delhi & Noida"
+                subtitle="Select your hub (Delhi or Noida) and get a callback on WhatsApp."
               />
             </div>
           </div>
@@ -82,14 +93,29 @@ export default function RidersPage() {
               </h2>
               <div className="grid gap-4 sm:grid-cols-3">
                 {[
-                  { n: "01", t: "Apply Online", d: "Submit your city, plan, and contact details." },
-                  { n: "02", t: "Verify at Hub", d: "Complete KYC document check and agreement." },
+                  { n: "01", t: "Apply Online", d: "Pick Delhi or Noida hub and share your contact." },
+                  { n: "02", t: "Verify at Hub", d: "Visit NSP (Delhi) or Sector 65 (Noida) for KYC." },
                   { n: "03", t: "Start Riding", d: "Collect your inspected EV and begin shifts." },
                 ].map((s) => (
                   <div key={s.n} className="rounded-3xl bg-[#F4F4F4] p-5">
                     <span className="font-display text-2xl font-semibold text-[#FCAA30]">{s.n}</span>
                     <h3 className="mt-3 font-display text-lg font-medium text-[#0F0F0F]">{s.t}</h3>
                     <p className="mt-1.5 text-xs text-[#666666]">{s.d}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid gap-4 pt-2 sm:grid-cols-2">
+                {AURUM_NCR_HUBS.map((hub) => (
+                  <div
+                    key={hub.city}
+                    className="rounded-3xl border border-[#0F0F0F]/10 bg-[#F8F9FB] p-5"
+                  >
+                    <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9E7524]">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {hub.city} · {hub.hub}
+                    </p>
+                    <p className="mt-2 text-xs leading-relaxed text-[#475569]">{hub.address}</p>
                   </div>
                 ))}
               </div>
