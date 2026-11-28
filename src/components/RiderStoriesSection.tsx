@@ -39,13 +39,14 @@ export function RiderStoriesSection({
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [userInteracted, setUserInteracted] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [dragOffsetPx, setDragOffsetPx] = useState(0);
 
   const pointerStartXRef = useRef<number | null>(null);
   const dragDeltaRef = useRef(0);
 
   useEffect(() => {
-    if (userInteracted || count <= 1) return;
+    if (userInteracted || isHovered || count <= 1) return;
     if (
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -55,19 +56,19 @@ export function RiderStoriesSection({
 
     const timer = window.setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % count);
-    }, 4500);
+    }, 3800);
 
     return () => window.clearInterval(timer);
-  }, [userInteracted, count]);
+  }, [userInteracted, isHovered, count]);
 
-  function selectStory(index: number, pauseAuto = true) {
+  function selectStory(index: number, pauseAuto = false) {
     if (pauseAuto) setUserInteracted(true);
     const normalized = ((index % count) + count) % count;
     setActiveIndex(normalized);
   }
 
   function stepStory(delta: number) {
-    selectStory(activeIndex + delta, true);
+    selectStory(activeIndex + delta, false);
   }
 
   // Real-time 60fps Chrome Specular Reflection + Magnetic 3D Tilt
@@ -99,7 +100,6 @@ export function RiderStoriesSection({
 
   // Touch & drag navigation
   function handleStagePointerDown(e: React.PointerEvent<HTMLDivElement>) {
-    setUserInteracted(true);
     pointerStartXRef.current = e.clientX;
     dragDeltaRef.current = 0;
   }
@@ -215,7 +215,8 @@ export function RiderStoriesSection({
 
             {/* 3D Precision Brushed-Chrome Orbital Stage */}
             <div
-              onPointerEnter={() => setUserInteracted(true)}
+              onPointerEnter={() => setIsHovered(true)}
+              onPointerLeave={() => setIsHovered(false)}
               onPointerDown={handleStagePointerDown}
               onPointerMove={handleStagePointerMove}
               onPointerUp={handleStagePointerEnd}
@@ -370,7 +371,7 @@ export function RiderStoriesSection({
               </div>
 
               {/* Minimalist Pagination Track */}
-              <div className="mt-5 flex items-center justify-center gap-2">
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-1.5 px-4">
                 {stories.map((story, idx) => {
                   const selected = idx === activeIndex;
                   return (
