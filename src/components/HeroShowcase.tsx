@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
-import { RaindropGlassCanvas } from "./RaindropGlassCanvas";
 import { HeroInteractiveBackground } from "./HeroInteractiveBackground";
+import { TriangleAssemblyCanvas } from "./TriangleAssemblyCanvas";
+import { HeroFloatingShardsBackdrop } from "./HeroFloatingShardsBackdrop";
 
 interface HeroScene {
   id: string;
@@ -153,20 +154,14 @@ function PremiumHeroButton({
   );
 }
 
-let introPlayedThisVisit = false;
-
 export function HeroShowcase() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [introPhase, setIntroPhase] = useState<"active" | "fading" | "done">(() =>
-    introPlayedThisVisit ? "done" : "active"
-  );
 
   const sectionRef = useRef<HTMLElement>(null);
   const ambientLightRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const copyColRef = useRef<HTMLDivElement>(null);
-  const rainPointerRef = useRef({ x: 0.5, y: 0.5, inside: false });
 
   const pointer = useRef({
     targetX: 0.5,
@@ -181,17 +176,6 @@ export function HeroShowcase() {
     intensity: 0.5,
     pressPulse: 0,
   });
-
-  useEffect(() => {
-    if (introPhase === "done") return;
-    introPlayedThisVisit = true;
-    const fadeTimer = window.setTimeout(() => setIntroPhase("fading"), 4400);
-    const doneTimer = window.setTimeout(() => setIntroPhase("done"), 5500);
-    return () => {
-      window.clearTimeout(fadeTimer);
-      window.clearTimeout(doneTimer);
-    };
-  }, [introPhase]);
 
   useEffect(() => {
     if (paused) return;
@@ -277,7 +261,6 @@ export function HeroShowcase() {
     pointer.current.targetNx = (rx - 0.5) * 2;
     pointer.current.targetNy = (ry - 0.5) * 2;
     pointer.current.inside = true;
-    rainPointerRef.current = { x: rx, y: ry, inside: true };
   }
 
   function handlePointerDown() {
@@ -286,7 +269,6 @@ export function HeroShowcase() {
 
   function handlePointerLeave() {
     pointer.current.inside = false;
-    rainPointerRef.current.inside = false;
   }
 
   function goPrev() {
@@ -342,14 +324,8 @@ export function HeroShowcase() {
         </div>
       </div>
 
-      {/* Intro-Only 3D Rain + Crystal Water Drops */}
-      {introPhase !== "done" && (
-        <RaindropGlassCanvas
-          imageSrc={current.image}
-          fadingOut={introPhase === "fading"}
-          pointerRef={rainPointerRef}
-        />
-      )}
+      {/* Floating Beveled 3D Triangular Prism Shards (HyperFrames-inspired entry stream) */}
+      <HeroFloatingShardsBackdrop />
 
       {/* Live Cursor-Reactive Aurum Gold & Chrome Energy Constellation */}
       <HeroInteractiveBackground pointerRef={pointer} />
@@ -469,10 +445,21 @@ export function HeroShowcase() {
                         fill
                         priority={idx === 0}
                         className={`object-cover object-center transition-transform duration-[5200ms] ease-out ${
-                          isFront ? "scale-105" : "scale-100 brightness-75"
+                          isFront ? "scale-100" : "scale-100 brightness-75"
                         }`}
                         sizes="(max-width: 1024px) 90vw, 48vw"
                       />
+
+                      {/* HyperFrames-Inspired 3D Triangular Shard Mosaic Assembly */}
+                      {isFront && (
+                        <TriangleAssemblyCanvas
+                          key={`desk-tri-${scene.id}-${activeIdx}`}
+                          imageSrc={scene.image}
+                          sceneKey={activeIdx}
+                          cols={8}
+                          pointerRef={pointer}
+                        />
+                      )}
 
                       {/* Diagonal Chrome Light Sweep on Active Card */}
                       {isFront && (
@@ -616,6 +603,12 @@ export function HeroShowcase() {
                   sizes="100vw"
                 />
               ))}
+              <TriangleAssemblyCanvas
+                key={`mob-tri-${current.id}-${activeIdx}`}
+                imageSrc={current.image}
+                sceneKey={activeIdx}
+                cols={6}
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
               <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2">
                 <span className="rounded-full bg-black/65 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
