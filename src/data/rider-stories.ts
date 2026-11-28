@@ -31,7 +31,7 @@ export interface RiderVideoEntry {
 }
 
 export const RIDER_SECTION_COPY = {
-  eyebrow: "SECTION 13 · RIDER EXPERIENCES & TESTIMONIALS",
+  eyebrow: "RIDER EXPERIENCES & TESTIMONIALS",
   headingLead: "Real Riders.",
   headingAccent: "Real Journeys.",
   supportingHeadline:
