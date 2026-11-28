@@ -288,8 +288,6 @@ export function HeroShowcase() {
       onPointerMove={handlePointerMove}
       onPointerDown={handlePointerDown}
       onPointerLeave={handlePointerLeave}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
       className="relative w-full overflow-hidden bg-[#050506]"
     >
       {/* Pure Matte Black Studio Backdrop */}
@@ -393,14 +391,21 @@ export function HeroShowcase() {
           </div>
 
           {/* Right Column — 3D Cascading Depth Card-Stack Deck */}
-          <div className="lg:col-span-6 lg:pr-8">
+          <div
+            className="lg:col-span-6 lg:pr-8"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+          >
             <div
               ref={stackRef}
               className="preserve-3d relative aspect-[16/11] w-full will-change-transform"
             >
+              {/* Background stacked cards for 3D depth */}
               {HERO_SCENES.map((scene, idx) => {
                 const rel = (idx - activeIdx + total) % total;
                 const isFront = rel === 0;
+                if (isFront) return null;
+
                 const isNext1 = rel === 1;
                 const isNext2 = rel === 2;
                 const isPrev = rel === total - 1;
@@ -409,11 +414,7 @@ export function HeroShowcase() {
                 let opacity = 0;
                 let zIndex = 1;
 
-                if (isFront) {
-                  transform = "translate3d(0, 0, 20px) scale(1) rotateY(0deg)";
-                  opacity = 1;
-                  zIndex = 30;
-                } else if (isNext1) {
+                if (isNext1) {
                   transform = "translate3d(26px, 10px, -45px) scale(0.94) rotateY(-6deg)";
                   opacity = 0.72;
                   zIndex = 20;
@@ -430,101 +431,94 @@ export function HeroShowcase() {
                 return (
                   <div
                     key={scene.id}
-                    onClick={!isFront ? () => setActiveIdx(idx) : undefined}
+                    onClick={() => setActiveIdx(idx)}
                     style={{ transform, opacity, zIndex }}
-                    className={`absolute inset-0 rounded-[2rem] p-[1.5px] transition-all duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                      isFront
-                        ? "bg-[linear-gradient(135deg,rgba(255,255,255,0.68)_0%,rgba(148,163,184,0.25)_26%,rgba(255,255,255,0.8)_50%,rgba(252,170,48,0.62)_76%,rgba(203,213,225,0.4)_100%)] shadow-[0_32px_90px_rgba(0,0,0,0.75)]"
-                        : "cursor-pointer bg-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
-                    }`}
+                    className="absolute inset-0 cursor-pointer rounded-[2rem] bg-white/25 p-[1.5px] shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-all duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
                   >
                     <div className="relative h-full w-full overflow-hidden rounded-[calc(2rem-1.5px)] bg-[#111216]">
                       <Image
                         src={scene.image}
                         alt={scene.alt}
                         fill
-                        priority={idx === 0}
-                        className={`object-cover object-center transition-transform duration-[5200ms] ease-out ${
-                          isFront ? "scale-100" : "scale-100 brightness-75"
-                        }`}
+                        className="object-cover object-center brightness-75"
                         sizes="(max-width: 1024px) 90vw, 48vw"
                       />
-
-                      {/* HyperFrames-Inspired 3D Triangular Shard Mosaic Assembly */}
-                      {isFront && (
-                        <TriangleAssemblyCanvas
-                          key={`desk-tri-${scene.id}-${activeIdx}`}
-                          imageSrc={scene.image}
-                          sceneKey={activeIdx}
-                          cols={8}
-                          pointerRef={pointer}
-                        />
-                      )}
-
-                      {/* Diagonal Chrome Light Sweep on Active Card */}
-                      {isFront && (
-                        <div
-                          aria-hidden="true"
-                          className="pointer-events-none absolute inset-0 overflow-hidden"
-                        >
-                          <div
-                            className="h-full w-1/3 motion-safe:animate-[partnerGoldSweep_5.5s_ease-in-out_infinite]"
-                            style={{
-                              background:
-                                "linear-gradient(110deg, transparent 15%, rgba(255,255,255,0.18) 48%, rgba(252,170,48,0.16) 55%, transparent 85%)",
-                            }}
-                          />
-                        </div>
-                      )}
-
                       <div
                         aria-hidden="true"
                         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20"
                       />
-
-                      {isFront && (
-                        <>
-                          {/* Stage Prev / Next Chrome Controls */}
-                          <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                goPrev();
-                              }}
-                              aria-label="Previous scene"
-                              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
-                            >
-                              <ChevronLeft className="h-4 w-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                goNext();
-                              }}
-                              aria-label="Next scene"
-                              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
-                            >
-                              <ChevronRight className="h-4 w-4" />
-                            </button>
-                          </div>
-
-                          {/* Live Animated Slide Progress Bar */}
-                          <div className="absolute bottom-5 left-4 right-28 z-30 h-1 overflow-hidden rounded-full bg-white/20">
-                            <span
-                              key={`stage-${activeIdx}-${paused ? "p" : "r"}`}
-                              className={`block h-full rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FDE6B6] to-[#FCAA30] ${
-                                paused ? "w-full" : "animate-slide-progress"
-                              }`}
-                            />
-                          </div>
-                        </>
-                      )}
                     </div>
                   </div>
                 );
               })}
+
+              {/* Persistent Front Stage Frame: seamless prev->next triangular shard assembly + constant optical flow */}
+              <div
+                style={{
+                  transform: "translate3d(0, 0, 20px) scale(1) rotateY(0deg)",
+                  opacity: 1,
+                  zIndex: 30,
+                }}
+                className="absolute inset-0 rounded-[2rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.68)_0%,rgba(148,163,184,0.25)_26%,rgba(255,255,255,0.8)_50%,rgba(252,170,48,0.62)_76%,rgba(203,213,225,0.4)_100%)] p-[1.5px] shadow-[0_32px_90px_rgba(0,0,0,0.75)]"
+              >
+                <div className="relative h-full w-full overflow-hidden rounded-[calc(2rem-1.5px)] bg-[#090A0D]">
+                  <Image
+                    src={current.image}
+                    alt={current.alt}
+                    fill
+                    priority
+                    className="object-cover object-center"
+                    sizes="(max-width: 1024px) 90vw, 48vw"
+                  />
+
+                  <TriangleAssemblyCanvas
+                    imageSrc={current.image}
+                    cols={9}
+                    pointerRef={pointer}
+                  />
+
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 z-[16] bg-gradient-to-t from-black/75 via-black/5 to-black/15"
+                  />
+
+                  {/* Stage Prev / Next Chrome Controls */}
+                  <div className="absolute bottom-4 right-4 z-30 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goPrev();
+                      }}
+                      aria-label="Previous scene"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goNext();
+                      }}
+                      aria-label="Next scene"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-xl transition hover:border-[#FCAA30] hover:bg-black/80 hover:text-[#FCAA30]"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  {/* Live Animated Slide Progress Bar */}
+                  <div className="absolute bottom-5 left-4 right-28 z-30 h-1 overflow-hidden rounded-full bg-white/20">
+                    <span
+                      key={`stage-${activeIdx}-${paused ? "p" : "r"}`}
+                      className={`block h-full rounded-full bg-gradient-to-r from-[#FCAA30] via-[#FDE6B6] to-[#FCAA30] ${
+                        paused ? "w-full" : "animate-slide-progress"
+                      }`}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -604,13 +598,11 @@ export function HeroShowcase() {
                 />
               ))}
               <TriangleAssemblyCanvas
-                key={`mob-tri-${current.id}-${activeIdx}`}
                 imageSrc={current.image}
-                sceneKey={activeIdx}
                 cols={6}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-              <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2">
+              <div className="absolute inset-0 z-[16] bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+              <div className="absolute inset-x-3 bottom-3 z-30 flex items-center justify-between gap-2">
                 <span className="rounded-full bg-black/65 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
                   {current.thumbLabel}
                 </span>
