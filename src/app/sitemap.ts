@@ -3,7 +3,7 @@ import { getAppUrl } from "@/lib/app-url";
 import { query } from "@/lib/db";
 import { STATIC_BLOG_SLUGS } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const PUBLIC_STATIC_ROUTES: Array<{
   path: string;
@@ -45,12 +45,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    const res = await query<{ slug: string; published_at: string | null }>(
-      "SELECT slug, published_at FROM blog_posts WHERE status = 'published' ORDER BY published_at DESC NULLS LAST"
-    );
-    for (const row of res.rows) {
-      if (row.slug) {
-        blogSlugMap.set(row.slug, row.published_at ? new Date(row.published_at) : new Date());
+    const res = await Promise.race([
+      query<{ slug: string; published_at: string | null }>(
+        "SELECT slug, published_at FROM blog_posts WHERE status = 'published' ORDER BY published_at DESC NULLS LAST"
+      ),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500)),
+    ]);
+    if (res) {
+      for (const row of res.rows) {
+        if (row.slug) {
+          blogSlugMap.set(row.slug, row.published_at ? new Date(row.published_at) : new Date());
+        }
       }
     }
   } catch {
