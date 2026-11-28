@@ -6,6 +6,24 @@ import {
   DEFAULT_PRICING_SETTINGS,
 } from "./settings";
 
+export async function syncRiderFaqs(): Promise<void> {
+  const faqCount = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM faqs");
+  const hasNewRiderFaqs = await queryOne<{ id: string }>(
+    "SELECT id FROM faqs WHERE question = $1 LIMIT 1",
+    [RIDER_HELP_CENTRE_FAQS[0].question]
+  );
+  if (Number(faqCount?.cnt ?? "0") === 0 || !hasNewRiderFaqs) {
+    await query("DELETE FROM faqs");
+    for (const item of RIDER_HELP_CENTRE_FAQS) {
+      await query(
+        `INSERT INTO faqs (category, question, answer, sort_order, is_published)
+         VALUES ($1, $2, $3, $4, TRUE)`,
+        [item.category, item.question, item.answer, item.sortOrder]
+      );
+    }
+  }
+}
+
 export async function seedDatabase(): Promise<void> {
   const settingsEntries: Array<{ key: string; value: unknown; description: string }> = [
     {
@@ -161,21 +179,7 @@ export async function seedDatabase(): Promise<void> {
   }
 
   // FAQs — sync with Rider Help Centre 15 FAQs
-  const faqCount = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM faqs");
-  const hasNewRiderFaqs = await queryOne<{ id: string }>(
-    "SELECT id FROM faqs WHERE question = $1 LIMIT 1",
-    [RIDER_HELP_CENTRE_FAQS[0].question]
-  );
-  if (Number(faqCount?.cnt ?? "0") === 0 || !hasNewRiderFaqs) {
-    await query("DELETE FROM faqs");
-    for (const item of RIDER_HELP_CENTRE_FAQS) {
-      await query(
-        `INSERT INTO faqs (category, question, answer, sort_order, is_published)
-         VALUES ($1, $2, $3, $4, TRUE)`,
-        [item.category, item.question, item.answer, item.sortOrder]
-      );
-    }
-  }
+  await syncRiderFaqs();
 
   // Website Pages
   const pageCount = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM website_pages");

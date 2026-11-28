@@ -176,11 +176,13 @@ export async function ensureDbReady(): Promise<void> {
   if (!globalForDb.__aurumDbInitPromise) {
     globalForDb.__aurumDbInitPromise = (async () => {
       await runMigrations();
+      const { seedDatabase, syncRiderFaqs } = await import("./seed-data");
       const countRes = await rawQuery<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM site_settings");
       const count = Number(countRes.rows[0]?.cnt ?? "0");
       if (count === 0) {
-        const { seedDatabase } = await import("./seed-data");
         await seedDatabase();
+      } else {
+        await syncRiderFaqs();
       }
     })().catch((err) => {
       globalForDb.__aurumDbInitPromise = undefined;
