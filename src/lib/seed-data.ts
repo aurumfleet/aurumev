@@ -6,6 +6,45 @@ import {
   DEFAULT_PRICING_SETTINGS,
 } from "./settings";
 
+export async function syncDelhiNoidaLocations(): Promise<string | null> {
+  const noidaAddress =
+    "Ground Floor, B 130, Dharampal Satyapal Rd, B Block, Sector 65, Noida, Uttar Pradesh 201301";
+  const delhiAddress =
+    "Office Number - 201-202, Pearl Best Heights-1, Netaji Subhash Place, New Delhi";
+
+  await query(
+    `UPDATE locations
+     SET city = 'Noida', state = 'Uttar Pradesh', hub_name = 'Noida Sector 65 Hub',
+         address = $1, operating_hours = 'Mon - Sat, 09:00 AM - 07:00 PM IST'
+     WHERE city = 'Bengaluru'`,
+    [noidaAddress]
+  );
+
+  await query(
+    `UPDATE locations
+     SET city = 'Delhi', state = 'Delhi', hub_name = 'Netaji Subhash Place Hub',
+         address = $1, operating_hours = 'Mon - Sat, 09:00 AM - 07:00 PM IST'
+     WHERE city = 'Hyderabad'`,
+    [delhiAddress]
+  );
+
+  const countRes = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM locations");
+  if (Number(countRes?.cnt ?? "0") === 0) {
+    const locRes = await query<{ id: string }>(
+      `INSERT INTO locations (city, state, hub_name, address, is_active, operating_hours)
+       VALUES
+         ('Noida', 'Uttar Pradesh', 'Noida Sector 65 Hub', $1, TRUE, 'Mon - Sat, 09:00 AM - 07:00 PM IST'),
+         ('Delhi', 'Delhi', 'Netaji Subhash Place Hub', $2, TRUE, 'Mon - Sat, 09:00 AM - 07:00 PM IST')
+       RETURNING id`,
+      [noidaAddress, delhiAddress]
+    );
+    return locRes.rows[0]?.id ?? null;
+  }
+
+  const firstLoc = await queryOne<{ id: string }>("SELECT id FROM locations ORDER BY city ASC LIMIT 1");
+  return firstLoc?.id ?? null;
+}
+
 export async function syncRiderFaqs(): Promise<void> {
   const faqCount = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM faqs");
   const hasNewRiderFaqs = await queryOne<{ id: string }>(
@@ -96,22 +135,8 @@ export async function seedDatabase(): Promise<void> {
     }
   }
 
-  // Locations
-  const locCount = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM locations");
-  let defaultLocId: string | null = null;
-  if (Number(locCount?.cnt ?? "0") === 0) {
-    const locRes = await query<{ id: string }>(
-      `INSERT INTO locations (city, state, hub_name, address, is_active, operating_hours)
-       VALUES
-         ('Bengaluru', 'Karnataka', 'Primary Service Hub', 'Registered hub address configurable via site_settings', TRUE, '09:00 AM - 07:00 PM'),
-         ('Hyderabad', 'Telangana', 'Regional Hub', 'Registered hub address configurable via site_settings', TRUE, '09:00 AM - 07:00 PM')
-       RETURNING id`
-    );
-    defaultLocId = locRes.rows[0]?.id ?? null;
-  } else {
-    const firstLoc = await queryOne<{ id: string }>("SELECT id FROM locations LIMIT 1");
-    defaultLocId = firstLoc?.id ?? null;
-  }
+  // Locations (Delhi & Noida Hubs)
+  const defaultLocId: string | null = await syncDelhiNoidaLocations();
 
   // Vehicle Models (specs_verified = FALSE until verified specs are configured)
   const modelCount = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM vehicle_models");

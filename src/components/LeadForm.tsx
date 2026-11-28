@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, AlertCircle, Send } from "lucide-react";
+import { CheckCircle2, AlertCircle, MessageCircle, Send } from "lucide-react";
 import { trackAnalyticsEvent } from "@/lib/analytics";
+
+const WHATSAPP_LEAD_NUMBER = "917779990277";
 
 interface LeadFormProps {
   defaultCategory?: "rental" | "delivery_partner" | "individual" | "corporate" | "investor";
@@ -24,7 +26,20 @@ export function LeadForm({
   const [leadCategory, setLeadCategory] = useState(defaultCategory);
   const [requirement, setRequirement] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [result, setResult] = useState<{ ok: boolean; msg: string; waUrl?: string } | null>(null);
+
+  function buildWhatsAppUrl(leadCode?: string): string {
+    const lines = [
+      "Hi AURUM EV Team, I submitted an enquiry:",
+      leadCode ? `Reference: ${leadCode}` : null,
+      fullName ? `Name: ${fullName}` : null,
+      phone ? `Mobile: ${phone}` : null,
+      city ? `City: ${city}` : null,
+      `Category: ${leadCategory}`,
+      requirement ? `Requirement: ${requirement}` : null,
+    ].filter(Boolean);
+    return `https://wa.me/${WHATSAPP_LEAD_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,10 +67,13 @@ export function LeadForm({
           leadCategory === "corporate" ? "business_enquiry_submit" : "rental_enquiry_submit",
           { category: leadCategory, city: city || "unspecified" }
         );
+        const waUrl = buildWhatsAppUrl(data.leadCode);
         setResult({
           ok: true,
           msg: `${data.message} Reference: ${data.leadCode}`,
+          waUrl,
         });
+        window.open(waUrl, "_blank", "noopener,noreferrer");
         setFullName("");
         setPhone("");
         setEmail("");
@@ -87,7 +105,22 @@ export function LeadForm({
           ) : (
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
           )}
-          <span>{result.msg}</span>
+          <div className="space-y-2">
+            <span>{result.msg}</span>
+            {result.waUrl && (
+              <div>
+                <a
+                  href={result.waUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[#13B75E] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#0fa352]"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  Send Lead on WhatsApp (7779990277)
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -127,7 +160,7 @@ export function LeadForm({
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="e.g. Bengaluru"
+            placeholder="Delhi or Noida"
             className="aurum-input"
           />
         </div>

@@ -25,6 +25,8 @@ export interface PublicLocation {
   city: string;
   state: string;
   hub_name: string;
+  address?: string | null;
+  operating_hours?: string | null;
 }
 
 export interface PublicRentalPlan {
