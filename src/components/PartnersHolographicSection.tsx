@@ -4,9 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { ECOSYSTEM_PARTNERS, type EcosystemPartner } from "@/data/partners";
 import { RevealOnScroll } from "@/components/MotionPrimitives";
 
+interface CardPhysics {
+  tx: number;
+  ty: number;
+  tz: number;
+  rx: number;
+  ry: number;
+  scale: number;
+  opacity: number;
+}
+
 export function PartnersHolographicSection() {
   const stageRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const logoRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const physicsRef = useRef<Record<number, CardPhysics>>({});
+  const focusedTargetRef = useRef<{ row: "r1" | "r2"; idx: number } | null>(null);
 
   const [isPaused, setIsPaused] = useState(false);
   const [focusedKey, setFocusedKey] = useState<string | null>(null);
@@ -17,7 +30,7 @@ export function PartnersHolographicSection() {
   const touchMovedRef = useRef(false);
   const lastPointerTypeRef = useRef<string>("mouse");
 
-  // Subtle curved 3D depth arc + cursor-driven 3D magnetic card tilt
+  // Smooth spring-damped 3D depth arc + magnetic neighbor repulsion + 3D parallax logo lift
   useEffect(() => {
     const prefersReduced =
       typeof window !== "undefined" &&
@@ -40,32 +53,96 @@ export function PartnersHolographicSection() {
         const rect = stage.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const halfWidth = Math.max(rect.width / 2, 180);
+        const activeFocus = focusedTargetRef.current;
 
-        for (const card of cardRefs.current) {
+        for (let i = 0; i < cardRefs.current.length; i++) {
+          const card = cardRefs.current[i];
           if (!card) continue;
+
           const isFocused = card.dataset.focused === "true";
           const isDimmed = card.dataset.dimmed === "true";
+          const row = card.dataset.row as "r1" | "r2" | undefined;
+          const rowIdx = Number(card.dataset.idx ?? -1);
+
           const cRect = card.getBoundingClientRect();
           const rawNorm = (cRect.left + cRect.width / 2 - centerX) / halfWidth;
           const norm = Math.max(-1.2, Math.min(1.2, rawNorm));
           const absNorm = Math.min(1, Math.abs(norm));
 
-          const tiltX = isFocused ? Number(card.dataset.tiltX || 0) : 0;
-          const tiltY = isFocused ? Number(card.dataset.tiltY || 0) : -norm * 9;
-          const scale = isFocused ? 1.07 : 1.01 - absNorm * 0.08;
-          const tz = isFocused ? 28 : 10 - absNorm * 28;
-          const ty = isFocused ? -5 : 0;
+          // Magnetic repulsion ripple along the active row when a card levitates
+          let repelX = 0;
+          let repelTiltY = 0;
+          if (activeFocus && row === activeFocus.row && !isFocused && rowIdx >= 0) {
+            const delta = rowIdx - activeFocus.idx;
+            if (Math.abs(delta) === 1) {
+              repelX = delta * 12;
+              repelTiltY = -delta * 5;
+            } else if (Math.abs(delta) === 2) {
+              repelX = Math.sign(delta) * 5;
+              repelTiltY = -Math.sign(delta) * 2;
+            }
+          }
 
-          card.style.transform = `perspective(1100px) translate3d(0,${ty}px,${tz.toFixed(
-            1
-          )}px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(
-            2
-          )}deg) scale(${scale.toFixed(3)})`;
-          card.style.opacity = isFocused
-            ? "1"
+          const targetRx = isFocused ? Number(card.dataset.tiltX || 0) : 0;
+          const targetRy = isFocused
+            ? Number(card.dataset.tiltY || 0)
+            : -norm * 8 + repelTiltY;
+          const targetScale = isFocused
+            ? 1.13
             : isDimmed
-              ? "0.62"
-              : (1 - absNorm * 0.14).toFixed(3);
+              ? 0.955 - absNorm * 0.04
+              : 1.01 - absNorm * 0.07;
+          const targetTz = isFocused ? 46 : isDimmed ? -8 : 10 - absNorm * 24;
+          const targetTy = isFocused ? -9 : 0;
+          const targetTx = repelX;
+          const targetOpacity = isFocused
+            ? 1
+            : isDimmed
+              ? 0.52
+              : 1 - absNorm * 0.14;
+
+          const prev =
+            physicsRef.current[i] ??
+            (physicsRef.current[i] = {
+              tx: targetTx,
+              ty: targetTy,
+              tz: targetTz,
+              rx: targetRx,
+              ry: targetRy,
+              scale: targetScale,
+              opacity: targetOpacity,
+            });
+
+          const lerp = isFocused ? 0.22 : 0.14;
+          prev.tx += (targetTx - prev.tx) * lerp;
+          prev.ty += (targetTy - prev.ty) * lerp;
+          prev.tz += (targetTz - prev.tz) * lerp;
+          prev.rx += (targetRx - prev.rx) * lerp;
+          prev.ry += (targetRy - prev.ry) * lerp;
+          prev.scale += (targetScale - prev.scale) * lerp;
+          prev.opacity += (targetOpacity - prev.opacity) * 0.16;
+
+          card.style.transform = `perspective(1200px) translate3d(${prev.tx.toFixed(
+            2
+          )}px,${prev.ty.toFixed(2)}px,${prev.tz.toFixed(1)}px) rotateX(${prev.rx.toFixed(
+            2
+          )}deg) rotateY(${prev.ry.toFixed(2)}deg) scale(${prev.scale.toFixed(3)})`;
+          card.style.opacity = prev.opacity.toFixed(3);
+          card.style.zIndex = isFocused ? "40" : isDimmed ? "5" : "10";
+
+          // Inner 3D logo depth parallax pop
+          const logoEl = logoRefs.current[i];
+          if (logoEl) {
+            if (isFocused) {
+              const lpx = Number(card.dataset.logoPx || 0);
+              const lpy = Number(card.dataset.logoPy || 0);
+              logoEl.style.transform = `translate3d(${lpx.toFixed(1)}px, ${lpy.toFixed(
+                1
+              )}px, 0) scale(1.09)`;
+            } else {
+              logoEl.style.transform = "translate3d(0px, 0px, 0) scale(1)";
+            }
+          }
         }
       }
       rafId = window.requestAnimationFrame(updateCurve);
@@ -78,15 +155,18 @@ export function PartnersHolographicSection() {
   const handleStagePointerLeave = () => {
     setIsPaused(false);
     setFocusedKey(null);
+    focusedTargetRef.current = null;
   };
 
   const handleCardPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
     const rect = el.getBoundingClientRect();
-    const nx = (e.clientX - rect.left) / rect.width;
-    const ny = (e.clientY - rect.top) / rect.height;
-    el.dataset.tiltX = (-(ny - 0.5) * 12).toFixed(2);
-    el.dataset.tiltY = ((nx - 0.5) * 14).toFixed(2);
+    const nx = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const ny = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    el.dataset.tiltX = (-(ny - 0.5) * 18).toFixed(2);
+    el.dataset.tiltY = ((nx - 0.5) * 20).toFixed(2);
+    el.dataset.logoPx = ((nx - 0.5) * 7).toFixed(2);
+    el.dataset.logoPy = ((ny - 0.5) * 5).toFixed(2);
     el.style.setProperty("--mx", `${(nx * 100).toFixed(1)}%`);
     el.style.setProperty("--my", `${(ny * 100).toFixed(1)}%`);
   };
@@ -137,10 +217,12 @@ export function PartnersHolographicSection() {
         ref={(el) => {
           cardRefs.current[refIndex] = el;
         }}
+        data-row={rowTag}
+        data-idx={idx}
         data-focused={isCardFocused ? "true" : "false"}
         data-dimmed={isCardDimmed ? "true" : "false"}
         style={{ "--mx": "50%", "--my": "50%" } as React.CSSProperties}
-        className="relative shrink-0 cursor-pointer"
+        className="relative shrink-0 cursor-pointer will-change-transform"
         onPointerEnter={() => {
           lastPointerTypeRef.current = "mouse";
         }}
@@ -148,6 +230,7 @@ export function PartnersHolographicSection() {
           if (e.pointerType !== "mouse") return;
           handleCardPointerMove(e);
           if (!isCardFocused) {
+            focusedTargetRef.current = { row: rowTag, idx };
             setFocusedKey(key);
             setIsPaused(true);
           }
@@ -157,48 +240,97 @@ export function PartnersHolographicSection() {
           if (card) {
             card.dataset.tiltX = "0";
             card.dataset.tiltY = "0";
+            card.dataset.logoPx = "0";
+            card.dataset.logoPy = "0";
+          }
+          if (
+            focusedTargetRef.current?.row === rowTag &&
+            focusedTargetRef.current?.idx === idx
+          ) {
+            focusedTargetRef.current = null;
           }
         }}
         onClick={() => {
           if (lastPointerTypeRef.current === "mouse") return;
           setFocusedKey((prev) => {
             const next = prev === key ? null : key;
+            focusedTargetRef.current = next ? { row: rowTag, idx } : null;
             setIsPaused(next !== null);
             return next;
           });
         }}
       >
-        {/* 2px Brushed-Chrome Metallic Bevel Frame */}
+        {/* Ambient Holographic Gold Aura Glow Underneath on Focus */}
         <div
-          className={`relative h-[88px] w-[176px] rounded-2xl p-[2px] transition-shadow duration-300 sm:h-[96px] sm:w-[192px] ${
+          aria-hidden="true"
+          className={`pointer-events-none absolute -inset-2 -z-10 rounded-3xl transition-all duration-300 ${
+            isCardFocused ? "opacity-100 scale-100" : "opacity-0 scale-90"
+          }`}
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 55%, rgba(252,170,48,0.42), rgba(6,103,244,0.16) 55%, transparent 75%)",
+            filter: "blur(12px)",
+          }}
+        />
+
+        {/* Precision Magnetic Gold Corner Target Brackets */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute -inset-1.5 z-30 transition-all duration-300 ${
+            isCardFocused ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          }`}
+        >
+          <span className="absolute left-0 top-0 h-3 w-3 rounded-tl-md border-l-2 border-t-2 border-[#FCAA30]" />
+          <span className="absolute right-0 top-0 h-3 w-3 rounded-tr-md border-r-2 border-t-2 border-[#FCAA30]" />
+          <span className="absolute bottom-0 left-0 h-3 w-3 rounded-bl-md border-b-2 border-l-2 border-[#FCAA30]" />
+          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-br-md border-b-2 border-r-2 border-[#FCAA30]" />
+        </div>
+
+        {/* 2px Revolving Conic Holographic Foil + Brushed Chrome Frame */}
+        <div
+          className={`relative h-[88px] w-[176px] overflow-hidden rounded-2xl p-[2px] transition-shadow duration-300 sm:h-[96px] sm:w-[192px] ${
             isCardFocused
-              ? "shadow-[0_20px_44px_rgba(198,154,67,0.28),0_8px_18px_rgba(15,15,15,0.08)]"
+              ? "shadow-[0_24px_50px_rgba(198,154,67,0.34),0_10px_22px_rgba(15,15,15,0.14)]"
               : "shadow-[0_10px_28px_rgba(15,15,15,0.07),0_2px_6px_rgba(15,15,15,0.04)]"
           }`}
           style={{
-            background: isCardFocused
-              ? "linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 24%, #FFFFFF 48%, #FCAA30 74%, #9E7524 100%)"
-              : "linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 30%, #F8FAFC 55%, #94A3B8 82%, #E2E8F0 100%)",
+            background:
+              "linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 30%, #F8FAFC 55%, #94A3B8 82%, #E2E8F0 100%)",
           }}
         >
+          {/* Animated Orbiting Conic Prism Border Ring on Hover */}
+          {isCardFocused && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[260px] -translate-x-1/2 -translate-y-1/2 motion-safe:animate-[spin_2.8s_linear_infinite]"
+              style={{
+                background:
+                  "conic-gradient(from 0deg, #FCAA30 0deg, #FFFFFF 55deg, #0667F4 125deg, #F5CF7E 200deg, #94A3B8 270deg, #FCAA30 360deg)",
+              }}
+            />
+          )}
+
           {/* Inner Brand Tile */}
           <div
-            className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[calc(1rem-2px)]"
+            className="relative z-10 flex h-full w-full items-center justify-center overflow-hidden rounded-[calc(1rem-2px)]"
             style={{
               backgroundColor: partner.tileBackdrop ?? "#FFFFFF",
             }}
           >
             <img
+              ref={(el) => {
+                logoRefs.current[refIndex] = el;
+              }}
               src={partner.logoUrl}
               alt={isDuplicate ? "" : partner.alt}
               loading="lazy"
               decoding="async"
               draggable={false}
-              className={`select-none transition-transform duration-300 ${
+              className={`select-none transition-transform duration-200 ease-out will-change-transform ${
                 partner.fit === "cover"
                   ? "h-full w-full object-cover"
                   : "h-full w-full object-contain px-5 py-3"
-              } ${isCardFocused ? "scale-[1.05]" : ""}`}
+              }`}
             />
 
             {/* Subtle Top Chrome Glass Specular Sheen */}
@@ -207,19 +339,36 @@ export function PartnersHolographicSection() {
               className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/25 to-transparent"
             />
 
-            {/* Pointer-Tracked Liquid Chrome Highlight */}
+            {/* Interactive Holographic Micro-Lattice + Iridescent Prism Foil Revealed Around Cursor */}
             {isCardFocused && (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(130px circle at var(--mx) var(--my), rgba(255,255,255,0.34), rgba(252,170,48,0.12) 55%, transparent 80%)",
-                }}
-              />
+              <>
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(60deg, rgba(252,170,48,0.22) 0 1px, transparent 1px 11px), repeating-linear-gradient(-60deg, rgba(255,255,255,0.28) 0 1px, transparent 1px 11px), radial-gradient(125px circle at var(--mx) var(--my), rgba(255,255,255,0.42), rgba(252,170,48,0.2) 48%, rgba(6,103,244,0.12) 72%, transparent 86%)",
+                    maskImage:
+                      "radial-gradient(135px circle at var(--mx) var(--my), rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.45) 55%, transparent 90%)",
+                    WebkitMaskImage:
+                      "radial-gradient(135px circle at var(--mx) var(--my), rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.45) 55%, transparent 90%)",
+                    mixBlendMode: "screen",
+                  }}
+                />
+                {/* Instant Glass Enter Flash Sweep */}
+                <div
+                  key={`flash-${key}`}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 w-1/2 motion-safe:animate-[partnerEnterFlash_680ms_cubic-bezier(0.22,1,0.36,1)_forwards]"
+                  style={{
+                    background:
+                      "linear-gradient(105deg, transparent 10%, rgba(255,255,255,0.68) 48%, rgba(252,170,48,0.35) 60%, transparent 90%)",
+                  }}
+                />
+              </>
             )}
 
-            {/* Diagonal Chrome Sweep */}
+            {/* Ambient Diagonal Chrome Sweep */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 overflow-hidden"
@@ -235,16 +384,19 @@ export function PartnersHolographicSection() {
           </div>
         </div>
 
-        {/* Floating Partner Name Micro-Tag on Focus */}
+        {/* Floating Obsidian & Gold Partner + Sector Pill on Focus */}
         <span
           aria-hidden="true"
-          className={`pointer-events-none absolute -bottom-3 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#C69A43]/50 bg-[#0F0F0F] px-2.5 py-[2px] text-[9px] font-semibold uppercase tracking-[0.14em] text-[#F5CF7E] shadow-md transition-all duration-200 ${
+          className={`pointer-events-none absolute -bottom-3.5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#FCAA30]/60 bg-[#0A0A0D]/95 px-3 py-[3px] text-[9px] font-semibold uppercase tracking-[0.14em] text-white shadow-[0_10px_24px_rgba(0,0,0,0.28)] backdrop-blur-md transition-all duration-250 ${
             isCardFocused
-              ? "translate-y-0 opacity-100"
-              : "translate-y-1 opacity-0"
+              ? "translate-y-0 scale-100 opacity-100"
+              : "translate-y-1.5 scale-90 opacity-0"
           }`}
         >
-          {partner.name}
+          <span className="h-1.5 w-1.5 rounded-full bg-[#FCAA30]" />
+          <span>{partner.name}</span>
+          <span className="text-white/35">·</span>
+          <span className="text-[#F5CF7E]">{partner.sector}</span>
         </span>
       </div>
     );
@@ -310,7 +462,7 @@ export function PartnersHolographicSection() {
             ref={stageRef}
             role="list"
             aria-label="Ecosystem partner logos"
-            className="partner-holo-stage partner-perspective relative overflow-hidden py-3"
+            className="partner-holo-stage partner-perspective relative overflow-hidden py-5"
             data-paused={isPaused ? "true" : undefined}
             onPointerLeave={handleStagePointerLeave}
             onTouchStart={handleTouchStart}
@@ -329,7 +481,7 @@ export function PartnersHolographicSection() {
 
             {/* Row 1: Slides Left (RTL) */}
             <div
-              className="partner-marquee-track flex w-max gap-5 pb-4 pt-2"
+              className="partner-marquee-track flex w-max gap-5 pb-6 pt-3"
               data-paused={isPaused ? "true" : undefined}
               style={
                 touchOffset !== 0
@@ -349,7 +501,7 @@ export function PartnersHolographicSection() {
 
             {/* Row 2: Slides Opposite Right (LTR) */}
             <div
-              className="partner-marquee-track-reverse flex w-max gap-5 pb-5 pt-2"
+              className="partner-marquee-track-reverse flex w-max gap-5 pb-7 pt-3"
               data-paused={isPaused ? "true" : undefined}
               style={
                 touchOffset !== 0
