@@ -30,6 +30,7 @@ const PUBLIC_PAGE_EXACT = new Set<string>([
   "/riders",
   "/robots.txt",
   "/sitemap.xml",
+  "/terms-and-conditions",
   "/manifest.webmanifest",
   "/opengraph-image.jpg",
   "/twitter-image.jpg",

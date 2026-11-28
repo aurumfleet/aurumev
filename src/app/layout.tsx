@@ -5,6 +5,11 @@ import "./globals.css";
 import { ClickPulseEffect } from "@/components/ClickPulseEffect";
 import { AurumCustomCursor } from "@/components/AurumCustomCursor";
 import { getAppUrl } from "@/lib/app-url";
+import {
+  buildOrganizationJsonLd,
+  buildWebSiteJsonLd,
+  safeJsonLd,
+} from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +40,20 @@ export const metadata: Metadata = {
     "Monthly EV rental",
     "Electric two-wheeler fleet solutions",
     "EV fleet management",
+    "Delhi EV rental",
+    "Noida EV rental",
   ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -89,22 +107,19 @@ export default function RootLayout({
   const ga4Id = /^G-[A-Z0-9]+$/.test(rawGa4) ? rawGa4 : "";
   const gtmId = /^GTM-[A-Z0-9]+$/.test(rawGtm) ? rawGtm : "";
 
-  const orgJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "AURUM EV",
-    legalName: "Aurum Fleet Solutions Pvt Ltd",
-    url: appUrl,
-    logo: `${appUrl}/images/aurum-emblem.png`,
-    slogan: "Driven by Trust. Powered by Tomorrow.",
-  };
+  const orgJsonLd = buildOrganizationJsonLd(appUrl);
+  const webSiteJsonLd = buildWebSiteJsonLd(appUrl);
 
   return (
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable}`}>
       <body className="min-h-screen font-sans antialiased">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(webSiteJsonLd) }}
         />
         {ga4Id && (
           <>

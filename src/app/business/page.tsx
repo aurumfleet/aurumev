@@ -4,16 +4,33 @@ import { Building2, CheckCircle2, FileSpreadsheet, Users, Shield } from "lucide-
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BusinessProposalForm } from "@/components/BusinessProposalForm";
+import { getAppUrl } from "@/lib/app-url";
+import { buildBreadcrumbJsonLd, buildPageMetadata, safeJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Business & Corporate EV Fleet Solutions",
   description:
-    "Bulk electric two-wheeler rentals, centralized corporate fleet management, and flexible commercial agreements by Aurum Fleet Solutions Pvt Ltd.",
-};
+    "Bulk electric two-wheeler rentals, centralized corporate fleet management, consolidated GST billing, and flexible commercial agreements by Aurum Fleet Solutions Pvt Ltd.",
+  path: "/business",
+  keywords: [
+    "corporate EV fleet rental",
+    "B2B electric two wheeler fleet",
+    "enterprise delivery EV India",
+  ],
+});
 
 export default function BusinessPage() {
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(getAppUrl(), [
+    { name: "Home", path: "/" },
+    { name: "Business Fleet", path: "/business" },
+  ]);
+
   return (
     <div className="flex min-h-screen flex-col bg-[#F4F4F4]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         <section className="bg-[#0F0F0F] py-16 text-white sm:py-24">
@@ -39,8 +56,9 @@ export default function BusinessPage() {
               <div className="relative aspect-[16/10] overflow-hidden rounded-3xl border border-white/10">
                 <Image
                   src="/images/aurum-porter.jpg"
-                  alt="Corporate EV fleet line-up"
+                  alt="AURUM EV corporate electric two-wheeler fleet lined up for business delivery operations in Delhi NCR"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
               </div>

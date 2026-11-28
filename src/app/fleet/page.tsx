@@ -3,12 +3,20 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { FleetShowcase, type PublicLocation, type PublicRentalPlan, type PublicVehicleModel } from "@/components/FleetShowcase";
 import { query } from "@/lib/db";
+import { getAppUrl } from "@/lib/app-url";
+import { buildBreadcrumbJsonLd, buildPageMetadata, safeJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Our Electric Fleet",
   description:
-    "Browse electric two-wheeler models, availability status, and city hubs operated by Aurum EV.",
-};
+    "Browse electric two-wheeler models, availability status, and city hubs operated by AURUM EV in Delhi & Noida.",
+  path: "/fleet",
+  keywords: [
+    "electric two-wheeler fleet",
+    "EV scooter models Delhi Noida",
+    "commercial delivery EV fleet",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +35,17 @@ export default async function FleetPage() {
     availableCountByModel[row.model_id] = Number(row.cnt);
   }
 
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(getAppUrl(), [
+    { name: "Home", path: "/" },
+    { name: "Our Fleet", path: "/fleet" },
+  ]);
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1 py-14 sm:py-20">
         <div className="aurum-container">

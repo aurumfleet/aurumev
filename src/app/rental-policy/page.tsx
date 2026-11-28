@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { LegalDocumentView } from "@/components/LegalDocumentView";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Rental Policy" };
+export const metadata: Metadata = buildPageMetadata({
+  title: "EV Rental Policy",
+  description:
+    "KYC documentation, vehicle handover checklist, preventive hub maintenance, and allocation rules for AURUM EV rentals.",
+  path: "/rental-policy",
+});
 
 export default function RentalPolicyPage() {
   return (

@@ -4,11 +4,25 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LeadForm } from "@/components/LeadForm";
 import { getSiteSetting, DEFAULT_CONTACT_SETTINGS, type ContactSettings } from "@/lib/settings";
+import { getAppUrl } from "@/lib/app-url";
+import {
+  buildBreadcrumbJsonLd,
+  buildLocalBusinessJsonLd,
+  buildPageMetadata,
+  safeJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Contact Us",
-  description: "Reach Aurum Fleet Solutions Pvt Ltd for EV rentals, business fleet partnerships, or support.",
-};
+  description:
+    "Reach Aurum Fleet Solutions Pvt Ltd for EV rentals in Delhi & Noida, delivery partner plans, business fleet partnerships, or rider support.",
+  path: "/contact",
+  keywords: [
+    "contact AURUM EV",
+    "Aurum Fleet Solutions phone WhatsApp",
+    "EV rental Delhi Noida support",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +32,23 @@ export default async function ContactPage() {
     DEFAULT_CONTACT_SETTINGS
   );
 
+  const appUrl = getAppUrl();
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(appUrl, [
+    { name: "Home", path: "/" },
+    { name: "Contact Us", path: "/contact" },
+  ]);
+  const localBusinessJsonLd = buildLocalBusinessJsonLd(appUrl);
+
   return (
     <div className="flex min-h-screen flex-col bg-[#F4F4F4]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1 py-16 sm:py-20">
         <div className="aurum-container grid gap-10 lg:grid-cols-12">
@@ -83,6 +112,7 @@ export default async function ContactPage() {
             <LeadForm
               title="Send a Message to Our Team"
               subtitle="Your enquiry is logged and routed directly to the appropriate Aurum operations or partnership specialist."
+              headingAs="h2"
             />
           </div>
         </div>

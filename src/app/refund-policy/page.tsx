@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { LegalDocumentView } from "@/components/LegalDocumentView";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Refund Policy" };
+export const metadata: Metadata = buildPageMetadata({
+  title: "Refund Policy",
+  description:
+    "Security deposit reconciliation, pre-handover cancellation refunds, and settlement timelines at Aurum Fleet Solutions Pvt Ltd.",
+  path: "/refund-policy",
+});
 
 export default function RefundPolicyPage() {
   return (

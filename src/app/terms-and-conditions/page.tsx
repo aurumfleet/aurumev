@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { LegalDocumentView } from "@/components/LegalDocumentView";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Terms & Conditions" };
+export const metadata: Metadata = buildPageMetadata({
+  title: "Terms & Conditions",
+  description:
+    "Platform usage rules, booking confirmation policies, and rider eligibility terms governing AURUM EV electric two-wheeler rentals.",
+  path: "/terms-and-conditions",
+});
 
 export default function TermsPage() {
   return (

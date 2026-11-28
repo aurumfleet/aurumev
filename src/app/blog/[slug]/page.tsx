@@ -5,6 +5,13 @@ import { Calendar, ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { queryOne } from "@/lib/db";
+import { getAppUrl } from "@/lib/app-url";
+import {
+  buildBlogPostingJsonLd,
+  buildBreadcrumbJsonLd,
+  buildPageMetadata,
+  safeJsonLd,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -208,16 +215,40 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await queryOne<{ title: string; seo_title: string | null; seo_description: string | null }>(
-    "SELECT title, seo_title, seo_description FROM blog_posts WHERE slug = $1 AND status = 'published'",
+  const post = await queryOne<{
+    title: string;
+    seo_title: string | null;
+    seo_description: string | null;
+    excerpt: string | null;
+    published_at: string | null;
+  }>(
+    "SELECT title, seo_title, seo_description, excerpt, published_at FROM blog_posts WHERE slug = $1 AND status = 'published'",
     [slug]
   );
   const fallback = STATIC_POST_CONTENT[slug];
+  if (!post && !fallback) {
+    return buildPageMetadata({
+      title: "Article Not Found",
+      description: "The requested AURUM EV article could not be found.",
+      path: `/blog/${slug}`,
+      noIndex: true,
+    });
+  }
+
   const title = post?.seo_title ?? post?.title ?? fallback?.title ?? "Blog Post";
-  return {
+  const description =
+    post?.seo_description ??
+    post?.excerpt ??
+    fallback?.excerpt ??
+    "Insights on urban electric mobility, EV rentals, and fleet operations by AURUM EV.";
+
+  return buildPageMetadata({
     title,
-    description: post?.seo_description ?? fallback?.excerpt ?? undefined,
-  };
+    description,
+    path: `/blog/${slug}`,
+    type: "article",
+    publishedTime: post?.published_at ?? fallback?.published_at ?? undefined,
+  });
 }
 
 function renderInlineBold(text: string) {
@@ -257,9 +288,33 @@ export default async function BlogDetailPage({
   const bodyText = post.body ?? "";
   const paragraphs = bodyText.split(/\n\n+/);
   const rt = readTime(bodyText);
+  const appUrl = getAppUrl();
+  const articleDesc =
+    post.excerpt ??
+    "Insights on urban electric mobility, EV rentals, and fleet operations by AURUM EV.";
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(appUrl, [
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: `/blog/${slug}` },
+  ]);
+  const blogPostingJsonLd = buildBlogPostingJsonLd(appUrl, {
+    slug,
+    title: post.title,
+    description: articleDesc,
+    publishedAt: post.published_at,
+    category: post.category,
+  });
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(blogPostingJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         {/* Article Header */}

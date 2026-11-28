@@ -11,12 +11,20 @@ import {
   formatINR,
   type DefinedEvPlanUnits,
 } from "@/data/investment-plans";
+import { getAppUrl } from "@/lib/app-url";
+import { buildBreadcrumbJsonLd, buildPageMetadata, safeJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Investment | EV Fleet Opportunities & Calculator",
   description:
     "Explore electric two-wheeler fleet investment plans (2 to 50 EVs), interactive 48-month rental calculator, per-EV pricing, and operational transparency with Aurum Fleet Solutions Pvt Ltd.",
-};
+  path: "/invest",
+  keywords: [
+    "EV fleet investment India",
+    "Aurum EV investment plan",
+    "electric scooter asset management",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -35,9 +43,17 @@ export default async function InvestPage({
 }) {
   const sp = await searchParams;
   const initialUnits = parsePlanUnits(sp.units);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(getAppUrl(), [
+    { name: "Home", path: "/" },
+    { name: "Invest", path: "/invest" },
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F4F4F4]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         {/* Hero Banner */}

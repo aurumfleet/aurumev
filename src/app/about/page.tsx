@@ -16,12 +16,20 @@ import {
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { RevealOnScroll } from "@/components/MotionPrimitives";
+import { getAppUrl } from "@/lib/app-url";
+import { buildBreadcrumbJsonLd, buildPageMetadata, safeJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "About Us | Aurum Fleet Solutions Pvt Ltd",
   description:
-    "Discover the mission, leadership principles, and operational discipline behind AURUM EV by Aurum Fleet Solutions Pvt Ltd.",
-};
+    "Discover the mission, leadership principles, and operational discipline behind AURUM EV by Aurum Fleet Solutions Pvt Ltd across Delhi & Noida.",
+  path: "/about",
+  keywords: [
+    "Aurum Fleet Solutions Pvt Ltd",
+    "about AURUM EV",
+    "electric mobility company Delhi NCR",
+  ],
+});
 
 const VALUES = [
   {
@@ -113,8 +121,17 @@ const SEGMENTS = [
 ];
 
 export default function AboutPage() {
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(getAppUrl(), [
+    { name: "Home", path: "/" },
+    { name: "About Us", path: "/about" },
+  ]);
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         {/* Hero */}

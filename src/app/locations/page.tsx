@@ -12,12 +12,25 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { query } from "@/lib/db";
 import { getSiteSetting, DEFAULT_CONTACT_SETTINGS, type ContactSettings } from "@/lib/settings";
+import { getAppUrl } from "@/lib/app-url";
+import {
+  buildBreadcrumbJsonLd,
+  buildLocalBusinessJsonLd,
+  buildPageMetadata,
+  safeJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Service Hub Locations | AURUM EV",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Service Hub Locations in Delhi & Noida",
   description:
-    "Find your nearest AURUM EV service hub for electric two-wheeler rentals, maintenance support, and fleet operations across active cities.",
-};
+    "Find your nearest AURUM EV service hub in Netaji Subhash Place (New Delhi) or Sector 65 (Noida) for electric two-wheeler rentals, KYC onboarding, and maintenance support.",
+  path: "/locations",
+  keywords: [
+    "AURUM EV Delhi hub",
+    "AURUM EV Noida Sector 65 hub",
+    "electric scooter rental hub near me",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -49,9 +62,23 @@ export default async function LocationsPage() {
   ]);
 
   const locations = locationsRes.rows;
+  const appUrl = getAppUrl();
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(appUrl, [
+    { name: "Home", path: "/" },
+    { name: "Locations", path: "/locations" },
+  ]);
+  const localBusinessJsonLd = buildLocalBusinessJsonLd(appUrl);
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         {/* Hero */}

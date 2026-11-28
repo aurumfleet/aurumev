@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -10,6 +11,28 @@ import { RiderStoriesSection } from "@/components/RiderStoriesSection";
 import { FaqAccordion, type FaqItem } from "@/components/FaqAccordion";
 import { query } from "@/lib/db";
 import { getSiteSettingsBundle } from "@/lib/settings";
+import { getAppUrl } from "@/lib/app-url";
+import {
+  buildFaqJsonLd,
+  buildLocalBusinessJsonLd,
+  buildPageMetadata,
+  safeJsonLd,
+} from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Electric Scooter Rentals & EV Fleet Solutions",
+  absoluteTitle: "AURUM EV | Electric Scooter Rentals & EV Fleet Solutions in Delhi & Noida",
+  description:
+    "Rent electric two-wheelers in Delhi & Noida for delivery partners, commuters, and businesses, or explore managed EV fleet investment plans with Aurum Fleet Solutions Pvt Ltd.",
+  path: "/",
+  keywords: [
+    "AURUM EV",
+    "electric scooter rental Delhi",
+    "electric scooter rental Noida",
+    "delivery partner EV rental",
+    "EV fleet investment India",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -23,9 +46,22 @@ export default async function HomePage() {
   ]);
 
   const verifiedStats = settings.sustainabilityStats.filter((s) => s.verified);
+  const appUrl = getAppUrl();
+  const faqJsonLd = faqsRes.rows.length > 0 ? buildFaqJsonLd(faqsRes.rows) : null;
+  const localBusinessJsonLd = buildLocalBusinessJsonLd(appUrl);
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#0F0F0F]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+        />
+      )}
       <Navbar />
 
       <main className="flex-1">

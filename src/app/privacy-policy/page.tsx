@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { LegalDocumentView } from "@/components/LegalDocumentView";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Privacy Policy" };
+export const metadata: Metadata = buildPageMetadata({
+  title: "Privacy Policy",
+  description:
+    "How Aurum Fleet Solutions Pvt Ltd (AURUM EV) collects, secures, and processes personal, business, and KYC verification records.",
+  path: "/privacy-policy",
+});
 
 export default function PrivacyPolicyPage() {
   return (

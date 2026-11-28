@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { LegalDocumentView } from "@/components/LegalDocumentView";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Cancellation Policy" };
+export const metadata: Metadata = buildPageMetadata({
+  title: "Cancellation Policy",
+  description:
+    "Pre-handover booking cancellations, plan flexibility, and vehicle return inspection rules at AURUM EV.",
+  path: "/cancellation-policy",
+});
 
 export default function CancellationPolicyPage() {
   return (

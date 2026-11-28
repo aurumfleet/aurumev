@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { LegalDocumentView } from "@/components/LegalDocumentView";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Investor Disclosures" };
+export const metadata: Metadata = buildPageMetadata({
+  title: "Investor Disclosures",
+  description:
+    "Governance disclosures, financial reporting distinctions, and commercial partnership terms for Aurum Fleet Solutions Pvt Ltd.",
+  path: "/investor-disclosures",
+});
 
 export default function InvestorDisclosuresPage() {
   return (

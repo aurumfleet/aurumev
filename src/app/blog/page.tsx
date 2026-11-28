@@ -5,12 +5,20 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { query } from "@/lib/db";
 import { RevealOnScroll } from "@/components/MotionPrimitives";
+import { getAppUrl } from "@/lib/app-url";
+import { buildBreadcrumbJsonLd, buildPageMetadata, safeJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Insights & Electric Mobility Blog",
   description:
-    "Articles on urban electric mobility, delivery fleet economics, and sustainable two-wheeler operations by AURUM EV.",
-};
+    "Articles on urban electric mobility, delivery fleet economics, preventive EV maintenance, and sustainable two-wheeler operations by AURUM EV.",
+  path: "/blog",
+  keywords: [
+    "electric mobility blog India",
+    "EV fleet economics",
+    "delivery scooter vs petrol comparison",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -94,9 +102,17 @@ export default async function BlogPage() {
 
   const featured = posts[0];
   const rest = posts.slice(1);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(getAppUrl(), [
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         {/* Hero */}

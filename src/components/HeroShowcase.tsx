@@ -563,12 +563,12 @@ export function HeroShowcase() {
           {HERO_CONTENT.eyebrow}
         </p>
 
-        <h1 className="mt-3 font-display text-[32px] font-semibold leading-[1.06] tracking-[-0.03em] text-white">
+        <p className="mt-3 font-display text-[32px] font-semibold leading-[1.06] tracking-[-0.03em] text-white">
           Powering India&apos;s Delivery Future{" "}
           <span className="bg-gradient-to-r from-white via-[#FBE3B4] to-[#FCAA30] bg-clip-text text-transparent">
             with Electric Mobility.
           </span>
-        </h1>
+        </p>
         <div className="mx-auto mt-4 h-px w-14 bg-gradient-to-r from-transparent via-[#FCAA30] to-transparent" />
         <p className="mx-auto mt-3.5 max-w-sm text-sm leading-relaxed text-white/90">
           {HERO_CONTENT.subtitle}

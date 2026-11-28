@@ -14,16 +14,44 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LeadForm } from "@/components/LeadForm";
 import { AURUM_NCR_HUBS } from "@/data/hubs";
+import { getAppUrl } from "@/lib/app-url";
+import {
+  buildBreadcrumbJsonLd,
+  buildLocalBusinessJsonLd,
+  buildPageMetadata,
+  safeJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "EV Rentals for Delivery Partners | Delhi & Noida",
+export const metadata: Metadata = buildPageMetadata({
+  title: "EV Rentals for Delivery Partners in Delhi & Noida",
   description:
     "Reliable weekly and monthly electric two-wheeler rentals designed for last-mile delivery partners and gig workers in Delhi & Noida.",
-};
+  path: "/riders",
+  keywords: [
+    "EV rental for delivery partners",
+    "Zomato Swiggy Blinkit EV scooter rent",
+    "Delhi Noida delivery bike rental",
+  ],
+});
 
 export default function RidersPage() {
+  const appUrl = getAppUrl();
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(appUrl, [
+    { name: "Home", path: "/" },
+    { name: "Delivery Riders", path: "/riders" },
+  ]);
+  const localBusinessJsonLd = buildLocalBusinessJsonLd(appUrl);
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         <section className="bg-[#0F0F0F] py-16 text-white sm:py-24">

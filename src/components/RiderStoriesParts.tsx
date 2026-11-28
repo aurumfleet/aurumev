@@ -131,7 +131,6 @@ export function CinematicIntroBanner() {
             fill
             sizes="(max-width: 768px) 100vw, 1360px"
             className="object-cover object-center sm:object-[64%_35%]"
-            priority
           />
         </div>
 

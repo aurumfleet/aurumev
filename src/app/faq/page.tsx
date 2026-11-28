@@ -3,12 +3,25 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { FaqAccordion, type FaqItem } from "@/components/FaqAccordion";
 import { query } from "@/lib/db";
+import { getAppUrl } from "@/lib/app-url";
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildPageMetadata,
+  safeJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Frequently Asked Questions | Aurum Fleet Solutions",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Frequently Asked Questions | Rider Help Centre",
   description:
     "Aurum Fleet Solutions Rider Help Centre: answers about EV rentals, delivery work, Delhi & Noida hubs, payment plans, charging, and maintenance.",
-};
+  path: "/faq",
+  keywords: [
+    "AURUM EV FAQ",
+    "EV scooter rental questions Delhi Noida",
+    "delivery partner EV help",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +29,25 @@ export default async function FaqPage() {
   const res = await query<FaqItem>(
     "SELECT id, category, question, answer FROM faqs WHERE is_published = TRUE ORDER BY sort_order ASC, created_at ASC"
   );
+  const appUrl = getAppUrl();
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(appUrl, [
+    { name: "Home", path: "/" },
+    { name: "FAQ", path: "/faq" },
+  ]);
+  const faqJsonLd = res.rows.length > 0 ? buildFaqJsonLd(res.rows) : null;
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F4F4F4]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+        />
+      )}
       <Navbar />
       <main className="flex-1 py-16 sm:py-20">
         <div className="aurum-container max-w-4xl">

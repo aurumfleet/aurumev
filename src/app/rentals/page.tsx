@@ -17,12 +17,28 @@ import { BookingWizard } from "@/components/BookingWizard";
 import { FaqAccordion, type FaqItem } from "@/components/FaqAccordion";
 import { query } from "@/lib/db";
 import type { PublicLocation, PublicRentalPlan, PublicVehicleModel } from "@/components/FleetShowcase";
+import { getAppUrl } from "@/lib/app-url";
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildLocalBusinessJsonLd,
+  buildPageMetadata,
+  safeJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "EV Rentals for Riders | Delhi & Noida | AURUM EV",
+export const metadata: Metadata = buildPageMetadata({
+  title: "EV Rentals for Riders in Delhi & Noida",
   description:
-    "Rent an electric two-wheeler in Delhi & Noida for delivery work or daily commuting. Flexible weekly & monthly rider plans with scheduled hub servicing and instant WhatsApp support.",
-};
+    "Rent an electric two-wheeler in Delhi & Noida for delivery work or daily commuting. Flexible weekly & monthly rider plans with scheduled hub servicing and WhatsApp support.",
+  path: "/rentals",
+  keywords: [
+    "EV scooter rental Delhi",
+    "EV scooter rental Noida",
+    "delivery scooter rent",
+    "weekly EV rental",
+    "monthly electric scooter plan",
+  ],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -53,8 +69,30 @@ export default async function RentalsPage({
       )
     : undefined;
 
+  const appUrl = getAppUrl();
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(appUrl, [
+    { name: "Home", path: "/" },
+    { name: "EV Rentals", path: "/rentals" },
+  ]);
+  const localBusinessJsonLd = buildLocalBusinessJsonLd(appUrl);
+  const faqJsonLd = faqsRes.rows.length > 0 ? buildFaqJsonLd(faqsRes.rows) : null;
+
   return (
     <div className="flex min-h-screen flex-col bg-[#F8F9FB]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+        />
+      )}
       <Navbar />
       <main className="flex-1">
         {/* Obsidian & Gold Hero Header (Aligned to Neev /riders + Delhi/Noida) */}

@@ -13,6 +13,7 @@ interface LeadFormProps {
   subtitle?: string;
   source?: "website" | "business_partnerships";
   riderHubMode?: boolean;
+  headingAs?: "h2" | "h3";
 }
 
 export function LeadForm({
@@ -21,6 +22,7 @@ export function LeadForm({
   subtitle = "Share your requirement and our team will respond with verified availability and options.",
   source = "website",
   riderHubMode = false,
+  headingAs = "h3",
 }: LeadFormProps) {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -98,7 +100,11 @@ export function LeadForm({
   return (
     <form onSubmit={handleSubmit} className="aurum-card space-y-4">
       <div>
-        <h3 className="font-display text-xl font-bold text-[#0F0F0F]">{title}</h3>
+        {headingAs === "h2" ? (
+          <h2 className="font-display text-xl font-bold text-[#0F0F0F]">{title}</h2>
+        ) : (
+          <h3 className="font-display text-xl font-bold text-[#0F0F0F]">{title}</h3>
+        )}
         <p className="mt-1 text-sm text-[#666666]">{subtitle}</p>
       </div>
 

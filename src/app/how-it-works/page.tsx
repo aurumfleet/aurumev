@@ -15,11 +15,20 @@ import {
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { RevealOnScroll } from "@/components/MotionPrimitives";
+import { getAppUrl } from "@/lib/app-url";
+import { buildBreadcrumbJsonLd, buildPageMetadata, safeJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "How It Works",
-  description: "Four simple steps to rent an electric two-wheeler with AURUM EV.",
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: "How EV Rentals Work",
+  description:
+    "Four simple steps to rent an electric two-wheeler with AURUM EV: choose your city & plan, submit details, complete hub KYC, and start riding.",
+  path: "/how-it-works",
+  keywords: [
+    "how EV rental works",
+    "electric scooter onboarding steps",
+    "AURUM EV KYC handover process",
+  ],
+});
 
 const STEPS = [
   {
@@ -76,8 +85,17 @@ const QUICK_INFO = [
 ];
 
 export default function HowItWorksPage() {
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(getAppUrl(), [
+    { name: "Home", path: "/" },
+    { name: "How It Works", path: "/how-it-works" },
+  ]);
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
+      />
       <Navbar />
       <main className="flex-1">
         {/* Hero */}

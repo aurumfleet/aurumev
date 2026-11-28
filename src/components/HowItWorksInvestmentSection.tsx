@@ -133,6 +133,7 @@ export function HowItWorksInvestmentSection() {
                       <Image
                         src="/images/aurum-ev-studio.png"
                         alt=""
+                        aria-hidden="true"
                         width={32}
                         height={26}
                         className="h-5 w-6 object-contain"
