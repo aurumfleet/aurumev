@@ -164,7 +164,6 @@ export function HeroShowcase() {
 
   const sectionRef = useRef<HTMLElement>(null);
   const ambientLightRef = useRef<HTMLDivElement>(null);
-  const bgParallaxRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const copyColRef = useRef<HTMLDivElement>(null);
   const rainPointerRef = useRef({ x: 0.5, y: 0.5, inside: false });
@@ -240,16 +239,10 @@ export function HeroShowcase() {
       const pctY = (p.curY * 100).toFixed(2);
 
       if (ambientLightRef.current) {
-        const pulseBoost = p.pressPulse * 0.24;
-        const a1 = (0.22 * p.intensity + pulseBoost).toFixed(3);
-        const a2 = (0.08 * p.intensity + pulseBoost * 0.5).toFixed(3);
-        ambientLightRef.current.style.background = `radial-gradient(${660 + p.pressPulse * 140}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,244,225,${a2}) 44%, transparent 74%)`;
-      }
-
-      if (bgParallaxRef.current) {
-        const px = (-p.nx * 16).toFixed(2);
-        const py = (-p.ny * 12).toFixed(2);
-        bgParallaxRef.current.style.transform = `scale(1.1) translate3d(${px}px, ${py}px, 0)`;
+        const pulseBoost = p.pressPulse * 0.08;
+        const a1 = (0.06 * p.intensity + pulseBoost).toFixed(3);
+        const a2 = (0.025 * p.intensity + pulseBoost * 0.4).toFixed(3);
+        ambientLightRef.current.style.background = `radial-gradient(${480 + p.pressPulse * 110}px circle at ${pctX}% ${pctY}%, rgba(252,170,48,${a1}), rgba(255,255,255,${a2}) 42%, transparent 72%)`;
       }
 
       if (copyColRef.current) {
@@ -315,33 +308,13 @@ export function HeroShowcase() {
       onPointerLeave={handlePointerLeave}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative w-full overflow-hidden bg-[#09090C]"
+      className="relative w-full overflow-hidden bg-[#050506]"
     >
-      {/* Ambient Blurred Background Wash Synced to Active Scene */}
+      {/* Pure Matte Black Studio Backdrop */}
       <div
-        ref={bgParallaxRef}
-        className="pointer-events-none absolute inset-0 will-change-transform"
-        style={{ transform: "scale(1.1)" }}
-      >
-        {HERO_SCENES.map((scene, idx) => (
-          <div
-            key={scene.id}
-            className={`absolute inset-0 transition-opacity duration-[1200ms] ease-out ${
-              idx === activeIdx ? "opacity-50" : "opacity-0"
-            }`}
-          >
-            <Image
-              src={scene.image}
-              alt=""
-              fill
-              priority={idx === 0}
-              className="scale-110 object-cover object-center blur-2xl brightness-75"
-              sizes="100vw"
-            />
-          </div>
-        ))}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_68%_45%,rgba(9,9,12,0.42)_0%,rgba(9,9,12,0.9)_70%,#09090C_100%)]" />
-      </div>
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_60%_at_72%_40%,#101115_0%,#070709_48%,#040405_100%)]"
+      />
 
       {/* Subtle Architectural Perspective Grid Floor */}
       <div
