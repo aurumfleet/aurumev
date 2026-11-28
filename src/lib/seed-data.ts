@@ -1,4 +1,5 @@
 import { rawQuery as query, rawQueryOne as queryOne } from "./db";
+import { RIDER_HELP_CENTRE_FAQS } from "@/data/faqs";
 import {
   DEFAULT_CONTACT_SETTINGS,
   DEFAULT_INVESTMENT_CONFIG,
@@ -159,17 +160,21 @@ export async function seedDatabase(): Promise<void> {
     );
   }
 
-  // FAQs
+  // FAQs — sync with Rider Help Centre 15 FAQs
   const faqCount = await queryOne<{ cnt: string }>("SELECT COUNT(*)::text AS cnt FROM faqs");
-  if (Number(faqCount?.cnt ?? "0") === 0) {
-    await query(
-      `INSERT INTO faqs (category, question, answer, sort_order, is_published) VALUES
-        ('Rentals', 'How does the EV rental booking process work at Aurum EV?', 'Select your city, preferred vehicle category, and rental duration, then submit your details. Our operations team verifies vehicle availability and confirms your booking before handover.', 1, TRUE),
-        ('Delivery Partners', 'Can delivery partners rent an EV on weekly or monthly plans?', 'Yes. Aurum EV offers dedicated weekly and monthly plans designed for last-mile delivery partners, complete with scheduled maintenance and assistance.', 2, TRUE),
-        ('KYC & Payments', 'What documents are required to rent an electric two-wheeler?', 'Depending on the vehicle category and plan, you will typically need valid government photo ID (Aadhaar/PAN), a driving licence where applicable, and current address verification.', 3, TRUE),
-        ('Business Fleet', 'How can businesses request bulk EV fleet rentals?', 'Businesses can submit a proposal request on our Business Solutions page, specifying fleet size and city requirements to receive a customized corporate proposal.', 4, TRUE),
-        ('Investment', 'How do I explore EV fleet investment opportunities with Aurum Fleet Solutions?', 'You can submit an investor enquiry on our Invest With Us page. Our team shares approved structure documentation directly upon review.', 5, TRUE)`
-    );
+  const hasNewRiderFaqs = await queryOne<{ id: string }>(
+    "SELECT id FROM faqs WHERE question = $1 LIMIT 1",
+    [RIDER_HELP_CENTRE_FAQS[0].question]
+  );
+  if (Number(faqCount?.cnt ?? "0") === 0 || !hasNewRiderFaqs) {
+    await query("DELETE FROM faqs");
+    for (const item of RIDER_HELP_CENTRE_FAQS) {
+      await query(
+        `INSERT INTO faqs (category, question, answer, sort_order, is_published)
+         VALUES ($1, $2, $3, $4, TRUE)`,
+        [item.category, item.question, item.answer, item.sortOrder]
+      );
+    }
   }
 
   // Website Pages

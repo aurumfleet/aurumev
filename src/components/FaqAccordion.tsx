@@ -34,7 +34,7 @@ export function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
               className="flex w-full items-center justify-between gap-4 py-4 text-left transition-colors"
             >
               <div>
-                <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0667F4]">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9E7524]">
                   {item.category}
                 </span>
                 <span className="mt-1 block font-display text-base font-medium text-[#0F0F0F] sm:text-lg">

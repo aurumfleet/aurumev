@@ -124,17 +124,17 @@ export default async function HomePage() {
         <section className="bg-white py-20">
           <div className="aurum-container max-w-4xl">
             <div className="mb-10 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#666666]">
-                Questions & Answers
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#9E7524]">
+                Aurum Fleet Solutions | Rider Help Centre
               </p>
               <h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.03em] text-[#0F0F0F] sm:text-4xl">
-                Clear Answers Before You Ride
+                Frequently Asked Questions
               </h2>
             </div>
             <FaqAccordion faqs={faqsRes.rows} />
             <div className="mt-6 text-center">
-              <Link href="/faq" className="text-sm font-semibold text-[#0F0F0F] hover:text-[#0667F4]">
-                View all FAQs →
+              <Link href="/faq" className="text-sm font-semibold text-[#0F0F0F] hover:text-[#9E7524]">
+                View all 15 FAQs →
               </Link>
             </div>
           </div>
